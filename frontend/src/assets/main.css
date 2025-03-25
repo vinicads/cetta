@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('./loading.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+  box-sizing: border-box;
+  letter-spacing: 1px;
+  scroll-behavior: smooth;
+  scroll-padding: 6rem;
+}
+
+:root {
+  --cor-principal: #D94141;
+  --cor-secundaria: #D95F5F;
+  --cor-terciaria: #F28D8D;
+  --cor-quaternaria: #F2B3B3;
+  --cor-branco: #F2F2F2;
+  --cor-preto: #2F2929;
+  --cor-preto-secundaria: #453E3E;
+} 
+
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+html.no-scroll {
+  overflow-y: hidden;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+.display {
+  width: 80vw;
+  margin: 0 auto;
+}
+
+input, select{
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1), 0px 1px 1px rgba(0, 0, 0, 0.01);
+}
+
+input:not([type="checkbox"]), select {
+  border-radius: 15px !important;
+  border: 1px solid #0000001c !important;
+}
+
+input:focus, select:focus,  input:hover, select:hover{
+  border: 1px solid var(--cor-principal) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+a{
+  text-decoration: none;
+}
+
+button:focus{  outline: none;}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #3d3d3d;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #717171;
+}
+
+.linha {
+  width: 50%;
+  background-color: #0000004c;
+  height: 1.5px;
+  border-radius: 15px;
+  margin: 5% auto;
+}
+
+@media (max-width: 1800px) {
+  .display {
+    width: 90vw;
+  }
+}
+
+@media (max-width: 1200px) {
+  .display {
+    width: 95vw;
+  }
+}
+
+@media (max-width: 768px) {
+  .display {
+    width: 100vw;
+  }
+}

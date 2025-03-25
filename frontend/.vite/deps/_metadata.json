@@ -1,0 +1,47 @@
+{
+  "hash": "0ebf9bd3",
+  "browserHash": "5df632ce",
+  "optimized": {
+    "vue": {
+      "src": "../../node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "44871e58",
+      "needsInterop": false
+    },
+    "vue-cookies": {
+      "src": "../../node_modules/vue-cookies/vue-cookies.js",
+      "file": "vue-cookies.js",
+      "fileHash": "f08f96e8",
+      "needsInterop": true
+    },
+    "vuex": {
+      "src": "../../node_modules/vuex/dist/vuex.esm-bundler.js",
+      "file": "vuex.js",
+      "fileHash": "4774138e",
+      "needsInterop": false
+    },
+    "axios": {
+      "src": "../../node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "8d009c93",
+      "needsInterop": false
+    },
+    "vue-router": {
+      "src": "../../node_modules/vue-router/dist/vue-router.mjs",
+      "file": "vue-router.js",
+      "fileHash": "30fbf2ce",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-IYYF2JOZ": {
+      "file": "chunk-IYYF2JOZ.js"
+    },
+    "chunk-VF46HPPO": {
+      "file": "chunk-VF46HPPO.js"
+    },
+    "chunk-76J2PTFD": {
+      "file": "chunk-76J2PTFD.js"
+    }
+  }
+}

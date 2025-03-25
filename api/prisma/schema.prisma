@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model assinatura {
+  idAssinatura     Int               @id @default(autoincrement())
+  prazo            DateTime          @db.Date
+  ultimoMes        DateTime?         @db.Date
+  qtdeFretes       Int
+  qtdeContatos     Int
+  status           assinatura_status
+  plano            String            @db.VarChar(45)
+  codPagamento     String?           @db.Text
+  idPagamentoFrete String?           @db.Text
+}
+
+model autenticacao {
+  idAutenticacao Int    @id @default(autoincrement())
+  email          String @db.VarChar(100)
+  senha          String @db.VarChar(80)
+  conta          contas @relation(fields: [idConta], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+  idConta        Int
+}
+
+model avaliacoes {
+  idAvaliacoes Int    @id @default(autoincrement())
+  nota         Float
+  idRecrutador Int
+  idAvaliador  Int
+  conta        contas @relation(fields: [idRecrutador], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model contas {
+  idConta             Int                   @id @default(autoincrement())
+  nome                String                @db.VarChar(45)
+  documento           String                @db.VarChar(15)
+  tipoDocumento       contas_documento
+  perfil              contas_perfil
+  contato             String                @db.VarChar(15)
+  cep                 String                @db.VarChar(8)
+  antt                Boolean?
+  mei                 Boolean?
+  tipoVeiculo         tipos_Veiculos?
+  foto                String?               @db.Text
+  idAssinatura        Int?
+  idDesconto          Int?
+  autenticacao        autenticacao[]
+  veiculo             veiculo[]
+  avaliacoes          avaliacoes[]
+  contasDesbloqueadas contasdesbloqueadas[]
+  frete               fretes[]
+  descontos           desconto[]
+
+  @@index([idAssinatura], map: "fk_Contas_Assinatura1_idx")
+  @@index([idDesconto], map: "fk_Contas_Desconto1_idx")
+}
+
+model contasdesbloqueadas {
+  idContasDesbloqueadas Int    @id @default(autoincrement())
+  idEmpresa             Int
+  idContato             Int
+  contaRecrutador       contas @relation(fields: [idEmpresa], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model desconto {
+  idDesconto        Int     @id @default(autoincrement())
+  valor             Decimal @db.Decimal(10, 2)
+  idContaRecrutador Int
+  idEmpresa         Int
+
+  contaEmpresa contas @relation(fields: [idEmpresa], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model fretes {
+  idFretes      Int           @id @default(autoincrement())
+  de            String        @db.VarChar(8)
+  para          Json
+  valor         Decimal       @db.Decimal(10, 2)
+  datas         Json
+  tiposVeiculos Json
+  distancia     Float
+  status        fretes_status
+  tipoVeiculo   tipos_Veiculos? @default(CargaSeca)
+  idEmpresa     Int
+  idRecrutador  Int?
+
+  contaEmpresa contas @relation(fields: [idEmpresa], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+}
+
+model geral {
+  idGeral              Int    @id @default(autoincrement())
+  valorFreteIndividual Float
+  emailContato         String @db.VarChar(100)
+  numeroContato        String @db.VarChar(15)
+  qtdeContatos         Int
+  qtdeEmpresa          Int
+  qtdeFretes           Int
+}
+
+model pagamento {
+  idPagamento  Int      @id @default(autoincrement())
+  dataPago     DateTime @db.Date
+  valor        Decimal  @db.Decimal(10, 2)
+  pago         Int      @db.TinyInt
+  idAssinatura Int
+  plano        String   @db.VarChar(45)
+
+  @@index([idAssinatura], map: "fk_Pagamento_Assinatura1_idx")
+}
+
+model planos {
+  idPlanos        Int    @id @default(autoincrement())
+  nome            String @db.VarChar(45)
+  qtdeFrete       Int
+  qtdeContatos    Int
+  valorMensal     Float
+  valorTrimestral Float
+  valorSemestral  Float
+  descricao       String @db.Text
+}
+
+model veiculo {
+  idVeiculo Int          @id @default(autoincrement())
+  tipo      veiculo_tipo
+  placa     String       @db.VarChar(45)
+  modelo    String       @db.VarChar(100)
+  ano       Int
+  foto      String       @db.LongText
+  idConta   Int
+
+  contas contas @relation(fields: [idConta], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+}
+
+enum tipos_Veiculos {
+  CargaSeca
+  Refrigerado
+}
+
+enum veiculo_tipo {
+  Fiorino
+  Van
+  HR
+  Iveco
+  Vuc
+  TresQuartos
+  Toco
+  Truck
+  Carreta
+}
+
+enum contas_documento {
+  CPF
+  CNPJ
+}
+
+enum contas_perfil {
+  Admin
+  Motorista
+  Empresa
+  Recrutador
+}
+
+enum assinatura_status {
+  Ativo
+  Inativo
+}
+
+enum fretes_status {
+  Ativo
+  Finalizado
+  Cancelado
+}
