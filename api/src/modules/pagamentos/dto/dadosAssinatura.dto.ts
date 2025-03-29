@@ -6,11 +6,7 @@ export class DadosAssinaturaDTO {
     @IsNotEmpty({ message: 'O código da assinatura precisa ser preenchido.' })
     idPlanos: number;
 
-    @IsInt({ message: 'A quantidade de meses da assinatura deve ser um número inteiro.' })
-    @IsNotEmpty({ message: 'A quantidade de meses da assinatura precisa ser preenchida.' })
-    qtdeMeses: number;
-
-    @IsBoolean({ message: 'Usar desconto deve ser um booleano.' })
-    @IsNotEmpty({ message: 'Usar desconto deve ser preenchida.' })
-    usarDesconto: boolean
+    @IsNumber(undefined, { message: 'O código do grupo deve ser um numero.' })
+    @IsOptional()
+    idGrupo: number;
 }

@@ -5,8 +5,11 @@ import { APP_PIPE } from '@nestjs/core';
 import { LoginFunctions } from '../login/functions/login.functions';
 import { AuthFunctions } from 'src/middlewares/auth.middleware';
 import { functionService } from 'src/middlewares/geralFunctions';
-import { VeiculosController } from './veiculos.controller';
-import { VeiculosService } from './veiculos.service';
+import { GruposController } from './grupos.controller';
+import { GruposService } from './grupos.service';
+import { QueueModule } from '../Queue/queue.module';
+import { contasFunctions } from '../users/functions/contas.functions';
+
 
 
 
@@ -17,13 +20,14 @@ import { VeiculosService } from './veiculos.service';
       secret: process.env.secret,
       signOptions: { expiresIn: process.env.tempoToken },
     }),
+    QueueModule
   ],
-  controllers: [VeiculosController],
-  providers: [VeiculosService, PrismaService, AuthFunctions, functionService,
+  controllers: [GruposController],
+  providers: [GruposService, PrismaService, AuthFunctions, functionService, contasFunctions,
     LoginFunctions, {
     provide: APP_PIPE,
     useClass: ValidationPipe,
   }],
 })
-export class VeiculosModule {}
+export class GruposModule {}
 

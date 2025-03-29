@@ -28,4 +28,35 @@ export class contasFunctions {
             }
         })
     }
+
+    async desativarAssinatura(idConta: number){
+        const conta = await this.prisma.contas.findFirst({
+            where: {
+                idConta: Number(idConta)
+            },
+        })
+        if (conta){
+            await this.prisma.contas.update({
+                where: {
+                    idConta: Number(idConta)
+                },
+                data: {
+                    idGrupo: null
+                }
+            })
+
+            if (conta.idAssinatura){
+                await this.prisma.assinatura.update({
+                    where: {
+                        idAssinatura: Number(conta.idAssinatura)
+                    },
+                    data: {
+                        ativo: false,
+                        codPagamento: '',
+                    }
+                })
+            }
+        }
+        
+    }
 }

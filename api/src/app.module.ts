@@ -14,17 +14,10 @@ import { PlanosModule } from './modules/planos/planos.module';
 import { InfoGeralController } from './modules/geralInfo/infoGeral.controller';
 import { PlanosController } from './modules/planos/planos.controller';
 import { PublicRoutesModule } from './modules/publicRoutes/publicRoutes.module';
-import { VeiculosModule } from './modules/veiculos/veiculos.module';
-import { VeiculosController } from './modules/veiculos/veiculos.controller';
-import { ContasDesbloqueadasModule } from './modules/contasDesbloqueadas/contasDesbloqueadas.module';
-import { ContasDesbloqueadasController } from './modules/contasDesbloqueadas/contasDesbloqueadas.controller';
-import { AvaliacoesModule } from './modules/avaliacoes/avaliacoes.module';
-import { DescontoModule } from './modules/desconto/desconto.module';
-import { DescontoController } from './modules/desconto/desconto.controller';
-import { FretesModule } from './modules/fretes/fretes.module';
-import { FretesController } from './modules/fretes/fretes.controller';
 import { PagamentosModule } from './modules/pagamentos/pagamentos.module';
 import { WebSocketsModule } from './modules/websocket/webSocket.module';
+import { GruposModule } from './modules/grupos/grupos.module';
+import { GruposController } from './modules/grupos/grupos.controller';
 
 @Module({
   imports: [
@@ -45,13 +38,9 @@ import { WebSocketsModule } from './modules/websocket/webSocket.module';
     UsersModule, 
     InfoGeralModule, 
     PlanosModule,
-    VeiculosModule,
     PublicRoutesModule,
-    ContasDesbloqueadasModule,
-    AvaliacoesModule,
-    DescontoModule,
-    FretesModule,
     PagamentosModule,
+    GruposModule,
   ],
   controllers: [AppController],
   providers: [
@@ -73,10 +62,7 @@ export class AppModule implements NestModule {
       .forRoutes(
         InfoGeralController,
         PlanosController,
-        VeiculosController,
-        ContasDesbloqueadasController,
-        DescontoController,
-        FretesController,
+        GruposController,
       )
   }
 }

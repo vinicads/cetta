@@ -16,13 +16,8 @@ export class PlanosService {
 
   async create(data: PlanosDTO, res, req) {
     try {
-      const contagem = await this.prisma.planos.count();
 
-      if (contagem >= 3) {
-        return res.status(400).send("O limite de planos foi atingido");
-      }
-
-      if (data.preco <= 0) {
+      if (data.valorTotal <= 0) {
         return res.status(400).send("Envie um valor real.");
       }
 
@@ -36,18 +31,17 @@ export class PlanosService {
         return res.status(403).send("Já existe um plano com esse nome");
       }
 
-      let preco3 = await this.calcularValor(data.preco, 3);
-      let preco6 = await this.calcularValor(data.preco, 6);
-
       await this.prisma.planos.create({
         data: {
           nome: data.nome,
+          subtitulo: data.subtitulo,
           descricao: data.descricao,
-          qtdeFrete: data.qtdeFrete,
-          qtdeContatos: data.qtdeContatos,
-          valorMensal: data.preco,
-          valorSemestral: preco6,
-          valorTrimestral: preco3
+          valorTotal: data.valorTotal,
+          qtdePessoas: data.qtdePessoas,
+          tipo: data.tipo,
+          tipoFuncionalidade: data.tipoFuncionalidade,
+          meses: data.meses,
+          maxSessoes: data.maxSessoes,
         }
       })
 
@@ -57,31 +51,6 @@ export class PlanosService {
       return res.status(400).send("Dados incorretos.");
     }
   }
-
-  async calcularValor(dados, qtdeMeses) {
-    const valorFinal = dados;
-    switch (qtdeMeses) {
-      case 1:
-        return valorFinal;
-        break;
-      case 3:
-        let desconto3 = (valorFinal * 25) / 100;
-        let valorRetorno3 = valorFinal - desconto3;
-        return valorRetorno3;
-        break;
-      case 6:
-        let desconto = (valorFinal * 38) / 100;
-        let valorRetorno = valorFinal - desconto;
-        return valorRetorno;
-        break;
-      default:
-        return valorFinal;
-        break;
-    }
-  }
-
-
-
 
   async update(id: number, data: PlanosDTO, res, req) {
     try {
@@ -108,27 +77,17 @@ export class PlanosService {
         return res.status(403).send("Já existe um plano com esse nome");
       }
 
-      if (data.preco <= 0) {
+      if (data.valorTotal <= 0) {
         return res.status(400).send("Envie um valor real.");
       }
 
-      let preco3 = await this.calcularValor(data.preco, 3);
-      let preco6 = await this.calcularValor(data.preco, 6);
       try {
 
         await this.prisma.planos.update({
           where: {
             idPlanos: Number(id)
           },
-          data: {
-            nome: data.nome,
-            descricao: data.descricao,
-            qtdeFrete: Number(data.qtdeFrete),
-            qtdeContatos: data.qtdeContatos,
-            valorMensal: data.preco,
-            valorTrimestral: preco3,
-            valorSemestral: preco6,
-          }
+          data
         });
     
 
@@ -160,6 +119,24 @@ export class PlanosService {
       if (!resultado) {
         return res.status(404).send("Nenhum plano cadastrado com esse ID")
       };
+
+      const assinaturasExists = await this.prisma.assinatura.findMany({
+        where: {
+          idPlanos: Number(resultado.idPlanos)
+        }
+      })
+      if (assinaturasExists.length > 0){
+        return res.status(400).send("Você não pode excluir um plano com assinaturas dependentes.");
+      }
+
+      const gruposExists = await this.prisma.grupos.findMany({
+        where: {
+          idPlanos: Number(resultado.idPlanos)
+        }
+      })
+      if (gruposExists.length > 0){
+        return res.status(400).send("Você não pode excluir um plano com grupos dependentes.");
+      }
 
       try {
   

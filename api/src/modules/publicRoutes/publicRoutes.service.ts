@@ -23,6 +23,7 @@ export class PublicRoutesService {
     }
   }
 
+
   async findPlanos(res) {
     try {
       const data = await this.prisma.planos.findMany();
@@ -37,10 +38,13 @@ export class PublicRoutesService {
     }
   }
 
-  async getFretes(filters, start, quantity, req, res) {
+  async getGrupos(filters, start, quantity, req, res) {
     try {
-      let contagem = await this.prisma.fretes.count({
-        where: filters
+      let contagem = await this.prisma.grupos.findMany({
+        where: filters,
+        include: {
+          datas: true 
+        }
       });
 
       if (!start) {
@@ -51,50 +55,22 @@ export class PublicRoutesService {
         quantity = contagem;
       }
 
-      var data = await this.prisma.fretes.findMany({
+      var data = await this.prisma.grupos.findMany({
         where: filters,
         skip: Number(start),
         take: Number(quantity),
         orderBy: {
-          idRecrutador: 'desc'
+          dataInicio: 'desc'
         }
       });
 
       if (!data || data.length === 0) {
-        return res.status(404).send("Nenhum frete encontrado.");
+        return res.status(404).send("Nenhum grupo encontrado.");
       }
 
-      const fretesRecrutadores = data.filter(frete => frete.idRecrutador);
-      const fretesSemRecrutador = data.filter(frete => !frete.idRecrutador);
-
-      const fretesRecrutadoresFormatados = fretesRecrutadores.map(frete => ({
-        de: frete.de,
-        status: frete.status,
-        para: frete.para,
-        tipoVeiculo: frete.tipoVeiculo == "CargaSeca" ? "Carga Seca" : frete.tipoVeiculo,
-        valor: frete.valor,
-        datas: frete.datas,
-        tiposVeiculos: frete.tiposVeiculos,
-        distancia: frete.distancia,
-        recrutador: true,
-      }));
-
-      const fretesFormatados = fretesSemRecrutador.map(frete => ({
-        de: frete.de,
-        para: frete.para,
-        valor: frete.valor,
-        tipoVeiculo: frete.tipoVeiculo == "CargaSeca" ? "Carga Seca" : frete.tipoVeiculo,
-        status: frete.status,
-        datas: frete.datas,
-        tiposVeiculos: frete.tiposVeiculos,
-        distancia: frete.distancia,
-        recrutador: false,
-      }));
-
       var newData = {
-        fretesRecrutadores: fretesRecrutadoresFormatados,
-        fretes: fretesFormatados,
-        count: contagem
+        grupos: data,
+        count: contagem.length
       }
 
 
@@ -104,47 +80,6 @@ export class PublicRoutesService {
     }
 
 
-  }
-
-  async calcularDistanciaCep(de, para, res) {
-    try {
-      const responseDe = await this.getCEP(de);
-      const latEmpresaDe = responseDe.data.lat;
-      const lonEmpresaDe = responseDe.data.lng;
-      const responsePara = await this.getCEP(para);
-      const latEmpresaPara = responsePara.data.lat;
-      const lonEmpresaPara = responsePara.data.lng;
-      const distancia = this.calcularDistancia(Number(latEmpresaDe), Number(lonEmpresaDe), Number(latEmpresaPara), Number(lonEmpresaPara));
-
-      if (distancia) {
-        return res.status(200).send({
-          "distancia": distancia
-        })
-      } else {
-        return res.status(404).send("CEP incorreto.")
-      }
-    } catch (error) {
-      return res.status(400).send("Dados incorretos.")
-    }
-  }
-
-
-  async getCEP(cep) {
-    try {
-      const resposta = await axios.get(`${process.env.apiCEP}/${cep}`);
-      return resposta;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  calcularDistancia(lat1, lon1, lat2, lon2) {
-    const distancia = geolib.getDistance(
-      { latitude: lat1, longitude: lon1 },
-      { latitude: lat2, longitude: lon2 }
-    );
-    const distanciaEmKm = distancia / 1000;
-    return distanciaEmKm;
   }
 
 }

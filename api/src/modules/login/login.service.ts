@@ -22,9 +22,9 @@ export class LoginService {
     if (cookies.meuToken) {
       res.cookie('meuToken', "token", {
         maxAge: 1,
-        secure: true,
+        secure: false,
         sameSite: 'lax',
-        domain: 'encontrandofretes.com',
+       // domain: 'encontrandofretes.com',
         httpOnly: true,
         withCredentials: true,
         path: "/",
@@ -59,11 +59,11 @@ export class LoginService {
               };
         
               res.cookie('meuToken', token, {
-                secure: true,
+                secure: false,
                 httpOnly: true,
                 withCredentials: true,
                 sameSite: 'lax',
-                domain: 'encontrandofretes.com',
+               // domain: 'encontrandofretes.com',
                 maxAge: Number(String(process.env.tempoCookie)),
                 path: "/",
               });
@@ -96,10 +96,10 @@ export class LoginService {
 async cookieAccepted(req, res){
   res.cookie('cookieAccepted', "true", {
     maxAge: 1000 * 60 * 60 * 24 * 365,
-    secure: true,
+    secure: false,
     httpOnly: true,
     sameSite: 'lax',
-    domain: 'encontrandofretes.com',
+   // domain: 'encontrandofretes.com',
     withCredentials: true,
     path: "/",
   });
@@ -144,10 +144,10 @@ async cookieAccepted(req, res){
         }else{
           return res.cookie('meuToken', "token", {
             maxAge: 1,
-            secure: true,
+            secure: false,
             httpOnly: true,
             sameSite: 'lax',
-            domain: 'encontrandofretes.com',
+           // domain: 'encontrandofretes.com',
             withCredentials: true,
             path: "/",
           }).status(400).send("Token invalido.");
@@ -156,10 +156,10 @@ async cookieAccepted(req, res){
       }else {
          res.cookie('meuToken', "token", {
         maxAge: 1,
-        secure: true,
+        secure: false,
         httpOnly: true,
         sameSite: 'lax',
-        domain: 'encontrandofretes.com',
+       // domain: 'encontrandofretes.com',
         withCredentials: true,
         path: "/",
       });
@@ -184,9 +184,9 @@ async cookieAccepted(req, res){
     if (cookies.meuToken) {
       res.cookie('meuToken', "token", {
         maxAge: 1,
-        secure: true,
+        secure: false,
         sameSite: 'lax',
-        domain: 'encontrandofretes.com',
+       // domain: 'encontrandofretes.com',
         httpOnly: true,
         withCredentials: true,
         path: "/",
@@ -224,11 +224,11 @@ async forgotPassword(email, req, res){
   let codeEncrypt =  await this.usersFunctions.encryptCode(code)
   let token = await this.loginFunctions.generateTokenCode(codeEncrypt, email);
   res.cookie('secureCode', token, {
-    secure: true,
+    secure: false,
     httpOnly: true,
     withCredentials: true,
     sameSite: 'lax',
-    domain: 'encontrandofretes.com',
+   // domain: 'encontrandofretes.com',
     maxAge: 30 * 60 * 1000,
     path: "/",
   })
@@ -268,9 +268,9 @@ async changePassword(dados, code, req, res){
       })
       res.cookie('secureCode', "code", {
         maxAge: 1,
-        secure: true,
+        secure: false,
         sameSite: 'lax',
-        domain: 'encontrandofretes.com',
+       // domain: 'encontrandofretes.com',
         httpOnly: true,
         withCredentials: true,
         path: "/",

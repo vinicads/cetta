@@ -18,12 +18,11 @@ export class InfoGeralController {
   
   async create(@Res() res: Response,
     @Body("infoGeral") infoGeral: InfoGeralDTO,
-    @Body("valorFrete") valorFrete: number,
     @Req() req: Request) {
       const resultado = await this.authFunctions.verifyProfile(req, ["Admin"]);
       if (resultado){
   
-        return this.infoGeralService.create(infoGeral, valorFrete,res, req);
+        return this.infoGeralService.create(infoGeral,res, req);
       }else{
         throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
       }
@@ -33,11 +32,10 @@ export class InfoGeralController {
   @Put(':id')
   async update(@Res() res: Response, @Param('id') id: number,
     @Body("infoGeral") infoGeral: InfoGeralDTO,
-    @Body("valorFrete") valorFrete: number,
     @Req() req: Request) {
       const resultado = await this.authFunctions.verifyProfile(req, ["Admin"]);
       if (resultado){
-        return this.infoGeralService.update(id, infoGeral, valorFrete, res, req);
+        return this.infoGeralService.update(id, infoGeral, res, req);
       }else{
           throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
         }

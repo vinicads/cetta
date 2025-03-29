@@ -52,64 +52,40 @@ export class PublicRoutesController {
         return this.publicRoutesService.findPlanos(res);
   }
 
-  @Post('calcularDistancia')
-  async calcularDistancia(
-    @Res() res: Response, 
-    @Req() req: Request,
-    @Body("de") de: string,
-    @Body("para") para: string,
-  ){
-      return this.publicRoutesService.calcularDistanciaCep(de, para, res);
-  }
 
-  @Get('/fretes')
-  async findFretes(
-    @Query('distancia') distancia: number,
-    @Query('idRecrutador') idRecrutador: number,
-    @Query('valor') valor: number,
-    @Query('veiculos') veiculos: string,
-    @Query('de') de: string,
-    @Query('para') para: string,
+  @Get('/grupos')
+  async findGrupos(
+    @Query('tipo') tipo: string,
+    @Query('data_inicio') data_inicio: string,
+    @Query('data_final') data_final: string,
+    @Query('dias') dias: string[],
     @Query('start') start: number,
     @Query('quantity') quantity: number,
     @Res() res: Response,
     @Req() req: Request) {
     let filters: any = {};
-    if (distancia) {
-      filters.distancia = {
-        lte: Number(distancia),
-      };
-    }
 
-    if (valor) {
-      filters.valor = {
-        lte: Number(valor),
-      };
-    }
-
-    if (de){
-      filters.de = de;
+    if (tipo){
+      filters.tipo = tipo;
     }
     
-    if (para && para.length > 0) {
-      const tiposArraypara = para.split(',');
-
-      filters.para = {
-        array_contains: tiposArraypara
-      }
+    if (data_inicio || data_final) {
+      filters.dataInicio =  {
+          ...(data_inicio ? { gte: new Date(data_inicio) } : {}),
+          ...(data_final ? { lte: new Date(data_final) } : {}), 
+      };
     }
 
-    if (idRecrutador){
-      filters.idRecrutador = Number(idRecrutador);
+    if (dias && dias.length > 0) {
+      filters.datas = {
+        some: {
+          dia: {
+            in: dias,
+          },
+        },
+      };
     }
 
-    if (veiculos && veiculos.length > 0) {
-      const tiposArray = veiculos.split(',');
-
-      filters.tiposVeiculos = {
-        array_contains: tiposArray
-      }
-    }
-    return this.publicRoutesService.getFretes(filters, start, quantity, req, res);
+    return this.publicRoutesService.getGrupos(filters, start, quantity, req, res);
   } 
 }

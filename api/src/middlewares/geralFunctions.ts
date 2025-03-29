@@ -7,6 +7,25 @@ import { rm } from 'fs/promises';
 @Injectable()
 export class functionService {
 
+  async getFilesAndFolders(caminho: string): Promise<{ nome: string; tipo: string }[]>  {
+    return new Promise((resolve, reject) => {
+      fs.readdir(caminho, { withFileTypes: true }, (err, arquivos) => {
+        if (err) {
+          return reject(`Erro ao ler a pasta: ${err.message}`);
+        }
+  
+        const resultado = arquivos.map(item => {
+          return {
+            nome: item.name,
+            tipo: item.isDirectory() ? 'pasta' : 'arquivo'
+          };
+        });
+  
+        resolve(resultado);
+      });
+    });
+  }
+
   async saveFiles(arquivos: MulterFile | MulterFile[], destino) {
     if (!arquivos || arquivos.length === 0) {
       return;
@@ -46,6 +65,26 @@ export class functionService {
     } catch (error) {
       console.error('Erro ao excluir o caminho:', error.message);
     }
+  }
+
+  phoneMask(celular: string): string {
+    const celularLimpo = celular.replace(/\D/g, '');
+  
+    if (celularLimpo.length === 11) {
+      return celularLimpo.replace(
+        /^(\d{2})(\d{5})(\d{4})$/,
+        '($1) $2-$3'
+      );
+    } else {
+      return celular;
+    }
+  }
+
+  formatarEmReais(valor: number): string {
+    return valor.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    });
   }
 
   async maskDate(data) {

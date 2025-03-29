@@ -8,15 +8,40 @@ datasource db {
 }
 
 model assinatura {
-  idAssinatura     Int               @id @default(autoincrement())
-  prazo            DateTime          @db.Date
-  ultimoMes        DateTime?         @db.Date
-  qtdeFretes       Int
-  qtdeContatos     Int
-  status           assinatura_status
-  plano            String            @db.VarChar(45)
-  codPagamento     String?           @db.Text
-  idPagamentoFrete String?           @db.Text
+  idAssinatura  Int       @id @default(autoincrement())
+  codPagamento  String?   @db.Text
+  ativo         Boolean?
+  data_inicio   DateTime? @db.Date
+  ultimo_update DateTime? @db.Date
+  planos        planos    @relation(fields: [idPlanos], references: [idPlanos], onDelete: Restrict, onUpdate: Cascade)
+  idPlanos      Int
+  contas        contas[]
+}
+
+model historicoPagamento {
+  idHistoricoPagamento Int       @id @default(autoincrement())
+  nome                 String    @db.VarChar(45)
+  descricao            String    @db.Text
+  pago                 Boolean
+  valorTotal           Float
+  data_inicio          DateTime? @db.Date
+  contas               contas    @relation(fields: [idConta], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+  idConta              Int
+}
+
+model planos {
+  idPlanos           Int                @id @default(autoincrement())
+  nome               String             @db.VarChar(45)
+  subtitulo          String             @db.VarChar(100)
+  descricao          String             @db.Text
+  valorTotal         Float
+  tipoFuncionalidade tipoFuncionalidade
+  tipo               tipoPlano
+  qtdePessoas        Int
+  meses              Int
+  maxSessoes         Float
+  assinatura         assinatura[]
+  grupos             grupos[]
 }
 
 model autenticacao {
@@ -27,151 +52,86 @@ model autenticacao {
   idConta        Int
 }
 
-model avaliacoes {
-  idAvaliacoes Int    @id @default(autoincrement())
-  nota         Float
-  idRecrutador Int
-  idAvaliador  Int
-  conta        contas @relation(fields: [idRecrutador], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
-}
-
 model contas {
-  idConta             Int                   @id @default(autoincrement())
-  nome                String                @db.VarChar(45)
-  documento           String                @db.VarChar(15)
-  tipoDocumento       contas_documento
-  perfil              contas_perfil
-  contato             String                @db.VarChar(15)
-  cep                 String                @db.VarChar(8)
-  antt                Boolean?
-  mei                 Boolean?
-  tipoVeiculo         tipos_Veiculos?
-  foto                String?               @db.Text
-  idAssinatura        Int?
-  idDesconto          Int?
-  autenticacao        autenticacao[]
-  veiculo             veiculo[]
-  avaliacoes          avaliacoes[]
-  contasDesbloqueadas contasdesbloqueadas[]
-  frete               fretes[]
-  descontos           desconto[]
+  idConta            Int                  @id @default(autoincrement())
+  nome               String               @db.VarChar(45)
+  data_nasc          DateTime             @db.Date
+  foto               String?              @db.Text
+  celular            String               @db.VarChar(15)
+  fagerstrom         Boolean              @default(false) @db.TinyInt
+  perfil             contas_perfil
+  idAssinatura       Int?
+  idGrupo            Int?
+  idQuestionario     Int?
+  autenticacao       autenticacao[]
+  historicoPagamento historicoPagamento[]
+
+  grupo        grupos?       @relation(fields: [idGrupo], references: [idGrupo], onDelete: Restrict, onUpdate: Cascade)
+  assinatura   assinatura?   @relation(fields: [idAssinatura], references: [idAssinatura], onDelete: Restrict, onUpdate: Cascade)
+  questionario questionario? @relation(fields: [idQuestionario], references: [idQuestionario], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([idAssinatura], map: "fk_Contas_Assinatura1_idx")
-  @@index([idDesconto], map: "fk_Contas_Desconto1_idx")
 }
 
-model contasdesbloqueadas {
-  idContasDesbloqueadas Int    @id @default(autoincrement())
-  idEmpresa             Int
-  idContato             Int
-  contaRecrutador       contas @relation(fields: [idEmpresa], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
-}
-
-model desconto {
-  idDesconto        Int     @id @default(autoincrement())
-  valor             Decimal @db.Decimal(10, 2)
-  idContaRecrutador Int
-  idEmpresa         Int
-
-  contaEmpresa contas @relation(fields: [idEmpresa], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
-}
-
-model fretes {
-  idFretes      Int           @id @default(autoincrement())
-  de            String        @db.VarChar(8)
-  para          Json
-  valor         Decimal       @db.Decimal(10, 2)
-  datas         Json
-  tiposVeiculos Json
-  distancia     Float
-  status        fretes_status
-  tipoVeiculo   tipos_Veiculos? @default(CargaSeca)
-  idEmpresa     Int
-  idRecrutador  Int?
-
-  contaEmpresa contas @relation(fields: [idEmpresa], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+model questionario {
+  idQuestionario Int      @id @default(autoincrement())
+  questao1       String?  @db.VarChar(45)
+  questao2       String?  @db.VarChar(45)
+  questao3       String?  @db.VarChar(45)
+  questao4       String?  @db.VarChar(45)
+  questao5       String?  @db.VarChar(45)
+  questao6       String?  @db.VarChar(45)
+  contas         contas[]
 }
 
 model geral {
-  idGeral              Int    @id @default(autoincrement())
-  valorFreteIndividual Float
-  emailContato         String @db.VarChar(100)
-  numeroContato        String @db.VarChar(15)
-  qtdeContatos         Int
-  qtdeEmpresa          Int
-  qtdeFretes           Int
+  idGeral       Int    @id @default(autoincrement())
+  emailContato  String @db.VarChar(100)
+  emailMedico   String @db.VarChar(100)
+  numeroContato String @db.VarChar(15)
 }
 
-model pagamento {
-  idPagamento  Int      @id @default(autoincrement())
-  dataPago     DateTime @db.Date
-  valor        Decimal  @db.Decimal(10, 2)
-  pago         Int      @db.TinyInt
-  idAssinatura Int
-  plano        String   @db.VarChar(45)
-
-  @@index([idAssinatura], map: "fk_Pagamento_Assinatura1_idx")
+model grupos {
+  idGrupo    Int      @id @default(autoincrement())
+  dataInicio DateTime @db.Date
+  dataFinal  DateTime @db.Date
+  planos     planos   @relation(fields: [idPlanos], references: [idPlanos], onDelete: Restrict, onUpdate: Cascade)
+  idPlanos   Int
+  datas      datas[]
+  contas     contas[]
 }
 
-model planos {
-  idPlanos        Int    @id @default(autoincrement())
-  nome            String @db.VarChar(45)
-  qtdeFrete       Int
-  qtdeContatos    Int
-  valorMensal     Float
-  valorTrimestral Float
-  valorSemestral  Float
-  descricao       String @db.Text
-}
-
-model veiculo {
-  idVeiculo Int          @id @default(autoincrement())
-  tipo      veiculo_tipo
-  placa     String       @db.VarChar(45)
-  modelo    String       @db.VarChar(100)
-  ano       Int
-  foto      String       @db.LongText
-  idConta   Int
-
-  contas contas @relation(fields: [idConta], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
-}
-
-enum tipos_Veiculos {
-  CargaSeca
-  Refrigerado
-}
-
-enum veiculo_tipo {
-  Fiorino
-  Van
-  HR
-  Iveco
-  Vuc
-  TresQuartos
-  Toco
-  Truck
-  Carreta
-}
-
-enum contas_documento {
-  CPF
-  CNPJ
+model datas {
+  idData  Int    @id @default(autoincrement())
+  dia     dias
+  hora    String @db.VarChar(10)
+  grupos  grupos @relation(fields: [idGrupo], references: [idGrupo], onDelete: Restrict, onUpdate: Cascade)
+  idGrupo Int
 }
 
 enum contas_perfil {
   Admin
-  Motorista
-  Empresa
-  Recrutador
+  Usuario
+  Nutricionista
 }
 
-enum assinatura_status {
-  Ativo
-  Inativo
+enum dias {
+  Segunda
+  Terca
+  Quarta
+  Quinta
+  Sexta
+  Sabado
+  Domingo
 }
 
-enum fretes_status {
-  Ativo
-  Finalizado
-  Cancelado
+enum tipoFuncionalidade {
+  Nutricao
+  Tabaquismo
+}
+
+enum tipoPlano {
+  Individual
+  Grupo
+  Mentoria
 }

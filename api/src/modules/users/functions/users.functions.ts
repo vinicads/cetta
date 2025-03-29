@@ -8,7 +8,7 @@ export class usersFunctions {
     constructor(private prisma: PrismaService,
         private readonly loginFunctions: LoginFunctions) { }
 
-    async veriySamePerson(email, req){
+    async veriySamePerson(email, req) {
         const cookies = req.cookies;
         var result = await this.loginFunctions.verifyToken(cookies.meuToken)
 
@@ -17,7 +17,36 @@ export class usersFunctions {
         return false;
     }
 
-    async findMyAuth (email){
+    async getUserCompleteData(idAutenticacao) {
+        // Buscar autenticação junto com conta, assinatura e grupo
+        const autenticacao = await this.prisma.autenticacao.findFirst({
+            where: { idAutenticacao: Number(idAutenticacao) },
+            include: {
+                conta: {
+                    include: {
+                        assinatura: true,
+                        grupo: true
+                    }
+                }
+            }
+        });
+
+        if (!autenticacao || !autenticacao.conta) return null;
+
+        const historico = await this.prisma.historicoPagamento.findMany({
+            where: { idConta: Number(autenticacao.conta.idConta) },
+            orderBy: { data_inicio: 'asc' }
+        });
+
+        return {
+            autenticacao,
+            dadosPessoais: autenticacao.conta,
+            historico: historico.length > 0 ? historico : undefined
+        };
+    }
+
+
+    async findMyAuth(email) {
         return await this.prisma.autenticacao.findFirst({
             where: {
                 email
@@ -36,10 +65,10 @@ export class usersFunctions {
     }
 
     async updateAuth(id, data) {
-        if (data.senha){
+        if (data.senha) {
             var senhaenc = await this.encryptPassword(data.senha)
             data.senha = senhaenc
-        }else{
+        } else {
             delete data.senha;
         }
         return await this.prisma.autenticacao.update({
@@ -50,12 +79,12 @@ export class usersFunctions {
         })
     }
 
-    async encryptPassword(password){
+    async encryptPassword(password) {
         var senhaenc = await bcrypt.hash(password, 10)
         return senhaenc;
     }
 
-    async encryptCode(code){
+    async encryptCode(code) {
         var codeenc = await bcrypt.hash(code, 10)
         return codeenc;
     }
@@ -85,24 +114,6 @@ export class usersFunctions {
         }
     }
 
-    async verifyDocumentExists(document, id?) {
-        if (id) {
-            return await this.prisma.contas.findFirst({
-                where: {
-                    documento: document,
-                    NOT: {
-                        idConta: Number(id)
-                    }
-                }
-            })
-        } else {
-            return await this.prisma.contas.findFirst({
-                where: {
-                    documento: document,
-                }
-            })
-        }
-    }
 
     async deletaAutenticacao(id) {
         return await this.prisma.autenticacao.delete({
@@ -116,26 +127,12 @@ export class usersFunctions {
         var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         var codeLength = 6;
         var code = '';
-      
+
         for (var i = 0; i < codeLength; i++) {
-          var randomIndex = Math.floor(Math.random() * characters.length);
-          code += characters[randomIndex];
+            var randomIndex = Math.floor(Math.random() * characters.length);
+            code += characters[randomIndex];
         }
-      
+
         return code;
-      }
-
-      async createAssinaturaRecrutador(){
-       const retorno = await this.prisma.assinatura.create({
-            data: {
-                status: 'Ativo',
-                qtdeFretes: 0,
-                qtdeContatos: 0,
-                plano: "Recrutador",
-                prazo: new Date()
-            }
-        });
-
-        return retorno.idAssinatura;
-      }
+    }
 }

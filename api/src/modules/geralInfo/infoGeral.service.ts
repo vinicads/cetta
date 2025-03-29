@@ -12,19 +12,14 @@ export class InfoGeralService {
     private readonly geralFunctions: functionService) { 
     }
 
-  async create(data: InfoGeralDTO, valorFrete, res, req) {
+  async create(data: InfoGeralDTO, res, req) {
     try {
       const resultado = await this.prisma.geral.findFirst();
 
       if(resultado){
         return res.status(400).send("Atualize os dados atuais.")
       }
-
-      if (!valorFrete){
-        return res.status(400).send("O valor do frete precisa ser enviado.");
-      }
-
-    
+ 
       await this.prisma.geral.create({
         data: data
       })
@@ -35,7 +30,7 @@ export class InfoGeralService {
     }
   }
 
-  async update(id: number, data: InfoGeralDTO, valorFrete, res, req) {
+  async update(id: number, data: InfoGeralDTO, res, req) {
     try {
 
       const resultado = await this.prisma.geral.findFirst({
@@ -48,23 +43,14 @@ export class InfoGeralService {
         return res.status(404).send("Nenhuma informação cadastrada com esse ID");
       }
 
-      if (!valorFrete){
-        return res.status(400).send("O valor do frete precisa ser enviado.");
-      }
-
-      
-
       await this.prisma.geral.update({
         where: {
           idGeral: Number(id)
         },
         data: {
           emailContato: data.emailContato,
+          emailMedico: data.emailMedico,
           numeroContato: data.numeroContato,
-          qtdeContatos: data.qtdeContatos,
-          qtdeEmpresa: data.qtdeEmpresa,
-          qtdeFretes: data.qtdeFretes,
-          valorFreteIndividual: Number(valorFrete)
         }
       })
       return res.status(200).send("Atualizado com sucesso.");

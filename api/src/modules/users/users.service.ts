@@ -10,6 +10,7 @@ import { functionService } from 'src/middlewares/geralFunctions';
 import { AuthFunctions } from 'src/middlewares/auth.middleware';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
+import { questionarioDTO } from './dto/questionario.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,36 +22,25 @@ export class UsersService {
     private readonly authFunctions: AuthFunctions,
     @InjectQueue('geral') private readonly geralQueue: Queue) { }
 
+  //create, upd, del e get de users, foto de perfil, historico de pagamento
+
   async create(data: usersDTO, conta: contaDTO, res, req) {
     try {
       const myData = await this.authFunctions.getMyData(req);
 
       if (conta.perfil == 'Admin') {
-        if (!myData) {
-          return res.status(401).send("Você não tem autorização para realizar essa ação.")
-        }
-
-        if (myData.conta.perfil != 'Admin') {
+        if (!myData || myData.conta.perfil != 'Admin') {
           return res.status(401).send("Você não tem autorização para realizar essa ação.")
         }
       }
 
       var resultadoEmail = await this.usersFunctions.verifyEmailExists(data.email);
-      var resultadoDocumento = await this.usersFunctions.verifyDocumentExists(conta.documento);
 
       if (resultadoEmail) {
         return res.status(403).send("E-mail já cadastrado.");
       }
 
-      if (resultadoDocumento) {
-        return res.status(403).send("Documento já cadastrado.");
-      }
-
       try {
-        if (conta.perfil == 'Recrutador') {
-          let id = await this.usersFunctions.createAssinaturaRecrutador();
-          conta.idAssinatura = Number(id);
-        }
         var resultadoConta = await this.contasFunctions.cadastrarConta(conta);
         data.idConta = resultadoConta.idConta;
         await this.usersFunctions.cadastroAutenticacao(data);
@@ -71,7 +61,8 @@ export class UsersService {
     }
   }
 
-  async findAllEmpresas(filters, start, quantity, res) {
+
+  async findAll(res, filters, start, quantity) {
     try {
       var contagem = await this.prisma.autenticacao.count({
         where: filters,
@@ -91,216 +82,35 @@ export class UsersService {
         take: Number(quantity),
         orderBy: {
           idAutenticacao: 'asc'
-        },
-        include: {
-          conta: true
         }
       });
 
-      if (Array.isArray(data) && data.length === 0) {
-        return res.status(404).send("Nenhuma empresa encontrada.");
-      } else {
-        var newData = {
-          "empresas": data,
-          "count": contagem
-        }
-        return res.status(200).send(newData);
-      }
-    } catch (error) {
-      return res.status(400).send(error);
-    }
-  }
+      const dataWithAssinatura = await Promise.all(
+        data.map(async (item) => {
+          let retornoUsuario = await this.usersFunctions.getUserCompleteData(item.idAutenticacao);
 
-  async findAllRecrutadores(filters, start, quantity, res) {
-    try {
-      var contagem = await this.prisma.autenticacao.count({
-        where: filters,
-      });
-
-      if (!start) {
-        start = 0;
-      }
-
-      if (!quantity) {
-        quantity = contagem;
-      }
-
-      var data = await this.prisma.autenticacao.findMany({
-        where: filters,
-        skip: Number(start),
-        take: Number(quantity),
-        orderBy: {
-          idAutenticacao: 'asc'
-        },
-        include: {
-          conta: true
-        }
-      });
-
-
-      if (Array.isArray(data) && data.length === 0) {
-        return res.status(404).send("Nenhum recrutador encontrada.");
-      } else {
-        var newData = {
-          "recrutadores": data,
-          "count": contagem
-        }
-        return res.status(200).send(newData);
-      }
-    } catch (error) {
-      return res.status(400).send("Nenhum recrutador encontrado.");
-    }
-  }
-
-  async enviarEmailGeral(filters, assinatura, conteudo, req, res){
-    try {
-      var data = await this.prisma.autenticacao.findMany({
-        where: filters,
-        orderBy: {
-          idAutenticacao: 'asc'
-        },
-        include: {
-          conta: true
-        }
-      });
-
-      if (Array.isArray(data) && data.length === 0) {
-        return res.status(404).send("Autenticação não encontrada.");
-      } else {
-        if (!assinatura) {
-          const jobData = {
-            contas: data,
-            conteudo: conteudo
+          return {
+            autenticacao: retornoUsuario.autenticacao,
+            conta: retornoUsuario.dadosPessoais,
+            assinatura: retornoUsuario.dadosPessoais.assinatura,
+            grupo: retornoUsuario.dadosPessoais.grupo,
+            historicoPagamento: retornoUsuario.historico,
           };
-    
-          await this.geralQueue.add('enviarEmailGeral', {
-            jobData
-          });
-          return res.status(200).send("E-mails enviados aos usuários.");
-        } else {
-          const filteredData = [];
+        })
+      );
 
-          await Promise.all(data.map(async (item) => {
-            if (assinatura == "Inativo"){
-              if (!item.conta.idAssinatura) {
-                filteredData.push(item);
-                return;
-              }
-            }else{
-              if (!item.conta.idAssinatura) {
-                return;
-              }
-            }
-          
-              const assinaturaRecord = await this.prisma.assinatura.findUnique({
-                where: { idAssinatura: Number(item.conta.idAssinatura) }
-              });
 
-              if (assinaturaRecord && assinaturaRecord.status === assinatura) {
-                filteredData.push(item);
-              }
-            
-          }));
-
-          if (!filteredData && filteredData.length == 0){
-            return res.status(404).send("Autenticação não encontrada.");
-          }else{
-            const jobData = {
-              contas: filteredData,
-              conteudo: conteudo
-            };
-      
-            await this.geralQueue.add('enviarEmailGeral', {
-              jobData
-            });
-            return res.status(200).send("E-mails enviados aos usuários.");
-          }
-         
-        }
-
-      }
-    } catch (error) {
-      console.log(error)
-      return res.status(400).send(error);
-    }
-  }
-
-  async findAll(res, filters, assinatura, start, quantity) {
-    try {
-      var contagem = await this.prisma.autenticacao.count({
-        where: filters,
-      });
-
-      if (!start) {
-        start = 0;
-      }
-
-      if (!quantity) {
-        quantity = contagem;
-      }
-
-      var data = await this.prisma.autenticacao.findMany({
-        where: filters,
-        skip: Number(start),
-        take: Number(quantity),
-        orderBy: {
-          idAutenticacao: 'asc'
-        },
-        include: {
-          conta: true
-        }
-      });
-
-      if (Array.isArray(data) && data.length === 0) {
-        return res.status(404).send("Autenticação não encontrada.");
+      if (Array.isArray(dataWithAssinatura) && dataWithAssinatura.length === 0) {
+        return res.status(404).send("Nenhum usuário encontrado.");
       } else {
-        if (!assinatura) {
-          var newData = {
-            "usuarios": data,
-            "count": contagem
-          }
-          return res.status(200).send(newData);
-        } else {
-          const filteredData = [];
-
-          await Promise.all(data.map(async (item) => {
-            if (assinatura == "Inativo"){
-              if (!item.conta.idAssinatura) {
-                filteredData.push(item);
-                return;
-              }
-            }else{
-              if (!item.conta.idAssinatura) {
-                return;
-              }
-            }
-          
-              const assinaturaRecord = await this.prisma.assinatura.findUnique({
-                where: { idAssinatura: Number(item.conta.idAssinatura) }
-              });
-
-              if (assinaturaRecord && assinaturaRecord.status === assinatura) {
-                filteredData.push(item);
-              }
-            
-          }));
-
-          if (!filteredData && filteredData.length == 0){
-            return res.status(404).send("Autenticação não encontrada.");
-          }else{
-            var newDataAssinatura = {
-              "usuarios": filteredData,
-              "count": filteredData.length
-            };
-            return res.status(200).send(newDataAssinatura);
-          }
-         
+        var newData = {
+          "usuarios": data,
+          "count": contagem
         }
-
+        return res.status(200).send(newData);
       }
     } catch (error) {
-      console.log(error)
-      return res.status(400).send(error);
+      return res.status(400).send("Nenhum usuário encontrado.");
     }
   }
 
@@ -311,33 +121,7 @@ export class UsersService {
         return res.status(404).send("Não encontramos seus dados no sistema.");
       }
 
-      let assinatura, desconto
-      if (myData.conta.idAssinatura) {
-        assinatura = await this.prisma.assinatura.findFirst({
-          where: {
-            idAssinatura: Number(myData.conta.idAssinatura)
-          }
-        })
-      } else {
-        assinatura = []
-      }
-
-      if (myData.conta.idDesconto) {
-        desconto = await this.prisma.desconto.findFirst({
-          where: {
-            idDesconto: Number(myData.conta.idDesconto)
-          }
-        })
-      } else {
-        desconto = []
-      }
-
-
-      const data = {
-        "conta": myData.conta,
-        "desconto": desconto,
-        "assinatura": assinatura,
-      }
+      const data = await this.usersFunctions.getUserCompleteData(myData.idAutenticacao);
 
       return res.status(200).send(data)
     } catch (error) {
@@ -345,7 +129,7 @@ export class UsersService {
     }
   }
 
-  async updateEmail(email, senha, req, res) {
+  async updateAuth(email, senha, req, res) {
     try {
       const myData = await this.authFunctions.getMyData(req);
 
@@ -371,11 +155,11 @@ export class UsersService {
 
         var token = await this.loginFunctions.generateToken(email);
         res.cookie('meuToken', token, {
-          secure: true,
+          secure: false,
           httpOnly: true,
           withCredentials: true,
           sameSite: 'lax',
-          domain: 'encontrandofretes.com',
+          //domain: 'encontrandofretes.com',
           maxAge: Number(String(process.env.tempoCookie)),
           path: "/",
         })
@@ -403,7 +187,7 @@ export class UsersService {
     }
   }
 
-  async update(id: number, data: usersDTO, conta: contaDTO, res, req) {
+  async update(id: number, data: usersDTO, conta: contaDTO, assinatura: string, res, req) {
     try {
 
       var autenticacaoExists
@@ -411,15 +195,11 @@ export class UsersService {
         autenticacaoExists = await this.prisma.autenticacao.findUnique({
           where: {
             idAutenticacao: Number(id),
-          },
-          include: {
-            conta: true
           }
         });
 
 
         if (!autenticacaoExists) {
-
           return res.status(404).send("Autenticação não encontrada.");
         }
       } catch (error) {
@@ -428,10 +208,8 @@ export class UsersService {
 
       const myData = await this.authFunctions.getMyData(req);
 
-      if (myData.conta.perfil != 'Admin') {
-        if (conta.perfil == 'Admin') {
+      if (myData.conta.perfil != 'Admin' && conta.perfil != "Admin") {
           return res.status(401).send("Você não tem autorização para realizar essa ação.")
-        }
       }
 
       var resultado = await this.usersFunctions.verifyEmailExists(data.email, id);
@@ -440,26 +218,29 @@ export class UsersService {
         return res.status(403).send("E-mail já cadastrado.");
       }
 
-      var resultadoDocumento = await this.usersFunctions.verifyDocumentExists(conta.documento, autenticacaoExists.idConta);
-
-      if (resultadoDocumento) {
-        return res.status(403).send("Documento já cadastrado.");
-      }
-
-
-
       await this.contasFunctions.atualizaConta(autenticacaoExists.idConta, conta);
       await this.usersFunctions.updateAuth(id, data);
+      if (assinatura && myData.conta.perfil == 'Admin'){
+        await this.prisma.assinatura.update({
+          where: {
+            idAssinatura: Number(myData.conta.idAssinatura)
+          },
+          data: {
+            ativo: assinatura == 'true' ? true : false
+          }
+        })
+      }
+
       let samePerson = await this.usersFunctions.veriySamePerson(autenticacaoExists.email, req);
       if (samePerson) {
         if (autenticacaoExists.email != data.email) {
           var token = await this.loginFunctions.generateToken(data.email);
           res.cookie('meuToken', token, {
-            secure: true,
+            secure: false,
             httpOnly: true,
             withCredentials: true,
             sameSite: 'lax',
-            domain: 'encontrandofretes.com',
+            //domain: 'encontrandofretes.com',
             maxAge: Number(String(process.env.tempoCookie)),
             path: "/",
           })
@@ -504,10 +285,6 @@ export class UsersService {
     } else {
       return res.status(401).send("Não autorizado.");
     }
-
-
-
-
   }
 
   async delete(id: number, res, req, samePerson?) {
@@ -542,41 +319,17 @@ export class UsersService {
         }
       }
 
-      if (autenticacaoExists.conta.perfil == 'Motorista') {
-        await this.prisma.veiculo.deleteMany({
+        await this.prisma.historicoPagamento.deleteMany({
           where: {
             idConta: Number(autenticacaoExists.idConta),
           }
         })
 
-        await this.prisma.contasdesbloqueadas.deleteMany({
-          where: {
-            idContato: Number(autenticacaoExists.idConta),
+        await this.prisma.questionario.delete({
+          where:{
+            idQuestionario: Number(autenticacaoExists.conta.idQuestionario)
           }
         })
-      } else {
-        if (autenticacaoExists.conta.perfil == 'Recrutador') {
-          await this.prisma.fretes.deleteMany({
-            where: {
-              idRecrutador: Number(autenticacaoExists.idConta)
-            }
-          })
-        } else {
-          await this.prisma.fretes.deleteMany({
-            where: {
-              idEmpresa: Number(autenticacaoExists.idConta)
-            }
-          })
-        }
-
-        await this.prisma.contasdesbloqueadas.deleteMany({
-          where: {
-            idEmpresa: Number(autenticacaoExists.idConta),
-          }
-        })
-      }
-
-
 
       await this.usersFunctions.deletaAutenticacao(id);
       await this.contasFunctions.deletaConta(autenticacaoExists.idConta)
@@ -591,10 +344,10 @@ export class UsersService {
       if (samePerson) {
         res.cookie('meuToken', "token", {
           maxAge: 1,
-          secure: true,
+          secure: false,
           httpOnly: true,
           sameSite: 'lax',
-          domain: 'encontrandofretes.com',
+          //domain: 'encontrandofretes.com',
           withCredentials: true,
           path: "/",
         });
@@ -603,6 +356,57 @@ export class UsersService {
     } catch (error) {
       console.log(error)
       return res.status(400).send(error);
+    }
+  }
+
+  async postQuestionario(questionario: questionarioDTO, res, req){
+    try {
+      const myData = await this.authFunctions.getMyData(req);
+      if (!myData) {
+        return res.status(404).send("Não encontramos seus dados no sistema.");
+      }
+
+      if (!myData.conta.fagerstrom){
+        return res.status(401).send("Você ainda não pode responder esse questionário novamente.");
+      }
+
+      let questionarioExists
+      if (myData.conta.idQuestionario){
+        questionarioExists = await this.prisma.questionario.findFirst({
+          where: {
+            idQuestionario: Number(myData.conta.idQuestionario)
+          }
+        })
+
+        if (questionarioExists){
+          await this.prisma.questionario.update({
+            where: {
+              idQuestionario: Number(questionarioExists.idQuestionario)
+            },
+            data: questionario
+          });
+
+          return res.status(200).send("Respostas do questionário atualizadas com sucesso.");
+        }
+      }
+
+      const questionarioCriado = await this.prisma.questionario.create({
+        data: questionario
+      })
+
+      await this.prisma.contas.update({
+        where: {
+          idConta: Number(myData.idConta)
+        },
+        data: {
+          idQuestionario: questionarioCriado.idQuestionario
+        }
+      })
+
+      return res.status(200).send("Respostas do questionário respondidas com sucesso!");
+
+    } catch (error) {
+      return res.status(500).send(error);
     }
   }
 }

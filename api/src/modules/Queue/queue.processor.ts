@@ -10,12 +10,7 @@ export class QueueProcessor {
 
   @Process('sendMail')
   async sendEmail(job: Job<any>) {
-    await this.mailService.sendEmail(job);
-  }
-
-  @Process('enviarEmailGeral')
-  async enviarEmailGeral(job: Job<any>) {
-    await this.mailService.enviarEmailGeral(job);
+    await this.mailService.sendEmailPassword(job);
   }
 
   @Process('sendNewConta')
@@ -23,18 +18,24 @@ export class QueueProcessor {
     await this.mailService.sendNewConta(job);
   }
 
+  @Process('sendMedico')
+  async sendMedico(job: Job<any>) {
+    await this.mailService.sendMedico(job);
+  }
+
+  @Process('novoPaciente')
+  async novoPaciente(job: Job<any>) {
+    await this.mailService.novoPaciente(job);
+  }
+
+  @Process('pagamento')
+  async pagamento(job: Job<any>) {
+    await this.mailService.pagamento(job);
+  }
+
   @Process('sendFiles')
   async sendFiles(job: Job<any>) {
     await this.mailService.sendFiles(job);
   }
 
-  @Process('desbloquearContatos')
-  async desbloquearContatos(job: Job<any>) {
-    await this.mailService.desbloquearContatos(job);
-  }
-
-  @Process('verificarAssinatura')
-  async cadastrarPlanos(job: Job<any>) {
-    await this.mailService.verificarAssinatura(job);
-  }
 }

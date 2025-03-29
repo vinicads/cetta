@@ -8,6 +8,7 @@ import { functionService } from 'src/middlewares/geralFunctions';
 import { PagamentosController } from './pagamentos.controller';
 import { PagamentosService } from './pagamentos.service';
 import { NotificationsGateway } from 'src/modules/websocket/websocket';
+import { QueueModule } from '../Queue/queue.module';
 
 
 
@@ -19,6 +20,7 @@ import { NotificationsGateway } from 'src/modules/websocket/websocket';
       secret: process.env.secret,
       signOptions: { expiresIn: process.env.tempoToken },
     }),
+    QueueModule
   ],
   controllers: [PagamentosController],
   providers: [PagamentosService, PrismaService, AuthFunctions, functionService, NotificationsGateway,

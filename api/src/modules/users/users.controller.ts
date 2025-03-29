@@ -10,6 +10,8 @@ import { usersFunctions } from './functions/users.functions';
 import { usersNoPasswordDTO } from './dto/usersNoPassword.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { MulterOptions, MulterFile } from 'multer';
+import { subYears } from 'date-fns';
+import { questionarioDTO } from './dto/questionario.dto';
 
 @Controller('users')
 export class UsersController {
@@ -27,50 +29,13 @@ export class UsersController {
     return this.usersService.create(autenticacao, conta, res, req);
   }
 
-  @Post('enviarEmailGeral')
-  @UsePipes(ValidationPipe)
-  async sendMail(@Res() res: Response,
-    @Body("perfil") perfil: string[],
-    @Body("assinatura") assinatura: string,
-    @Body("conteudo") conteudo: string,
-    @Req() req: Request) {
-      const resultado = await this.authFunctions.verifyProfile(req, ["Admin"]);
-
-      const filters: any = {};
-
-      if (!conteudo){
-        throw new HttpException("Você precisa enviar o conteúdo do e-mail.", HttpStatus.BAD_REQUEST);
-      }
-
-      if (perfil && perfil.length > 0) {
-        filters.conta = {
-          ...filters.conta,
-          perfil: { in: perfil }
-        };
-      }
-  
-      if(assinatura){
-        filters.conta = {
-          ...filters.conta,
-          perfil: 'Empresa',
-        };
-      }
-
-  
-      if (resultado) {
-        return this.usersService.enviarEmailGeral(filters, assinatura, conteudo, req, res);
-      } else {
-        throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
-      }
-  }
 
   @Get()
   async findAll(@Res() res: Response,
     @Query('nome') nome: string,
     @Query('email') email: string,
-    @Query('assinatura') assinatura: string,
-    @Query('cpf') cpf: string,
-    @Query('cnpj') cnpj: string,
+    @Query('idadeInicio') idadeInicio: number,
+    @Query('idadeFim') idadeFim: number,
     @Query('perfil') perfil: string,
     @Query('start') start: number,
     @Query('quantity') quantity: number,
@@ -87,25 +52,33 @@ export class UsersController {
       };
     }
 
-    if (cpf || cnpj) {
-      filters.conta = {
-        ...filters.conta,
-        AND: [
-          {
-            OR: [
-              cpf ? { documento: { contains: cpf } } : undefined,
-              cnpj ? { documento: { contains: cnpj } } : undefined,
-            ].filter(Boolean)
-          }
-        ]
-      };
-    }
-
     if (email) {
       filters.email = {
         contains: email,
       };
     }
+
+    const today = new Date();
+  let data_nasc_inicio: Date | null = null;
+  let data_nasc_final: Date | null = null;
+
+  if (idadeInicio) {
+    data_nasc_final = subYears(today, idadeInicio); 
+  }
+
+  if (idadeFim) {
+    data_nasc_inicio = subYears(today, idadeFim); 
+  }
+
+  if (data_nasc_inicio || data_nasc_final) {
+    filters.conta = {
+      ...filters.conta,
+      data_nasc: {
+        ...(data_nasc_inicio ? { gte: data_nasc_inicio } : {}), 
+        ...(data_nasc_final ? { lte: data_nasc_final } : {}), 
+      }
+    };
+  }
 
     if (perfil) {
       filters.conta = {
@@ -114,100 +87,23 @@ export class UsersController {
       };
     }
 
-    if(assinatura){
-      filters.conta = {
-        ...filters.conta,
-        perfil: 'Empresa',
-      };
-    }
 
     if (resultado) {
-      return this.usersService.findAll(res, filters, assinatura, start, quantity);
+      return this.usersService.findAll(res, filters, start, quantity);
     } else {
       throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
     }
   }
 
-  @Get('empresas')
-  async findAllEmpresas(@Res() res: Response,
-    @Query('nome') nome: string,
-    @Query('documento') documento: string,
-    @Query('start') start: number,
-    @Query('quantity') quantity: number,
+  @Post('questionario')
+  @UsePipes(ValidationPipe)
+
+  async questionario(@Res() res: Response,
+    @Body("questionario") questionario: questionarioDTO,
     @Req() req: Request) {
-    const resultado = await this.authFunctions.verifyProfile(req, ["Recrutador"]);
-    if (resultado) {
-      const filters: any = {};
-      if (nome) {
-        filters.conta = {
-          ...filters.conta,
-          nome: {
-            contains: nome,
-          }
-        };
-      }
-
-      if (documento) {
-        filters.conta = {
-          ...filters.conta,
-          documento: {
-            contains: documento,
-          }
-        };
-      }
-
-      filters.conta = {
-        ...filters.conta,
-        perfil: "Empresa"
-      }
-
-      return this.usersService.findAllEmpresas(filters, start, quantity, res);
-    } else {
-      throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
-    }
+    return this.usersService.postQuestionario(questionario, res, req);
   }
 
-  @Get('recrutadores')
-  async findAllRecrutadores(@Res() res: Response,
-    @Query('idRecrutador') idConta: number,
-    @Query('nome') nome: string,
-    @Query('documento') documento: string,
-    @Query('start') start: number,
-    @Query('quantity') quantity: number,
-    @Req() req: Request) {
-    const filters: any = {};
-    if (idConta) {
-      filters.conta = {
-        ...filters.conta,
-        idConta: Number(idConta)
-      };
-    }
-
-    if (nome) {
-      filters.conta = {
-        ...filters.conta,
-        nome: {
-          contains: nome,
-        }
-      };
-    }
-
-    if (documento) {
-      filters.conta = {
-        ...filters.conta,
-        documento: {
-          contains: documento,
-        }
-      };
-    }
-
-    filters.conta = {
-      ...filters.conta,
-      perfil: "Recrutador"
-    }
-
-    return this.usersService.findAllRecrutadores(filters, start, quantity, res);
-  }
 
   @Get('/myData')
   async findOne(@Res() res: Response, @Req() req: Request) {
@@ -216,7 +112,7 @@ export class UsersController {
 
   @Put('changePerfil/:id')
   @UseInterceptors(FilesInterceptor('arquivos'))
-  async putCertidoes(
+  async changePerfil(
     @Res() res: Response,
     @UploadedFiles() arquivos: MulterFile[],
     @Param('id') id: number,
@@ -234,10 +130,11 @@ export class UsersController {
   async update(@Res() res: Response, @Param('id') id: number,
     @Body("autenticacao") autenticacao: usersNoPasswordDTO,
     @Body("conta") conta: contaDTO,
+    @Body("assinatura") assinatura: string,
     @Req() req: Request) {
     const resultado = await this.authFunctions.verifyProfile(req, ["Admin"]);
     if (resultado) {
-      return this.usersService.update(id, autenticacao, conta, res, req);
+      return this.usersService.update(id, autenticacao, conta, assinatura, res, req);
     } else {
       var data = await this.prisma.autenticacao.findFirst({
         where: {
@@ -254,7 +151,7 @@ export class UsersController {
           if (conta.perfil != data.conta.perfil) {
             throw new HttpException("Você não tem autorização para atualizar seu perfil.", HttpStatus.UNAUTHORIZED);
           }
-          return this.usersService.update(id, autenticacao, conta, res, req);
+          return this.usersService.update(id, autenticacao, conta, assinatura, res, req);
         }
       }
     }
@@ -269,7 +166,7 @@ export class UsersController {
     if (email.length < 5) {
       throw new HttpException("Você precisa enviar um e-mail válido.", HttpStatus.BAD_REQUEST);
     }
-    return this.usersService.updateEmail(email, senha, req, res);
+    return this.usersService.updateAuth(email, senha, req, res);
 
   }
 

@@ -40,19 +40,6 @@ export class PagamentosController {
       }
   }
 
-  @Post('/frete')
-  @UsePipes(ValidationPipe)
-  async createFrete(@Res() res: Response,
-    @Body("usarDesconto") usarDesconto: boolean,
-    @Req() req: Request) {
-      const resultado = await this.authFunctions.verifyProfile(req, ["Empresa"]);
-      if (resultado){
-        return this.pagamentosService.createFrete(usarDesconto, req, res);
-      }else{
-        throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
-      }
-  }
-
 
   @Post('/webhook')
   async handleStripeEvent(@Body() buffer: any, @Res() res, @Req() req, @Query() queryParams: any,) {
