@@ -10,16 +10,62 @@ import path from 'path';
 import * as fs from 'fs';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { AssinaturasService } from 'src/services/assinaturas.service';
+import { AssinaturaDTO } from '../users/dto/assinatura.dto';
+import { AuthFunctions } from 'src/middlewares/auth.middleware';
 
 @Injectable()
 export class GruposService {
   constructor(private prisma: PrismaService,
     private readonly loginFunctions: LoginFunctions,
     private readonly contasFunctions: contasFunctions,
+    private readonly authFunctions: AuthFunctions,
     private readonly geralFunctions: functionService,
+    private readonly assinaturaService: AssinaturasService,
     @InjectQueue('geral') private readonly geralQueue: Queue
   ) {
 
+  }
+
+  async findAll(res, req) {
+    try {
+      const myData = await this.authFunctions.getMyData(req);
+      if (!myData) {
+        return res.status(404).send("Não encontramos seus dados no sistema.");
+      }
+
+      const resultadoGrupos = await this.prisma.grupoConta.findMany({
+        where: {
+          idConta: Number(myData.idConta)
+        }
+      });
+
+      if (resultadoGrupos.length == 0) {
+        return res.status(404).send("Nenhum grupo encontrado.");
+      }
+
+      const grupos = await Promise.all(resultadoGrupos.map(async (grupo) => {
+        const dadosGrupo = await this.prisma.grupos.findFirst({
+          where: {
+            idGrupo: Number(grupo.idGrupo)
+          },
+          include: {
+            planos: true,
+            datas: true
+          }
+        });
+
+        if (!dadosGrupo) {
+          return null;
+        }
+
+        return dadosGrupo;
+      }));
+
+      return res.status(200).send(grupos);
+    } catch (error) {
+      return res.status(400).send("Dados incorretos.");
+    }
   }
 
   async create(grupo: GrupoDTO, datas: DataDTO[], res, req) {
@@ -47,10 +93,17 @@ export class GruposService {
           where: {
             dia: data.dia,
             hora: data.hora
+          },
+          include: {
+            grupos: {
+              include: {
+                planos: true
+              }
+            }
           }
         });
 
-        if (dataExistente) {
+        if (dataExistente && dataExistente.grupos.planos.tipoFuncionalidade == planoExists.tipoFuncionalidade) {
           return res.status(400).send(`Já existe uma sessão no dia ${data.dia} às ${data.hora}.`);
         }
       }
@@ -71,7 +124,7 @@ export class GruposService {
 
       return res.status(200).send("Cadastrado com sucesso.");
     } catch (error) {
-
+      console.log(error)
       return res.status(400).send("Dados incorretos.");
     }
   }
@@ -147,7 +200,7 @@ export class GruposService {
       };
 
       try {
-        const contasGrupo = await this.prisma.contas.findMany({
+        const contasGrupo = await this.prisma.grupoConta.findMany({
           where: {
             idGrupo: Number(resultado.idGrupo)
           }
@@ -155,7 +208,7 @@ export class GruposService {
 
         if (contasGrupo.length > 0) {
           await Promise.all(contasGrupo.map(async (conta) => {
-            await this.contasFunctions.desativarAssinatura(conta.idConta);
+            await this.contasFunctions.desativarAssinatura(conta.idConta, resultado.idPlanos);
           }));
         }
         await this.prisma.datas.deleteMany({
@@ -199,9 +252,6 @@ export class GruposService {
         let conta = await this.prisma.contas.findFirst({
           where: {
             idConta: Number(id)
-          },
-          include: {
-            assinatura: true
           }
         });
 
@@ -211,41 +261,39 @@ export class GruposService {
               idConta: Number(conta.idConta)
             }
           })
-          let assinatura = undefined;
-          if (!conta.idAssinatura) {
-            assinatura = await this.prisma.assinatura.create({
-              data: {
-                ativo: true,
-                data_inicio: new Date(),
-                idPlanos: resultado.idPlanos,
-                ultimo_update: new Date()
-              }
-            })
+          let assinatura = await this.assinaturaService.get(conta.idConta, resultado.idPlanos);
+          if (assinatura) {
+            await this.assinaturaService.create(conta.idConta, resultado.idPlanos, true);
           } else {
-            await this.prisma.assinatura.update({
-              where: {
-                idAssinatura: Number(conta.idAssinatura)
-              },
+            let assinaturaDTO = new AssinaturaDTO();
+            assinaturaDTO.ativo = true;
+            assinaturaDTO.idAssinatura = assinatura.idAssinatura;
+            assinaturaDTO.idPlanos = assinatura.idPlanos;
+            await this.assinaturaService.update(assinaturaDTO);
+          }
+
+          let usuarioGrupo = await this.prisma.grupoConta.findFirst({
+            where: {
+              idGrupo: Number(idGrupo),
+              idConta: Number(conta.idConta)
+            }
+          });
+
+          if (!usuarioGrupo) {
+            await this.prisma.grupoConta.create({
               data: {
-                ativo: true
+                idConta: Number(conta.idConta),
+                idGrupo: Number(idGrupo)
               }
             })
           }
-          await this.prisma.contas.update({
-            where: {
-              idConta: Number(conta.idConta)
-            },
-            data: {
-              idGrupo: Number(idGrupo),
-              idAssinatura: Number(assinatura.idAssinatura)
-            }
-          })
+
           const jobData = {
             nome: conta.nome,
             mensagem: "Olá, informamos que você foi adicionado a um grupo, acesse o sistema para mais detalhes",
             email: autenticacao.email,
           };
-    
+
           await this.geralQueue.add('novoPaciente', {
             jobData
           });
@@ -258,7 +306,78 @@ export class GruposService {
     }
   }
 
-  async removerUsuario(idConta, res, req){
+  async entrar(idGrupo: number, res, req) {
+    try {
+
+      const myData = await this.authFunctions.getMyData(req);
+      if (!myData) {
+        return res.status(404).send("Não encontramos seus dados no sistema.");
+      }
+
+      const resultado = await this.prisma.grupos.findFirst({
+        where: {
+          idGrupo: Number(idGrupo)
+        }
+      });
+
+      if (!resultado) {
+        return res.status(404).send("Nenhum grupo cadastrado com esse ID")
+      };
+
+      const usuarioGrupo = await this.prisma.grupoConta.findFirst({
+        where: {
+          idConta: myData.idConta,
+          idGrupo: idGrupo
+        }
+      })
+
+      if (usuarioGrupo) {
+        return res.status(200).send("Você já faz parte desse grupo.");
+      }
+
+      const plano = await this.prisma.planos.findFirst({
+        where: {
+          idPlanos: Number(resultado.idPlanos)
+        }
+      });
+
+      if (!plano) {
+        return res.status(404).send("Nenhum plano cadastrado com esse ID")
+      }
+
+      const assinatura = await this.assinaturaService.get(myData.idConta, resultado.idPlanos);
+
+      if (!assinatura || assinatura.ativo == false) {
+        return res.status(401).send("Você precisa ter uma assinatura ativa para esse tipo de grupo para entrar.");
+      }
+
+      const contagemGrupo = await this.prisma.grupoConta.count({
+        where: {
+          idGrupo: Number(idGrupo)
+        }
+      });
+
+      if (contagemGrupo >= plano.qtdePessoas) {
+        return res.status(401).send("O grupo selecionado não possui mais espaço.");
+      }
+
+      await this.prisma.grupoConta.create({
+        data: {
+          idConta: Number(myData.idConta),
+          idGrupo: Number(idGrupo)
+        }
+      })
+
+      return res.status(200).send("Parabéns! Agora você faz parte do grupo.");
+
+
+
+    } catch (error) {
+      return res.status(500).send("Algo deu errado.");
+    }
+  }
+
+  async removerUsuario(idConta, idGrupo, res, req) {
     try {
       const contaExists = await this.prisma.contas.findFirst({
         where: {
@@ -266,20 +385,15 @@ export class GruposService {
         }
       })
 
-      if (!contaExists){
+      if (!contaExists) {
         return res.status(404).send("Conta não encontrada");
       }
 
-      if (!contaExists.idGrupo){
-        return res.status(400).send("O usuário não pertence a nenhum grupo");
-      }
 
-      await this.prisma.contas.update({
+      await this.prisma.grupoConta.deleteMany({
         where: {
-          idConta: Number(idConta)
-        },
-        data: {
-          idGrupo: null
+          idConta: Number(idConta),
+          idGrupo: Number(idGrupo)
         }
       });
 
@@ -298,6 +412,8 @@ export class GruposService {
       await this.geralQueue.add('novoPaciente', {
         jobData
       });
+
+      return res.status(200).send("Usuário removido do grupo com sucesso.");
     } catch (error) {
       return res.status(500).send("Algo deu errado.");
     }

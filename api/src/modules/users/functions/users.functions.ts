@@ -22,12 +22,7 @@ export class usersFunctions {
         const autenticacao = await this.prisma.autenticacao.findFirst({
             where: { idAutenticacao: Number(idAutenticacao) },
             include: {
-                conta: {
-                    include: {
-                        assinatura: true,
-                        grupo: true
-                    }
-                }
+                conta: true
             }
         });
 
@@ -38,10 +33,19 @@ export class usersFunctions {
             orderBy: { data_inicio: 'asc' }
         });
 
+        const assinaturas = await this.prisma.assinatura.findMany({
+            where: { idConta: Number(autenticacao.conta.idConta) },
+            include: {
+                planos: true
+            },
+            orderBy: { data_inicio: 'asc' }
+        });
+
         return {
             autenticacao,
             dadosPessoais: autenticacao.conta,
-            historico: historico.length > 0 ? historico : undefined
+            historico: historico.length > 0 ? historico : undefined,
+            assinaturas: assinaturas.length > 0 ? assinaturas : undefined
         };
     }
 

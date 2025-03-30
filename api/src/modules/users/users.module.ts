@@ -10,6 +10,7 @@ import { usersFunctions } from './functions/users.functions';
 import { contasFunctions } from './functions/contas.functions';
 import { functionService } from 'src/middlewares/geralFunctions';
 import { QueueModule } from '../Queue/queue.module';
+import { AssinaturasService } from 'src/services/assinaturas.service';
 
 
 
@@ -24,7 +25,7 @@ import { QueueModule } from '../Queue/queue.module';
     QueueModule,
   ],
   controllers: [UsersController],
-  providers: [UsersService, PrismaService, usersFunctions, AuthFunctions, contasFunctions, functionService,
+  providers: [UsersService, PrismaService, usersFunctions, AuthFunctions, contasFunctions, functionService, AssinaturasService,
     LoginFunctions, {
     provide: APP_PIPE,
     useClass: ValidationPipe,

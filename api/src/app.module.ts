@@ -18,9 +18,11 @@ import { PagamentosModule } from './modules/pagamentos/pagamentos.module';
 import { WebSocketsModule } from './modules/websocket/webSocket.module';
 import { GruposModule } from './modules/grupos/grupos.module';
 import { GruposController } from './modules/grupos/grupos.controller';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     JwtModule.register({
       secret: process.env.secret,
       signOptions: { expiresIn: Number(process.env.tempoToken) },
@@ -48,7 +50,7 @@ import { GruposController } from './modules/grupos/grupos.controller';
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
-    WebSocketsModule
+    WebSocketsModule,
   ],
 })
 

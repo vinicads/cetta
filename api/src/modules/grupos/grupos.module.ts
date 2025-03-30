@@ -9,6 +9,8 @@ import { GruposController } from './grupos.controller';
 import { GruposService } from './grupos.service';
 import { QueueModule } from '../Queue/queue.module';
 import { contasFunctions } from '../users/functions/contas.functions';
+import { AssinaturasService } from 'src/services/assinaturas.service';
+import { ScheduleService } from './schedule.service';
 
 
 
@@ -23,7 +25,7 @@ import { contasFunctions } from '../users/functions/contas.functions';
     QueueModule
   ],
   controllers: [GruposController],
-  providers: [GruposService, PrismaService, AuthFunctions, functionService, contasFunctions,
+  providers: [GruposService, PrismaService, AuthFunctions, functionService, contasFunctions, AssinaturasService, ScheduleService,
     LoginFunctions, {
     provide: APP_PIPE,
     useClass: ValidationPipe,

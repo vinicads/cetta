@@ -9,6 +9,7 @@ import { PagamentosController } from './pagamentos.controller';
 import { PagamentosService } from './pagamentos.service';
 import { NotificationsGateway } from 'src/modules/websocket/websocket';
 import { QueueModule } from '../Queue/queue.module';
+import { AssinaturasService } from 'src/services/assinaturas.service';
 
 
 
@@ -23,7 +24,7 @@ import { QueueModule } from '../Queue/queue.module';
     QueueModule
   ],
   controllers: [PagamentosController],
-  providers: [PagamentosService, PrismaService, AuthFunctions, functionService, NotificationsGateway,
+  providers: [PagamentosService, PrismaService, AuthFunctions, functionService, NotificationsGateway, AssinaturasService,
     LoginFunctions, {
     provide: APP_PIPE,
     useClass: ValidationPipe,

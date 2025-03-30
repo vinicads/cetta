@@ -29,26 +29,30 @@ export class contasFunctions {
         })
     }
 
-    async desativarAssinatura(idConta: number){
+    async desativarAssinatura(idConta: number, idPlanos: number){
         const conta = await this.prisma.contas.findFirst({
             where: {
                 idConta: Number(idConta)
             },
         })
+
+        const grupo = await this.prisma.grupos.findFirst({
+            where: {
+                idPlanos: Number(idPlanos)
+            }
+        })
         if (conta){
-            await this.prisma.contas.update({
+            await this.prisma.grupoConta.deleteMany({
                 where: {
-                    idConta: Number(idConta)
-                },
-                data: {
-                    idGrupo: null
+                    idConta: Number(idConta),
+                    idGrupo: Number(grupo.idGrupo)
                 }
             })
 
-            if (conta.idAssinatura){
-                await this.prisma.assinatura.update({
+                await this.prisma.assinatura.updateMany({
                     where: {
-                        idAssinatura: Number(conta.idAssinatura)
+                        idConta: Number(conta.idConta),
+                        idPlanos: Number(idPlanos)
                     },
                     data: {
                         ativo: false,
@@ -56,7 +60,6 @@ export class contasFunctions {
                     }
                 })
             }
-        }
         
     }
 }

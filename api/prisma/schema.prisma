@@ -15,7 +15,8 @@ model assinatura {
   ultimo_update DateTime? @db.Date
   planos        planos    @relation(fields: [idPlanos], references: [idPlanos], onDelete: Restrict, onUpdate: Cascade)
   idPlanos      Int
-  contas        contas[]
+  contas        contas    @relation(fields: [idConta], references: [idConta], onDelete: Restrict, onUpdate: Cascade)
+  idConta       Int
 }
 
 model historicoPagamento {
@@ -60,17 +61,11 @@ model contas {
   celular            String               @db.VarChar(15)
   fagerstrom         Boolean              @default(false) @db.TinyInt
   perfil             contas_perfil
-  idAssinatura       Int?
-  idGrupo            Int?
   idQuestionario     Int?
   autenticacao       autenticacao[]
   historicoPagamento historicoPagamento[]
-
-  grupo        grupos?       @relation(fields: [idGrupo], references: [idGrupo], onDelete: Restrict, onUpdate: Cascade)
-  assinatura   assinatura?   @relation(fields: [idAssinatura], references: [idAssinatura], onDelete: Restrict, onUpdate: Cascade)
-  questionario questionario? @relation(fields: [idQuestionario], references: [idQuestionario], onDelete: Restrict, onUpdate: Cascade)
-
-  @@index([idAssinatura], map: "fk_Contas_Assinatura1_idx")
+  assinaturas        assinatura[]
+  questionario       questionario?        @relation(fields: [idQuestionario], references: [idQuestionario], onDelete: Restrict, onUpdate: Cascade)
 }
 
 model questionario {
@@ -98,7 +93,12 @@ model grupos {
   planos     planos   @relation(fields: [idPlanos], references: [idPlanos], onDelete: Restrict, onUpdate: Cascade)
   idPlanos   Int
   datas      datas[]
-  contas     contas[]
+}
+
+model grupoConta {
+  idGrupoConta Int @id @default(autoincrement())
+  idGrupo      Int
+  idConta      Int
 }
 
 model datas {

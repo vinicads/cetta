@@ -12,6 +12,7 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { MulterOptions, MulterFile } from 'multer';
 import { subYears } from 'date-fns';
 import { questionarioDTO } from './dto/questionario.dto';
+import { AssinaturaDTO } from './dto/assinatura.dto';
 
 @Controller('users')
 export class UsersController {
@@ -130,11 +131,11 @@ export class UsersController {
   async update(@Res() res: Response, @Param('id') id: number,
     @Body("autenticacao") autenticacao: usersNoPasswordDTO,
     @Body("conta") conta: contaDTO,
-    @Body("assinatura") assinatura: string,
+    @Body("assinatura") assinatura: AssinaturaDTO[],
     @Req() req: Request) {
     const resultado = await this.authFunctions.verifyProfile(req, ["Admin"]);
     if (resultado) {
-      return this.usersService.update(id, autenticacao, conta, assinatura, res, req);
+      return this.usersService.update(id, autenticacao, conta, res, req);
     } else {
       var data = await this.prisma.autenticacao.findFirst({
         where: {
@@ -151,11 +152,23 @@ export class UsersController {
           if (conta.perfil != data.conta.perfil) {
             throw new HttpException("Você não tem autorização para atualizar seu perfil.", HttpStatus.UNAUTHORIZED);
           }
-          return this.usersService.update(id, autenticacao, conta, assinatura, res, req);
+          return this.usersService.update(id, autenticacao, conta, res, req);
         }
       }
     }
     throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
+  }
+
+  @Put('assinatura')
+  async updateAssinatura(@Res() res: Response, @Param('id') id: number,
+    @Body("assinatura") assinatura: AssinaturaDTO,
+    @Req() req: Request) {
+    const resultado = await this.authFunctions.verifyProfile(req, ["Admin"]);
+    if (resultado) {
+      return this.usersService.updateAssinatura(assinatura, res, req);
+    }else{
+      throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
+    } 
   }
 
   @Put('/atualizar/autenticacao')

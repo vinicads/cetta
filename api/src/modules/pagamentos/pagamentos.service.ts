@@ -13,6 +13,7 @@ import axios from 'axios';
 import { NotificationsGateway } from '../websocket/websocket';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
+import { AssinaturasService } from 'src/services/assinaturas.service';
 
 @Injectable()
 export class PagamentosService {
@@ -21,6 +22,7 @@ export class PagamentosService {
     private readonly geralFunctions: functionService,
     private readonly authFunctions: AuthFunctions,
     private readonly notificationsGateway: NotificationsGateway,
+    private readonly assinaturaService: AssinaturasService,
     @InjectQueue('geral') private readonly geralQueue: Queue
   ) {
 
@@ -29,6 +31,7 @@ export class PagamentosService {
   async create(dadosAssinatura: DadosAssinaturaDTO, req, res) {
     try {
       const myData = await this.authFunctions.getMyData(req);
+
       if (!myData) {
         return res.status(404).send("Não encontramos seus dados no sistema.");
       }
@@ -45,31 +48,75 @@ export class PagamentosService {
 
       let assinaturaUsuario
       let desconto
-      if (myData.conta.idAssinatura) {
-        const assinatura = await this.prisma.assinatura.findFirst({
-          where: {
-            idAssinatura: Number(myData.conta.idAssinatura)
-          }
-        })
+      const assinatura = await this.assinaturaService.get(myData.idConta, dadosPlano.idPlanos)
 
-        if (!assinatura) {
-          return res.status(404).send("Não encontramos seus dados no sistema.");
-        }
-
-        assinaturaUsuario = myData.conta.idAssinatura;
-
+      if (assinatura) {
+        assinaturaUsuario = assinatura.idAssinatura;
         if (assinatura.idPlanos == dadosPlano.idPlanos) {
-          if (assinatura.codPagamento && assinatura.ativo == true)
+          if (assinatura.ativo == true)
             return res.status(400).send("Você já possui uma assinatura com este plano.")
         }
 
         if (assinatura.codPagamento) {
           return res.status(400).send("Você já possui um pedido em aberto para assinar.");
         }
+
+      }
+
+
+      const contagemGrupo = await this.prisma.grupoConta.count({
+        where: {
+          idGrupo: Number(dadosAssinatura.idGrupo)
+        }
+      });
+
+      if (contagemGrupo >= dadosPlano.qtdePessoas) {
+        return res.status(401).send("O grupo selecionado não possui mais espaço.");
+      }
+
+      if (!assinatura) {
+        await this.assinaturaService.create(myData.idConta, dadosPlano.idPlanos, false);
+      }
+
+
+
+      if (dadosAssinatura.idGrupo) {
+        let gruposContasExists = await this.prisma.grupoConta.findFirst({
+          where: {
+            idConta: Number(myData.idConta),
+            idGrupo: Number(dadosAssinatura.idGrupo)
+          }
+        })
+
+        const dadosGrupo = await this.prisma.grupos.findFirst({
+          where: {
+            idGrupo: Number(dadosAssinatura.idGrupo)
+          }
+        });
+
+        if (dadosGrupo.idPlanos != dadosAssinatura.idPlanos) {
+          return res.status(400).send("O grupo selecionado não está incluido nessa assinatura.");
+        }
+
+        if (!gruposContasExists) {
+          await this.prisma.grupoConta.create({
+            data: {
+              idConta: Number(myData.idConta),
+              idGrupo: Number(dadosAssinatura.idGrupo)
+            }
+          })
+        } else {
+          return res.status(400).send("Você já faz parte desse grupo.");
+        }
       }
 
       const client = new MercadoPagoConfig({ accessToken: process.env.SECRET_MERCADOPAGO });
       const preference = new Preference(client);
+      const nomeCompleto = myData.conta.nome.trim();
+      const partes = nomeCompleto.split(" ");
+
+      const name = partes[0];
+      const surname = partes.length > 1 ? partes.slice(1).join(" ") : name;
 
       preference.create({
         body: {
@@ -77,13 +124,22 @@ export class PagamentosService {
             {
               id: dadosPlano.idPlanos.toString(),
               title: dadosPlano.nome,
+              description: dadosPlano.descricao,
+              category_id: 'services',
               quantity: 1,
               unit_price: dadosPlano.valorTotal
             }
           ],
+          payer:
+          {
+            name: name,
+            surname: surname
+          }
+          ,
           external_reference: JSON.stringify({
             userId: myData.idConta,
             planId: dadosPlano.idPlanos,
+            gruopId: dadosAssinatura.idGrupo
           }),
           back_urls: {
             success: process.env.mydomainWorld,
@@ -102,23 +158,7 @@ export class PagamentosService {
 
 
           const paymentUrl = response.init_point;
-          if (!myData.conta.idAssinatura) {
-            const assinaturaCriada = await this.prisma.assinatura.create({
-              data: {
-                ativo: false,
-                idPlanos: dadosPlano.idPlanos,
-              }
-            });
 
-            await this.prisma.contas.update({
-              where: {
-                idConta: Number(myData.conta.idConta)
-              },
-              data: {
-                idAssinatura: Number(assinaturaCriada.idAssinatura)
-              }
-            })
-          }
           return res.status(200).send({ urL: paymentUrl });
         })
         .catch((error) => {
@@ -134,17 +174,14 @@ export class PagamentosService {
     }
   }
 
-  async getPlano(req, res) {
+  async getPlano(idPlanos: number, req, res) {
     try {
       const myData = await this.authFunctions.getMyData(req);
       if (!myData) {
         return res.status(404).send("Não encontramos seus dados no sistema.");
       }
-      const assinatura = await this.prisma.assinatura.findFirst({
-        where: {
-          idAssinatura: Number(myData.conta.idAssinatura)
-        }
-      })
+
+      const assinatura = await this.assinaturaService.get(myData.idConta, idPlanos)
 
       if (!assinatura) {
         return res.status(404).send("Não encontramos seus dados no sistema.");
@@ -213,7 +250,7 @@ export class PagamentosService {
     const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
     try {
       if (eventData.type == 'payment' || eventData.topic == 'payment') {
-        let accountId, planId, tipo, qtdeMeses, status
+        let accountId, planId, tipo, status, gruopId
         let paymentId = eventData.data;
         if (paymentId.id) {
 
@@ -229,8 +266,14 @@ export class PagamentosService {
             const externalReference = JSON.parse(paymentData.external_reference);
             tipo = externalReference.tipo;
             planId = externalReference.planId;
+            gruopId = externalReference.gruopId;
             accountId = externalReference.userId;
             status = paymentData.status;
+            const contaInfo = await this.prisma.contas.findFirst({
+              where: {
+                idConta: Number(accountId)
+              }
+            });
             const dadosPlano = await this.prisma.planos.findFirst({
               where: {
                 idPlanos: Number(planId)
@@ -239,18 +282,7 @@ export class PagamentosService {
             switch (eventData.action) {
               case 'payment.created':
 
-                const contaCriada = await this.prisma.contas.findFirst({
-                  where: {
-                    idConta: Number(accountId)
-                  }
-                });
-
-                const assinaturaCriada = await this.prisma.assinatura.findFirst({
-                  where: {
-                    idAssinatura: Number(contaCriada.idAssinatura)
-                  },
-                });
-
+                const assinaturaCriada = await this.assinaturaService.get(contaInfo.idConta, planId);
 
                 const notificationCriada = {
                   "tipo": "criado",
@@ -261,7 +293,7 @@ export class PagamentosService {
 
                 await this.prisma.assinatura.update({
                   where: {
-                    idAssinatura: Number(contaCriada.idAssinatura)
+                    idAssinatura: Number(assinaturaCriada.idAssinatura)
                   },
                   data: {
                     codPagamento: paymentId
@@ -284,17 +316,13 @@ export class PagamentosService {
                     }
                   })
 
-                  const assinatura = await this.prisma.assinatura.findFirst({
-                    where: {
-                      idAssinatura: Number(conta.idAssinatura)
-                    },
-                  });
+                  const assinatura = await this.assinaturaService.get(contaInfo.idConta, planId);
 
 
 
                   await this.prisma.assinatura.update({
                     where: {
-                      idAssinatura: Number(conta.idAssinatura)
+                      idAssinatura: Number(assinatura.idAssinatura)
                     },
                     data: {
                       ativo: true,
@@ -317,7 +345,7 @@ export class PagamentosService {
                     telefone: conta.celular,
                     email: autenticacao.email,
                   };
-            
+
                   await this.geralQueue.add('sendMedico', {
                     jobData
                   });
@@ -328,7 +356,7 @@ export class PagamentosService {
                     valorTotal: dadosPlano.valorTotal,
                     email: autenticacao.email,
                   };
-            
+
                   await this.geralQueue.add('pagamento', {
                     jobData: jobdataPagamento
                   });
@@ -367,15 +395,11 @@ export class PagamentosService {
                   }
                 })
 
-                const assinatura = await this.prisma.assinatura.findFirst({
-                  where: {
-                    idAssinatura: Number(conta.idAssinatura)
-                  },
-                });
+                const assinatura = await this.assinaturaService.get(contaInfo.idConta, planId);
 
                 await this.prisma.assinatura.update({
                   where: {
-                    idAssinatura: Number(conta.idAssinatura)
+                    idAssinatura: Number(assinatura.idAssinatura)
                   },
                   data: {
                     ativo: false,
@@ -383,16 +407,12 @@ export class PagamentosService {
                   }
                 })
 
-                if (conta.idGrupo) {
-                  await this.prisma.contas.update({
-                    where: {
-                      idConta: Number(conta.idConta)
-                    },
-                    data: {
-                      idGrupo: null,
-                    }
-                  })
-                }
+                await this.prisma.grupoConta.deleteMany({
+                  where: {
+                    idGrupo: Number(gruopId),
+                    idConta: Number(conta.idConta)
+                  }
+                })
 
                 await this.prisma.historicoPagamento.create({
                   data: {
@@ -411,7 +431,7 @@ export class PagamentosService {
                   valorTotal: dadosPlano.valorTotal,
                   email: autenticacao.email,
                 };
-          
+
                 await this.geralQueue.add('pagamento', {
                   jobData: jobdataPagamento
                 });

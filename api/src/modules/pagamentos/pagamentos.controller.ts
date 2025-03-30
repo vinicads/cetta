@@ -20,24 +20,25 @@ export class PagamentosController {
   async create(@Res() res: Response,
     @Body("assinatura") DadosAssinatura: DadosAssinaturaDTO,
     @Req() req: Request) {
-      const resultado = await this.authFunctions.verifyProfile(req, ["Empresa"]);
-      if (resultado){
-        return this.pagamentosService.create(DadosAssinatura, req, res);
-      }else{
-        throw new HttpException("Apenas empresas podem obter uma assinatura.", HttpStatus.FORBIDDEN);
-      }
+    const resultado = await this.authFunctions.verifyProfile(req, ["Usuario"]);
+    if (resultado) {
+      return this.pagamentosService.create(DadosAssinatura, req, res);
+    } else {
+      throw new HttpException("Apenas usuários podem obter uma assinatura.", HttpStatus.FORBIDDEN);
+    }
   }
 
-  @Get('/meuPlano')
+  @Get('/meuPlano/:idPlanos')
   @UsePipes(ValidationPipe)
   async find(@Res() res: Response,
+    @Param('idPlanos') idPlanos: number,
     @Req() req: Request) {
-      const resultado = await this.authFunctions.verifyProfile(req, ["Empresa"]);
-      if (resultado){
-        return this.pagamentosService.getPlano(req, res);
-      }else{
-        throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.FORBIDDEN);
-      }
+    const resultado = await this.authFunctions.verifyProfile(req, ["Usuario"]);
+    if (resultado) {
+      return this.pagamentosService.getPlano(idPlanos, req, res);
+    } else {
+      throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.FORBIDDEN);
+    }
   }
 
 
@@ -50,7 +51,7 @@ export class PagamentosController {
       return res.status(HttpStatus.BAD_REQUEST).send('Erro ao lidar com webhook');
     }
   }
-  
+
 
 
 }

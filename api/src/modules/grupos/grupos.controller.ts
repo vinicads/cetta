@@ -15,6 +15,18 @@ export class GruposController {
     private readonly authFunctions: AuthFunctions,
     private prisma: PrismaService) { }
 
+
+  @Get()
+  async findAll(@Res() res: Response,
+    @Req() req: Request) {
+    const resultado = await this.authFunctions.verifyProfile(req, ["Usuario"]);
+    if (resultado) {
+      return this.GruposService.findAll(res, req);
+    } else {
+      throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
+    }
+  }
+
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Res() res: Response,
@@ -43,14 +55,28 @@ export class GruposController {
     }
   }
 
-  @Delete('remover/usuario')
+  @Post('entrar')
+  @UsePipes(ValidationPipe)
+  async entrar(@Res() res: Response,
+    @Body("idGrupo") idGrupo: number,
+    @Req() req: Request) {
+    const resultado = await this.authFunctions.verifyProfile(req, ["Usuario"]);
+    if (resultado) {
+      return this.GruposService.entrar(idGrupo, res, req);
+    } else {
+      throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  @Delete('remover/usuario/:idConta/:idGrupo')
   @UsePipes(ValidationPipe)
   async removerUsuario(@Res() res: Response,
-    @Body("idConta") idConta: number,
+    @Param('idConta') idConta: number,
+    @Param('idGrupo') idGrupo: number,
     @Req() req: Request) {
     const resultado = await this.authFunctions.verifyProfile(req, ["Admin"]);
     if (resultado) {
-      return this.GruposService.removerUsuario(idConta, res, req);
+      return this.GruposService.removerUsuario(idConta, idGrupo, res, req);
     } else {
       throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
     }

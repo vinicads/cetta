@@ -20,15 +20,6 @@ export class LoginService {
   async verify(data: loginDTO, res, req) {
     const cookies = req.cookies;
     if (cookies.meuToken) {
-      res.cookie('meuToken', "token", {
-        maxAge: 1,
-        secure: false,
-        sameSite: 'lax',
-       // domain: 'encontrandofretes.com',
-        httpOnly: true,
-        withCredentials: true,
-        path: "/",
-      });
       return res.status(400).send("Você já está logado.")
     } else {
       try {
@@ -41,11 +32,17 @@ export class LoginService {
             if (senhaValida) {
               const cookieAccepted = cookies.cookieAccepted ? true : false;
               
-              let assinatura
-              if (resultado.conta.idAssinatura){
-                assinatura = await this.prisma.assinatura.findFirst({
+              let assinaturas, historicoPagamento
+              if (resultado.conta){
+                assinaturas = await this.prisma.assinatura.findMany({
                   where: {
-                    idAssinatura: Number(resultado.conta.idAssinatura)
+                    idConta: Number(resultado.conta.idConta)
+                  }
+                })
+
+                historicoPagamento = await this.prisma.historicoPagamento.findMany({
+                  where: {
+                    idConta: Number(resultado.conta.idConta)
                   }
                 })
               }
@@ -54,7 +51,8 @@ export class LoginService {
                 autenticacao: resultado,
                 dadosPessoais: resultado.conta,
                 perfil: resultado.conta.perfil,
-                assinatura: assinatura,
+                assinaturas: assinaturas,
+                historicoPagamento: historicoPagamento,
                 cookieAccepted: cookieAccepted
               };
         
@@ -117,21 +115,28 @@ async cookieAccepted(req, res){
       const resultado = await this.loginFunctions.verifyToken(cookies.meuToken);
       if (resultado){
         var newResultado = await this.usersFunctions.verifyEmailExists(resultado.email);
-        let assinatura
-        if (newResultado.conta.idAssinatura){
-          assinatura = await this.prisma.assinatura.findFirst({
-            where: {
-              idAssinatura: Number(newResultado.conta.idAssinatura)
-            }
-          })
-        }
+        let assinaturas, historicoPagamento
+              if (resultado.conta){
+                assinaturas = await this.prisma.assinatura.findMany({
+                  where: {
+                    idConta: Number(resultado.conta.idConta)
+                  }
+                })
+
+                historicoPagamento = await this.prisma.historicoPagamento.findMany({
+                  where: {
+                    idConta: Number(resultado.conta.idConta)
+                  }
+                })
+              }
         if(newResultado){
   
           const newDados= {
             "autenticacao": newResultado,
             "dadosPessoais": newResultado.conta,
             "perfil": newResultado.conta.perfil,
-            "assinatura": assinatura,
+            "assinatura": assinaturas,
+            "historicoPagamento": historicoPagamento,
             "cookieAccepted": cookieAccepted
           };
           const jobData = {

@@ -11,6 +11,8 @@ import { AuthFunctions } from 'src/middlewares/auth.middleware';
 import { Queue } from 'bull';
 import { InjectQueue } from '@nestjs/bull';
 import { questionarioDTO } from './dto/questionario.dto';
+import { AssinaturaDTO } from './dto/assinatura.dto';
+import { AssinaturasService } from 'src/services/assinaturas.service';
 
 @Injectable()
 export class UsersService {
@@ -20,9 +22,8 @@ export class UsersService {
     private readonly contasFunctions: contasFunctions,
     private readonly geralFunctions: functionService,
     private readonly authFunctions: AuthFunctions,
+    private readonly assinaturasService: AssinaturasService,
     @InjectQueue('geral') private readonly geralQueue: Queue) { }
-
-  //create, upd, del e get de users, foto de perfil, historico de pagamento
 
   async create(data: usersDTO, conta: contaDTO, res, req) {
     try {
@@ -88,12 +89,30 @@ export class UsersService {
       const dataWithAssinatura = await Promise.all(
         data.map(async (item) => {
           let retornoUsuario = await this.usersFunctions.getUserCompleteData(item.idAutenticacao);
+          let assinaturas = await this.assinaturasService.getAll(item.idConta);
+          let grupos = await this.prisma.grupoConta.findMany({
+            where: {
+              idConta: Number(item.idConta)
+            }
+          });
 
+          let gruposConta = await Promise.all(
+            grupos.map(async (grupo) => {
+              let grupoData = await this.prisma.grupos.findFirst({
+                where: {
+                  idGrupo: Number(grupo.idGrupo)
+                }
+              });
+
+              return {
+                ...grupoData
+              }
+            }))
           return {
             autenticacao: retornoUsuario.autenticacao,
             conta: retornoUsuario.dadosPessoais,
-            assinatura: retornoUsuario.dadosPessoais.assinatura,
-            grupo: retornoUsuario.dadosPessoais.grupo,
+            assinatura: assinaturas,
+            grupo: gruposConta,
             historicoPagamento: retornoUsuario.historico,
           };
         })
@@ -187,7 +206,7 @@ export class UsersService {
     }
   }
 
-  async update(id: number, data: usersDTO, conta: contaDTO, assinatura: string, res, req) {
+  async update(id: number, data: usersDTO, conta: contaDTO, res, req) {
     try {
 
       var autenticacaoExists
@@ -209,7 +228,7 @@ export class UsersService {
       const myData = await this.authFunctions.getMyData(req);
 
       if (myData.conta.perfil != 'Admin' && conta.perfil != "Admin") {
-          return res.status(401).send("Você não tem autorização para realizar essa ação.")
+        return res.status(401).send("Você não tem autorização para realizar essa ação.")
       }
 
       var resultado = await this.usersFunctions.verifyEmailExists(data.email, id);
@@ -220,16 +239,6 @@ export class UsersService {
 
       await this.contasFunctions.atualizaConta(autenticacaoExists.idConta, conta);
       await this.usersFunctions.updateAuth(id, data);
-      if (assinatura && myData.conta.perfil == 'Admin'){
-        await this.prisma.assinatura.update({
-          where: {
-            idAssinatura: Number(myData.conta.idAssinatura)
-          },
-          data: {
-            ativo: assinatura == 'true' ? true : false
-          }
-        })
-      }
 
       let samePerson = await this.usersFunctions.veriySamePerson(autenticacaoExists.email, req);
       if (samePerson) {
@@ -247,6 +256,15 @@ export class UsersService {
         }
       }
       return res.status(200).send("Atualizado com sucesso.");
+    } catch (error) {
+      return res.status(400).send("Dados incorretos." + error);
+    }
+  }
+
+  async updateAssinatura(assinatura, res, req) {
+    try {
+      await this.assinaturasService.update(assinatura);
+      return res.status(200).send("Assinatura atualizada com sucesso");
     } catch (error) {
       return res.status(400).send("Dados incorretos." + error);
     }
@@ -319,17 +337,17 @@ export class UsersService {
         }
       }
 
-        await this.prisma.historicoPagamento.deleteMany({
-          where: {
-            idConta: Number(autenticacaoExists.idConta),
-          }
-        })
+      await this.prisma.historicoPagamento.deleteMany({
+        where: {
+          idConta: Number(autenticacaoExists.idConta),
+        }
+      })
 
-        await this.prisma.questionario.delete({
-          where:{
-            idQuestionario: Number(autenticacaoExists.conta.idQuestionario)
-          }
-        })
+      await this.prisma.questionario.delete({
+        where: {
+          idQuestionario: Number(autenticacaoExists.conta.idQuestionario)
+        }
+      })
 
       await this.usersFunctions.deletaAutenticacao(id);
       await this.contasFunctions.deletaConta(autenticacaoExists.idConta)
@@ -359,26 +377,26 @@ export class UsersService {
     }
   }
 
-  async postQuestionario(questionario: questionarioDTO, res, req){
+  async postQuestionario(questionario: questionarioDTO, res, req) {
     try {
       const myData = await this.authFunctions.getMyData(req);
       if (!myData) {
         return res.status(404).send("Não encontramos seus dados no sistema.");
       }
 
-      if (!myData.conta.fagerstrom){
+      if (!myData.conta.fagerstrom) {
         return res.status(401).send("Você ainda não pode responder esse questionário novamente.");
       }
 
       let questionarioExists
-      if (myData.conta.idQuestionario){
+      if (myData.conta.idQuestionario) {
         questionarioExists = await this.prisma.questionario.findFirst({
           where: {
             idQuestionario: Number(myData.conta.idQuestionario)
           }
         })
 
-        if (questionarioExists){
+        if (questionarioExists) {
           await this.prisma.questionario.update({
             where: {
               idQuestionario: Number(questionarioExists.idQuestionario)
