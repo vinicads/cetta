@@ -269,7 +269,6 @@ export class PagamentosService {
             gruopId = externalReference.gruopId;
             accountId = externalReference.userId;
             status = paymentData.status;
-            console.log(status)
             const contaInfo = await this.prisma.contas.findFirst({
               where: {
                 idConta: Number(accountId)
@@ -380,6 +379,65 @@ export class PagamentosService {
 
                   this.notificationsGateway.sendNotification(accountId, notificationData);
 
+                } else if (status === 'cancelled' || status === 'rejected') {
+                  const conta = await this.prisma.contas.findFirst({
+                    where: {
+                      idConta: Number(accountId)
+                    }
+                  });
+
+                  const autenticacao = await this.prisma.autenticacao.findFirst({
+                    where: {
+                      idConta: Number(accountId)
+                    }
+                  })
+
+                  const assinatura = await this.assinaturaService.get(contaInfo.idConta, planId);
+
+                  await this.prisma.assinatura.update({
+                    where: {
+                      idAssinatura: Number(assinatura.idAssinatura)
+                    },
+                    data: {
+                      ativo: false,
+                      codPagamento: null
+                    }
+                  })
+
+                  await this.prisma.grupoConta.deleteMany({
+                    where: {
+                      idGrupo: Number(gruopId),
+                      idConta: Number(conta.idConta)
+                    }
+                  })
+
+                  await this.prisma.historicoPagamento.create({
+                    data: {
+                      nome: dadosPlano.nome,
+                      descricao: dadosPlano.subtitulo,
+                      valorTotal: dadosPlano.valorTotal,
+                      data_inicio: new Date(),
+                      idConta: conta.idConta,
+                      pago: false
+                    }
+                  })
+
+                  let jobdataPagamento = {
+                    mensagem: "Olá, infelizmente seu pagamento não foi confirmado. Caso ainda tenha interesse de realizar o tratamento, tente realizar a compra da assinatura mais uma vez!",
+                    nomePlano: dadosPlano.nome,
+                    valorTotal: dadosPlano.valorTotal,
+                    email: autenticacao.email,
+                  };
+
+                  await this.geralQueue.add('pagamento', {
+                    jobData: jobdataPagamento
+                  });
+
+                  const notificationDataFrete = {
+                    tipo: "cancelado",
+                  };
+
+                  this.notificationsGateway.sendNotification(accountId, notificationDataFrete);
                 }
                 break;
               case 'payment.cancelled':
