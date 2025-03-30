@@ -3,7 +3,7 @@
     <avisoCookies />
     <header id="header">
         <nav id="navbar" :class="{ 'home': $route.path == '/' }">
-            <div class="logoNavbar"><router-link to="/"><img src="../../assets/images/logo.png" alt=""></router-link>
+            <div class="logoNavbar"><router-link to="/"><img src="../../assets/icons/logo-miniatura.png" alt=""></router-link>
             </div>
             <div class="menu" @click="openMenu" id="menu">
                 <div class="line1"></div>
@@ -14,13 +14,9 @@
 
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
                 <a @click="openPopupPlanos">Planos</a>
-                <router-link :class="{ 'active': $route.path === '/fretes' }" to="/fretes">Fretes</router-link>
-                <router-link :class="{ 'active': $route.path === '/recrutadores' }"
-                    to="/recrutadores">Recrutadores</router-link>
-                <router-link :class="{ 'active': $route.path === '/cadastro/empresa' }" to="/cadastro/empresa">Para
-                    Empresas</router-link>
-                <router-link :class="{ 'active': $route.path === '/cadastro/motorista' }" to="/cadastro/motorista">Para
-                    Motoristas</router-link>
+                <router-link :class="{ 'active': $route.path === '/sobre' }" to="/sobre">Sobre nós</router-link>
+                <router-link :class="{ 'active': $route.path === '/funciona' }" to="/sobre">Como funciona</router-link>
+                <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
                 <div class="dropdown">
 
                     <a @click="toggleDropdown" @mouseenter="toggleDropdown" @mouseleave="toggleDropdown">
@@ -32,43 +28,18 @@
                     <div class="dropdown-content" id="dropdown" @mouseenter="toggleDropdown"
                         @mouseleave="toggleDropdown">
                         <div><router-link to="/login">Login</router-link></div>
-                        <div><router-link to="/cadastroGeral">Cadastre-se</router-link></div>
+                        <div><router-link to="/cadastro">Cadastre-se</router-link></div>
                     </div>
                 </div>
             </ul>
-            <ul class="navigation" id="navigation" v-if="isAuthenticated && perfil == 'Motorista'">
-
-                <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
-                <router-link :class="{ 'active': $route.path === '/fretes' }" to="/fretes">Fretes</router-link>
-                <router-link :class="{ 'active': $route.path === '/recrutadores' }"
-                    to="/recrutadores">Recrutadores</router-link>
-                <router-link :class="{ 'active': $route.path === '/cadastro/motorista' }" to="/cadastro/motorista">Para
-                    Motoristas</router-link>
-                <div class="dropdown">
-
-                    <a @click="toggleDropdown" @mouseenter="toggleDropdown" @mouseleave="toggleDropdown">
-                        <div class="iconDropdown">
-                            <div>Acesso</div>
-                            <div> <i class="fa fa-arrow-down" aria-hidden="true"></i></div>
-                        </div>
-                    </a>
-                    <div class="dropdown-content" id="dropdown" @mouseenter="toggleDropdown"
-                        @mouseleave="toggleDropdown">
-                        <div><router-link to="/meuPerfil">Meu Perfil</router-link></div>
-                        <div><router-link to="" @click="abrirConfig()">Configurações</router-link></div>
-                        <div><router-link to="" @click="logout()">Sair</router-link></div>
-                    </div>
-                </div>
-            </ul>
-            <ul class="navigation" id="navigation" v-if="isAuthenticated && perfil == 'Empresa'">
+           
+            <ul class="navigation" id="navigation" v-if="isAuthenticated && perfil == 'Usuario'">
 
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
                 <a @click="openPopupPlanos">Planos</a>
-                <router-link :class="{ 'active': $route.path === '/fretes' }" to="/fretes">Fretes</router-link>
-                <router-link :class="{ 'active': $route.path === '/recrutadores' }"
-                    to="/recrutadores">Recrutadores</router-link>
-                <router-link :class="{ 'active': $route.path === '/cadastro/empresa' }" to="/cadastro/empresa">Para
-                    Empresas</router-link>
+                <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
+                <router-link :class="{ 'active': $route.path === '/sobre' }" to="/sobre">Sobre nós</router-link>
+                <router-link :class="{ 'active': $route.path === '/funciona' }" to="/sobre">Como funciona</router-link>
                 <div class="dropdown">
 
                     <a @click="toggleDropdown" @mouseenter="toggleDropdown" @mouseleave="toggleDropdown">
@@ -91,10 +62,10 @@
                     </div>
                 </div>
             </ul>
-            <ul class="navigation" id="navigation" v-if="isAuthenticated && perfil == 'Recrutador'">
+            <ul class="navigation" id="navigation" v-if="isAuthenticated && perfil == 'Nutricionista'">
 
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
-                <router-link :class="{ 'active': $route.path === '/fretes' }" to="/fretes">Fretes</router-link>
+                <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
                 <div class="dropdown">
 
                     <a @click="toggleDropdown" @mouseenter="toggleDropdown" @mouseleave="toggleDropdown">
@@ -114,7 +85,7 @@
             <ul class="navigation" id="navigation" v-if="isAuthenticated && perfil == 'Admin'">
 
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
-                <router-link :class="{ 'active': $route.path === '/fretes' }" to="/fretes">Fretes</router-link>
+                <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
                 <router-link :class="{ 'active': $route.path === '/admin/planos' }"
                     to="/admin/planos">Planos</router-link>
                 <router-link :class="{ 'active': $route.path === '/admin/usuarios' }"
@@ -201,7 +172,7 @@ export default {
                 path: '/socket.io',
             };
 
-            this.socket = io(`wss://encontrandofretes.com`, options);
+            this.socket = io(`wss://cetta.com`, options);
 
             this.socket.on('connect', () => {
                 console.log('Aguardando pagamento');
@@ -242,7 +213,6 @@ export default {
                 .then(async (response) => {
                     if (response.status == 200) {
                         store.commit('setPagamentoAssinatura', response.data.assinatura);
-                        store.commit('setPagamentoFrete', response.data.frete);
                     }
                 })
                 .catch((error) => {
@@ -585,7 +555,7 @@ ul {
 
 .logoNavbar {
     padding: 1%;
-    max-width: 7vw;
+    width: 12rem;
 }
 
 .logoNavbar img {
@@ -657,29 +627,13 @@ li {
 }
 
 
-@media (max-width: 1920px) {
-    .logoNavbar {
-        max-width: 8vw;
-    }
-}
-
 @media (max-width: 1440px) {
-    .logoNavbar {
-        max-width: 10vw;
-    }
 
     .title {
         width: 40% !important;
         font-size: 2rem;
     }
 }
-
-@media (max-width: 932px) {
-    .logoNavbar {
-        max-width: 11vw;
-    }
-}
-
 @media (max-width: 852px) {
 
     .flag {
@@ -690,11 +644,6 @@ li {
     .title {
         width: 70% !important;
         font-size: 1.5rem;
-    }
-
-    .logoNavbar {
-        padding: 0;
-        max-width: 14vw;
     }
 
 
@@ -782,7 +731,7 @@ li {
 
     nav {
         justify-content: space-between;
-        padding-inline: 10vw;
+        padding-inline: 1rem;
     }
 
 
@@ -844,21 +793,4 @@ li {
 
 }
 
-@media (max-width: 550px) {
-    .logoNavbar {
-        max-width: 18vw;
-    }
-}
-
-@media (max-width: 470px) {
-    .logoNavbar {
-        max-width: 20vw;
-    }
-}
-
-@media (max-width: 425px) {
-    .logoNavbar {
-        max-width: 25vw;
-    }
-}
 </style>

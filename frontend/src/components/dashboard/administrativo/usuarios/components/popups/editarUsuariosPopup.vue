@@ -12,9 +12,8 @@
 
                 <label for="modelo">Perfil</label>
                 <select id="perfil" class="form-control" @change="verificaTipoDocumento" v-model="perfil" required>
-                    <option class="select-option" value="Motorista">Motorista </option>
-                    <option class="select-option" value="Empresa">Empresa</option>
-                    <option class="select-option" value="Recrutador">Recrutador</option>
+                    <option class="select-option" value="Usuario">Usuário</option>
+                    <option class="select-option" value="Nutricionista">Nutricionista</option>
                     <option class="select-option" value="Admin">Admin</option>
                 </select>
             </div>
@@ -26,48 +25,9 @@
                         maxlength="45" required>
                 </div>
                 <div class="form-group">
-                    <label for="documento">Documento</label>
-                    <input id="documento" type="text" v-model="documento" name="documento"
-                        :maxlength="tipoDocumento == 'CPF' ? 14 : 18" @keyup.enter="editarUsuario"
-                        @input="mascaraDocumentoInput" @paste="colarDocumentoInput" required>
-                </div>
-                <div class="form-group">
-                    <label for="cep">CEP</label>
-                    <input id="cep" type="cep" name="cep" v-model="cep" @keyup.enter="editarUsuario" maxlength="9"
-                        @input="mascaraCEPInput" @paste="colarCEPInput" required>
-                </div>
-                <div class="form-group">
                     <label for="telefone">Celular</label>
-                    <input id="telefone" type="telefone" maxlength="14" @keyup.enter="editarUsuario"
-                        v-model="telefone" name="telefone" @input="mascaraTelefoneInput" @paste="colarTelefoneInput"
-                        required>
-                </div>
-                <div class="form-group" v-if="perfil == 'Motorista'">
-                    <label for="antt">Tipo de veículo</label>
-                    <div class="radioGroup">
-                        <div class="radio"> <input id="CargaSeca" type="radio" v-model="tipoVeiculo" name="CargaSeca" value="CargaSeca"
-                                required> Carga Seca</div>
-                        <div class="radio"> <input id="Refrigerado" type="radio" v-model="tipoVeiculo" name="Refrigerado" value="Refrigerado"
-                                required> Refrigerado</div>
-                    </div>
-                </div>
-                <div class="form-group" v-if="perfil == 'Motorista'">
-                    <label for="antt">ANTT</label>
-                    <div class="radioGroup">
-                        <div class="radio"> <input id="anttT" type="radio" v-model="antt" name="antt" value="true"
-                                required> Sim</div>
-                        <div class="radio"> <input id="anttF" type="radio" v-model="antt" name="antt" value="false"
-                                required> Não</div>
-                    </div>
-                </div>
-                <div class="form-group" v-if="perfil == 'Motorista'">
-                    <label for="firstname">MEI</label>
-                    <div class="radioGroup">
-                        <div class="radio"> <input id="meiT" type="radio" v-model="mei" value="true" name="mei"
-                                required> Sim</div>
-                        <div class="radio"> <input id="meiF" type="radio" v-model="mei" name="mei" value="false"
-                                required> Não</div>
-                    </div>
+                    <input id="telefone" type="telefone" maxlength="14" @keyup.enter="editarUsuario" v-model="telefone"
+                        name="telefone" @input="mascaraTelefoneInput" @paste="colarTelefoneInput" required>
                 </div>
                 <div class="form-group">
                     <label for="email">E-mail</label>
@@ -83,6 +43,23 @@
                 <button @click="closePopup">Cancelar</button>
                 <button @click="editarUsuario">Atualizar</button>
             </div>
+            <div class="assinaturas" v-if="data.assinatura.length > 0">
+                <h5>Assinaturas</h5>
+                <div class="row">
+                    <div class="col-md-4" v-for="item in data.assinatura" :key="item.idAssinatura">
+                        <assinaturaTemp :assinatura="item" />
+                    </div>
+                </div>
+            </div>
+            <div class="assinaturas" v-if="data.historicoPagamento.length > 0">
+                <h5>Histórico de pagamento</h5>
+                <div class="row">
+                    <div class="col-md-3" v-for="item in data.historicoPagamento" :key="item.idPagamento">
+                        <historicoPagamentoTemp :historicoPagamento="item" />
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     <Mensagem :mensagem="mensagemErro" v-if="!mensagemSucesso && !mensagemAlerta" tipo="Erro"
@@ -101,6 +78,8 @@ import store from '@/auth/autenticacao';
 import axios from 'axios';
 import Mensagem from '@/components/alertas/mensagensTemp.vue';
 import popupCarregamentoTemp from '@/components/popups/popupCarregamentoGeralTemp.vue';
+import assinaturaTemp from './components/assinaturaTemp.vue'
+import historicoPagamentoTemp from './components/historicoPagamentoTemp.vue'
 import { fieldCollector, resetFieldBorders, removeField, verificaCEP, MascaraCPF, colarCPF, colarCEP, MascaraCEP, MascaraCNPJ, colarCNPJ, retornaCidade, MascaraCelular, RemoveMascaraCNPJ, colarCelular, validarCnpj, RemoveMascaraCPF, RemoveMascaraCEP, RemoveMascaraContato } from '@/utils/utils.js'
 export default {
     emits: ['close'],
@@ -110,7 +89,9 @@ export default {
     },
     components: {
         Mensagem,
-        popupCarregamentoTemp
+        popupCarregamentoTemp,
+        assinaturaTemp,
+        historicoPagamentoTemp
     },
     data() {
         return {
@@ -118,82 +99,20 @@ export default {
             mensagemSucesso: '',
             mensagemAlerta: '',
             nome: '',
-            documento: '',
-            tipoDocumento: '',
             perfil: '',
-            cep: '',
             telefone: '',
+            data_nasc: '',
             foto: '',
-            antt: '',
-            mei: '',
-            tipoVeiculo: '',
             email: '',
             senha: null,
             loading: false,
         }
     },
     methods: {
-        verificaTipoDocumento() {
-            if (this.perfil == 'Empresa') {
-                this.tipoDocumento = 'CNPJ'
-            } else {
-                this.tipoDocumento = 'CPF'
-            }
-            if (this.documento) {
-                this.documento = ''
-            }
-        },
         fecharModal() {
             this.mensagemErro = '';
             this.mensagemAlerta = '';
             this.mensagemSucesso = '';
-        },
-        mascaraDocumentoInput(event) {
-            if (this.tipoDocumento == 'CPF') {
-                if (this.documento.length == 14) {
-                    this.documento = colarCPF(this.documento, event)
-                } else {
-                    this.documento = MascaraCPF(this.documento.replace(/\s/g, ''), event);
-                }
-            } else {
-                if (this.documento.length == 18) {
-                    this.documento = colarCNPJ(this.documento, event)
-                } else {
-                    this.documento = MascaraCNPJ(this.documento.replace(/\s/g, ''), event);
-                }
-            }
-
-        },
-        colarDocumentoInput(event) {
-            if (this.tipoDocumento == 'CPF') {
-                var aux = colarCPF(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-                this.documento = aux;
-            } else {
-                var aux = colarCNPJ(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-                this.documento = aux;
-            }
-
-        },
-        colarDocumentoRetorno(documento) {
-            if (this.tipoDocumento == 'CPF') {
-                var aux = colarCPF(documento, event);
-                return aux
-            } else {
-                var aux = colarCNPJ(documento, event);
-                return aux
-            }
-
-        },
-        mascaraCEPInput(event) {
-            if (this.cep.length == 9) {
-                this.cep = colarCEP(this.cep, event)
-            } else {
-                this.cep = MascaraCEP(this.cep.replace(/\s/g, ''), event);
-            }
-        },
-        colarCEPInput(event) {
-            var aux = colarCEP(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-            this.cep = aux;
         },
         mascaraTelefoneInput(event) {
             if (this.telefone.length == 14) {
@@ -213,62 +132,11 @@ export default {
             this.mensagemSucesso = '';
 
 
-            let cep, documento, telefone
-            if (this.cep) {
-                cep = RemoveMascaraCEP(this.cep)
-                let verifica = await verificaCEP(cep)
-
-                if (!verifica) {
-                    this.fecharModal()
-                    this.mensagemErro = "Insira um CEP valido.";
-                    this.loading = false;
-                    return;
-                }
-            }
-
-            if (this.documento) {
-                if (this.tipoDocumento == 'CNPJ') {
-                    documento = RemoveMascaraCNPJ(this.documento)
-                } else {
-                    documento = RemoveMascaraCPF(this.documento)
-                }
-
-            }
+            let telefone
 
             if (this.telefone) {
                 telefone = RemoveMascaraContato(this.telefone)
             }
-
-            let mei, antt, tipoVeiculo
-
-
-            if (this.perfil == 'Motorista') {
-                if (!this.mei || !this.antt) {
-                    this.mensagemErro = 'ANTT e MEI devem ser preenchidos no perfil motorista.';
-                    this.loading = false;
-                    return;
-                }
-                if (!this.tipoVeiculo){
-                    this.mensagemErro = 'Tipo de veículo deve ser preenchido no perfil motorista';
-                    this.loading = false;
-                    return;
-                }
-                if (this.antt) {
-                    antt = this.antt === 'true';
-                }
-
-                if (this.mei) {
-                    mei = this.mei === 'true';
-                }
-
-                if (this.tipoVeiculo){
-                    tipoVeiculo = this.tipoVeiculo
-                }
-            } else {
-                antt = null;
-                mei = null;
-            }
-
 
             const data = {
                 "autenticacao": {
@@ -277,19 +145,14 @@ export default {
                 },
                 "conta": {
                     "nome": this.nome,
-                    "tipoDocumento": this.tipoDocumento,
-                    "documento": documento,
-                    "cep": cep,
-                    "contato": telefone,
+                    "celular": telefone,
                     "foto": this.foto,
                     "perfil": this.perfil,
-                    "antt": antt,
-                    "mei": mei,
-                    "tipoVeiculo": tipoVeiculo
+                    "data_nasc": this.data_nasc,
                 }
             }
 
-            await axios.put(`${store.state.apiUrl}/users/${this.data.idAutenticacao}`,
+            await axios.put(`${store.state.apiUrl}/users/${this.data.autenticacao.idAutenticacao}`,
                 data, {
                 withCredentials: true,
                 headers: {
@@ -343,21 +206,12 @@ export default {
                 this.closePopup();
             }
         },
-        carregarDados(){
+        carregarDados() {
             this.nome = this.data.conta.nome;
+            this.data_nasc = this.data.conta.data_nasc;
             this.perfil = this.data.conta.perfil;
-            this.telefone = colarCelular(this.data.conta.contato);
-            this.cep = colarCEP(this.data.conta.cep);
-            this.tipoDocumento = this.data.conta.tipoDocumento;
-            if (this.tipoDocumento == 'CPF'){
-                this.documento = colarCPF(this.data.conta.documento);
-            }else{
-                this.documento = colarCNPJ(this.data.conta.documento);  
-            }
-            this.antt = this.data.conta.antt;
-            this.mei = this.data.conta.mei;
-            this.tipoVeiculo = this.data.conta.tipoVeiculo;
-            this.email = this.data.email;
+            this.telefone = colarCelular(this.data.conta.celular);
+            this.email = this.data.autenticacao.email;
         },
     },
     mounted() {
@@ -395,10 +249,10 @@ export default {
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 95%;
-    max-width: 600px;
     text-align: left;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     color: var(--cor-preto);
@@ -567,6 +421,10 @@ export default {
     font-size: 0.75rem;
     font-weight: 600;
     color: #000000c0;
+}
+
+.assinaturas {
+    margin-top: 2rem;
 }
 
 .input-box input::placeholder {

@@ -6,57 +6,36 @@
             <div class="form-container">
                 <div class="form-group">
                     <label for="nome">Nome</label>
-                    <input type="text" class="form-control" id="nome" maxlength="45" v-model="nome"
-                        required>
+                    <input type="text" class="form-control" id="nome" maxlength="45" v-model="nome" required>
                 </div>
                 <div class="form-group">
                     <label for="email">E-mail</label>
-                    <input type="email" class="form-control" id="email" maxlength="100" v-model="email"
-                        required>
+                    <input type="email" class="form-control" id="email" maxlength="100" v-model="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="cnpj">CNPJ</label>
-                    <input type="text" class="form-control" @input="mascaraCNPJInput" @paste="colarCNPJInput" id="cnpj" maxlength="18" v-model="cnpj"
-                        required>
-                </div>   
+                    <label for="idadeInicio">Idade Mínima</label>
+                    <input type="number" class="form-control" id="idadeInicio" v-model="idadeInicio" required>
+                </div>
+
                 <div class="form-group">
-                    <label for="cpf">CPF</label>
-                    <input type="text" class="form-control" @input="mascaraCPFInput" @paste="colarCPFInput" id="cpf" maxlength="14" v-model="cpf"
-                        required>
-                </div>   
+                    <label for="idadeFim">Idade Máxima</label>
+                    <input type="number" class="form-control" id="idadeFim" required v-model="idadeFim">
+                </div>
                 <div class="form-group">
                     <label>Perfil</label>
                     <div>
-                        <label for="Motorista" class="radio-label">
-                            <input type="radio" id="Motorista" value="Motorista" v-model="perfil"> Motorista
+                        <label for="Usuario" class="radio-label">
+                            <input type="radio" id="Usuario" value="Usuario" v-model="perfil"> Usuário
                         </label>
                     </div>
                     <div>
-                        <label for="Empresa" class="radio-label">
-                            <input type="radio" id="Empresa" value="Empresa" v-model="perfil"> Empresa
-                        </label>
-                    </div>
-                    <div>
-                        <label for="Recrutador" class="radio-label">
-                            <input type="radio" id="Recrutador" value="Recrutador" v-model="perfil"> Recrutador
+                        <label for="Nutricionista" class="radio-label">
+                            <input type="radio" id="Nutricionista" value="Nutricionista" v-model="perfil">Nutricionista
                         </label>
                     </div>
                     <div>
                         <label for="Admin" class="radio-label">
                             <input type="radio" id="Admin" value="Admin" v-model="perfil"> Admin
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Assinatura</label>
-                    <div>
-                        <label for="Ativo" class="radio-label">
-                            <input type="radio" id="Ativo" value="Ativo" v-model="assinatura"> Ativo
-                        </label>
-                    </div>
-                    <div>
-                        <label for="Inativo" class="radio-label">
-                            <input type="radio" id="Inativo" value="Inativo" v-model="assinatura"> Inativo
                         </label>
                     </div>
                 </div>
@@ -84,9 +63,8 @@ export default {
             isMobile: window.innerWidth < 768,
             nome: this.currentFilters.nome || '',
             email: this.currentFilters.email || '',
-            assinatura: this.currentFilters.assinatura || '',
-            cpf: this.currentFilters.cpf || '',
-            cnpj: this.currentFilters.cnpj || '',
+            idadeInicio: this.currentFilters.idadeInicio || '',
+            idadeFim: this.currentFilters.idadeFim || '',
             perfil: this.currentFilters.perfil || '',
         };
     },
@@ -105,28 +83,6 @@ export default {
         });
     },
     methods: {
-        mascaraCPFInput(event) {
-            if (this.cpf.length == 14) {
-                this.cpf = colarCPF(this.cpf, event)
-            } else {
-                this.cpf = MascaraCPF(this.cpf.replace(/\s/g, ''), event);
-            }
-        },
-        colarCPFInput(event) {
-            var aux = colarCPF(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-            this.cpf = aux;
-        },
-        mascaraCNPJInput(event) {
-            if (this.cnpj.length == 18) {
-                this.cnpj = colarCNPJ(this.cnpj, event)
-            } else {
-                this.cnpj = MascaraCNPJ(this.cnpj.replace(/\s/g, ''), event);
-            }
-        },
-        colarCNPJInput(event) {
-            var aux = colarCNPJ(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-            this.cnpj = aux;
-        },
         onEscKey(event) {
             if (event.key === 'Escape') {
                 this.closePopup();
@@ -145,19 +101,17 @@ export default {
             this.$emit('apply-filters', {
                 nome: this.nome,
                 email: this.email,
-                assinatura: this.assinatura,
-                cpf: this.cpf,
-                cnpj: this.cnpj,
+                idadeInicio: this.idadeInicio,
+                idadeFim: this.idadeFim,
                 perfil: this.perfil,
             });
             this.closePopup();
         },
         clearFilters() {
             this.nome = '';
-            this.cpf = '';
             this.email = '';
-            this.assinatura = '';
-            this.cnpj = '';
+            this.idadeInicio = '';
+            this.idadeFim = '';
             this.perfil = '';
             this.$emit('clear-filters');
             this.closePopup();
@@ -180,7 +134,7 @@ export default {
     align-items: center;
 }
 
-.popup-mobile .popup-content{
+.popup-mobile .popup-content {
     z-index: 1001;
     position: relative;
     background: var(--cor-branco);
@@ -197,7 +151,7 @@ export default {
     color: var(--cor-preto);
 }
 
-h2{
+h2 {
     font-size: 2rem;
     font-weight: bold
 }
@@ -231,7 +185,7 @@ h2{
     color: var(--cor-texto);
 }
 
-.popup-desktop .form-container{
+.popup-desktop .form-container {
     grid-template-columns: 1fr;
     gap: 0;
     width: 100%;
@@ -245,7 +199,7 @@ h2{
 }
 
 
-.popup-desktop .form-group{
+.popup-desktop .form-group {
     border: 1px solid rgba(82, 82, 82, 0.116);
     width: 100%;
     padding: 5% 5%;
@@ -356,12 +310,12 @@ h2{
     color: var(--cor-principal);
 }
 
-.popup-desktop .buttons{
+.popup-desktop .buttons {
     justify-content: center;
     gap: 10px;
 }
 
-.popup-desktop .buttons button{
+.popup-desktop .buttons button {
     padding: 10px 10px;
 }
 

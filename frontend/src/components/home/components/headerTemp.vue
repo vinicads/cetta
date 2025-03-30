@@ -1,24 +1,12 @@
 <template>
     <div class="home">
         <div class="contentHome">
-            <div>Encontrando Fretes</div>
-            <p>
-                Sempre o melhor frete perto de você
-            </p>
+            <div>Faça por você!</div>
+            <h2>viva a vida</h2>
+            <h2 class="color">sem cigarro</h2>
         </div>
-    </div>
-    <div class="grid-info" v-if="!semResultado">
-        <div class="cardInfo">
-            <h2>{{ qtdeEmpresa }}</h2>
-            <p>Empresas</p>
-        </div>
-        <div class="cardInfo">
-            <h2>{{ qtdeContatos }}</h2>
-            <p>Motoristas</p>
-        </div>
-        <div class="cardInfo">
-            <h2>{{ qtdeFretes }}</h2>
-            <p>Fretes <span class="green">ativos</span></p>
+        <div class="logo">
+            <img src="../../../assets/icons/logo.png" alt="">
         </div>
     </div>
 </template>
@@ -30,33 +18,11 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            apiUrl: store.state.apiUrl,
-            data: [],
-            qtdeContatos: 0,
-            qtdeEmpresa: 0,
-            qtdeFretes: 0,
-            semResultado: true,
         };
     },
     mounted() {
-        this.getGeral();
     },
     methods: {
-        async getGeral() {
-            this.semResultado = true;
-            try {
-                const response = await axios.get(`${store.state.apiUrl}/public/infoGeral`, {
-                    withCredentials: true,
-                });
-                this.data = response.data;
-                this.qtdeContatos = this.data.qtdeContatos;
-                this.qtdeEmpresa = this.data.qtdeEmpresa;
-                this.qtdeFretes = this.data.qtdeFretes;
-                this.semResultado = false;
-            } catch (error) {
-                this.semResultado = true;
-            }
-        },
     },
 };
 </script>
@@ -65,21 +31,21 @@ export default {
 .home {
     width: 100%;
     min-height: 100vh;
-    background: url('../../../assets/images/backgroundHome.jpg');
+    background: url('../../../assets/images/background.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     position: relative;
 }
 
 .contentHome {
+    width: 50%;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: start;
+    align-items: start;
     flex-direction: column;
 }
 
@@ -89,20 +55,28 @@ export default {
     box-sizing: border-box;
 }
 
-.contentHome div:first-child {
+.contentHome div {
     text-align: center;
     color: #fff;
-    font-size: 5vw;
+    font-size: 2rem;
+    border-radius: 8px;
+    background-color: var(--cor-quaternaria);
+    padding: 1rem;
     font-weight: bold;
 }
 
-.contentHome p {
-    width: 70%;
-    margin: 0 auto;
-    font-size: 1.6vw;
+.contentHome h2 {
+    font-size: 5rem;
+    font-weight: bold;
+    letter-spacing: 0.3rem;
     color: #fff;
     text-align: center;
 }
+
+.color {
+    color: var(--cor-quaternaria) !important;
+}
+
 
 .grid-info {
     display: flex;
@@ -145,7 +119,50 @@ export default {
     color: #41D999;
 }
 
+.logo img{
+    width: 35rem;
+    object-fit: contain;
+}
+
+@media (max-width: 1200px) {
+
+    .contentHome div {
+        font-size: 2rem;
+    }
+
+    .contentHome h2 {
+        font-size: 3.5rem;
+    }
+
+    .logo img{
+        width: 27rem;
+    }
+}
+
 @media (max-width: 900px) {
+
+    .home{
+        flex-direction: column-reverse;
+    }
+
+    .contentHome {
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .contentHome div {
+        font-size: 2rem;
+    }
+
+    .contentHome h2 {
+        font-size: 3.5rem;
+    }
+
+    .logo img{
+        width: 30rem;
+    }
+
     .grid-info{
         width: 90%;
     }
@@ -170,39 +187,36 @@ export default {
 }
 
 @media (max-width: 600px) {
-    .grid-info{
-        width: 98%;
-    }
 
-    .cardInfo {
-        min-width: 33%;
-        width: auto;
-    }
-
-    .cardInfo h2{
-        font-size: 1.8rem;
-    }
-
-    .cardInfo p{
+    .contentHome div {
         font-size: 1.2rem;
-        text-align: center;
+    }
+
+    .contentHome h2 {
+        font-size: 3rem;
+    }
+
+    .logo img{
+        width: 25rem;
     }
 }
 
-@media (max-width: 475px) {
-    .contentHome div:first-child {
-        font-size: 10vw;
-    }
 
-    .contentHome p {
-        width: 90%;
-        font-size: 5vw;
-    }
-}
-
-@media (max-height: 350px) {
+@media (max-width: 350px) {
     .contentHome {
         margin-top: 3rem;
+    }
+
+    .contentHome div {
+        font-size: 1rem;
+    }
+
+    .contentHome h2 {
+        font-size: 2.7rem;
+    }
+
+    .logo img{
+        width: 20rem;
     }
 }
 </style>

@@ -3,9 +3,9 @@
         <div class="container">
             <div class="row">
                 <div class="footer-col">
-                    <h4>Encontrando Fretes</h4>
+                    <h4>CETTA</h4>
                     <ul>
-                        <li><a>Encontramos sempre o melhor frete perto de você.</a></li>
+                        <li><a>Centro de Educação e Tratamento do Tabaquismo</a></li>
 
                     </ul>
                 </div>
@@ -29,35 +29,31 @@
                 <div class="footer-col">
                     <h4>Navegar</h4>
                     <ul v-if="!isAuthenticated">
-                        <li><router-link to="/planos">Planos</router-link></li>
-                        <li><router-link to="/fretes">Fretes</router-link></li>
-                        <li><router-link to="/recrutadores">Recrutadores</router-link></li>
-                        <li><router-link to="/cadastro/empresa">Para Empresas</router-link></li>
-                        <li><router-link to="/cadastro/motorista">Para Motoristas</router-link></li>
+                        <li><router-link to="/sobre">Sobre nós</router-link></li>
+                        <li><router-link to="/funciona">Como funciona</router-link></li>
+                        <li><router-link to="/grupos">Grupos</router-link></li>
                         <li><router-link to="/login">Login</router-link></li>
-                        <li><router-link to="/cadastroGeral">Cadastre-se</router-link></li>
+                        <li><router-link to="/cadastro">Cadastre-se</router-link></li>
                         <li><router-link to="/politicas">Politica de Privacidade e Termos de Uso</router-link></li>
                     </ul>
-                    <ul v-if="isAuthenticated && perfil == 'Motorista'">
-                        <li><router-link to="/fretes">Fretes</router-link></li>
-                        <li><router-link to="/recrutadores">Recrutadores</router-link></li>
+                    <ul v-if="isAuthenticated && perfil == 'Usuario'">
+                        <li><router-link to="/sobre">Sobre nós</router-link></li>
+                        <li><router-link to="/funciona">Como funciona</router-link></li>
+                        <li><router-link to="/grupos">Grupos</router-link></li>
                         <li><router-link to="/meuPerfil">Meu Perfil</router-link></li>
                         <li><router-link to="/politicas">Politica de Privacidade e Termos de Uso</router-link></li>
                     </ul>
-                    <ul v-if="isAuthenticated && perfil == 'Empresa'">
-                        <li><router-link to="/planos">Planos</router-link></li>
-                        <li><router-link to="/fretes">Fretes</router-link></li>
-                        <li><router-link to="/recrutadores">Recrutadores</router-link></li>
-                        <li><router-link to="/meuPerfil">Meu Perfil</router-link></li>
-                        <li><router-link to="/politicas">Politica de Privacidade e Termos de Uso</router-link></li>
-                    </ul>
-                    <ul v-if="isAuthenticated && perfil == 'Recrutador'">
-                        <li><router-link to="/fretes">Fretes</router-link></li>
+                    <ul v-if="isAuthenticated && perfil == 'Nutricionista'">
+                        <li><router-link to="/sobre">Sobre nós</router-link></li>
+                        <li><router-link to="/funciona">Como funciona</router-link></li>
+                        <li><router-link to="/grupos">Grupos</router-link></li>
                         <li><router-link to="/meuPerfil">Meu Perfil</router-link></li>
                         <li><router-link to="/politicas">Politica de Privacidade e Termos de Uso</router-link></li>
                     </ul>
                     <ul v-if="isAuthenticated && perfil == 'Admin'">
-                        <li><router-link to="/fretes">Fretes</router-link></li>
+                        <li><router-link to="/sobre">Sobre nós</router-link></li>
+                        <li><router-link to="/funciona">Como funciona</router-link></li>
+                        <li><router-link to="/grupos">Grupos</router-link></li>
                         <li><router-link to="/admin/planos">Planos</router-link></li>
                         <li><router-link to="/admin/usuarios">Usuários</router-link></li>
                         <li><router-link to="/admin/geral">Sistema</router-link></li>
@@ -67,10 +63,10 @@
             </div>
         </div>
     </footer>
-    <div class="footerCopyight">Copyright © &nbsp; <label for=""> Encontrando Fretes.</label></div>
-    <button class="floating-button" v-if="telefone" @click="sendMessageWpp">
+    <div class="footerCopyight">Copyright © &nbsp; <label for=""> CETTA.</label></div>
+    <!-- <button class="floating-button" v-if="telefone" @click="sendMessageWpp">
         <i class="fab fa-whatsapp" aria-hidden="true"></i>
-    </button>
+    </button> -->
 </template>
 
 
@@ -124,8 +120,8 @@ export default {
           withCredentials: true,
         })
         .then((response) => {
-            this.telefone = response.data.numeroContato
-            this.email = response.data.emailContato
+            this.telefone = response.data.numeroContato;
+            this.email = response.data.emailContato;
         })
         .catch((error) => {
             this.semResultado = true;

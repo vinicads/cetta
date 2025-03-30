@@ -13,6 +13,7 @@ import { InjectQueue } from '@nestjs/bull';
 import { questionarioDTO } from './dto/questionario.dto';
 import { AssinaturaDTO } from './dto/assinatura.dto';
 import { AssinaturasService } from 'src/services/assinaturas.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -46,6 +47,7 @@ export class UsersService {
         data.idConta = resultadoConta.idConta;
         await this.usersFunctions.cadastroAutenticacao(data);
       } catch (error) {
+        console.log(error)
         return res.status(400).send("Dados incorretos." + error);
       }
 
@@ -56,8 +58,23 @@ export class UsersService {
       await this.geralQueue.add('sendNewConta', {
         jobData
       });
+
+      if (!myData){
+        var token = await this.loginFunctions.generateToken(data.email);
+        res.cookie('meuToken', token, {
+          secure: false,
+          httpOnly: true,
+          withCredentials: true,
+          sameSite: 'lax',
+          // domain: 'encontrandofretes.com',
+          maxAge: Number(String(process.env.tempoCookie)),
+          path: "/",
+        });
+      }
+
       return res.status(200).send("Cadastro de conta realizado.");
     } catch (error) {
+      console.log(error)
       return res.status(400).send("Dados incorretos." + error);
     }
   }
@@ -123,7 +140,7 @@ export class UsersService {
         return res.status(404).send("Nenhum usuário encontrado.");
       } else {
         var newData = {
-          "usuarios": data,
+          "usuarios": dataWithAssinatura,
           "count": contagem
         }
         return res.status(200).send(newData);
@@ -343,7 +360,7 @@ export class UsersService {
         }
       })
 
-      await this.prisma.questionario.delete({
+      await this.prisma.questionario.deleteMany({
         where: {
           idQuestionario: Number(autenticacaoExists.conta.idQuestionario)
         }

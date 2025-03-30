@@ -99,9 +99,8 @@ export default {
             this.filters = {
                 nome: '',
                 email: '',
-                assinatura: '',
-                cpf: '',
-                cnpj: '',
+                idadeInicio: '',
+                idadeFim: '',
                 perfil: '',
             };
             this.closePopupFiltros()

@@ -12,9 +12,7 @@
     <router-link to="/"><button class="voltar"><img src="../../assets/icons/back.png"
           alt="">Voltar</button></router-link>
     <div class="left-login">
-      <h1>Seja bem-vindo(a)! <br>
-        Encontrando Fretes</h1>
-      <img src="../../assets/images/logo.png" alt="">
+      <img src="../../assets/icons/logo-miniatura.png" alt="">
     </div>
     <div class="right-login">
       <div class="card-login">
@@ -38,7 +36,7 @@
         </div>
         <button class="btn-login" @click="verificaCredenciais()">Login</button>
         <div class="fieldText">
-          Ainda não possui cadastro? <router-link to="/cadastroGeral">Clique aqui.</router-link>
+          Ainda não possui cadastro? <router-link to="/cadastro">Clique aqui.</router-link>
         </div>
 
       </div>
@@ -218,7 +216,7 @@ export default {
 }
 
 .fieldText a {
-  color: var(--cor-principal);
+  color: var(--cor-secundaria);
 }
 
 
@@ -364,7 +362,7 @@ export default {
   }
 
   .left-login img {
-    width: 10rem;
+    width: 15rem;
   }
 
   .left-login {

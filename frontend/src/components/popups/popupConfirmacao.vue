@@ -3,17 +3,19 @@
       <div class="modal-content">
         <span class="fechar" @click="fecharModal">X</span>
         <div class='headerModal'>
-            <img src="../../assets/icons/check.png" v-if="data.tipo != 'criado'" alt="">
-            <img src="../../assets/icons/wait.png" v-else alt="">
+            <img src="../../assets/icons/check.png" v-if="data.tipo == 'pago'" alt="">
+            <img src="../../assets/icons/wait.png" v-if="data.tipo == 'criado'" alt="">
+            <img src="../../assets/icons/cancelado.png" v-if="data.tipo == 'cancelado'" alt="">
         </div>
         <div class="avisoModal">
           <div class="texto" v-if="data.tipo == 'criado'">Recebemos sua solicitação de pagamento.</div>
 
-          <div class="title" v-if="data.tipo == 'frete'">Confirmação de pagamento</div>
-          <div class="texto" v-if="data.tipo == 'frete'">Frete adicionado.</div>
+          <div class="title" v-if="data.tipo == 'pago'">Confirmação de pagamento</div>
+          <div class="texto" v-if="data.tipo == 'pago'">Benefícios da assinatura disponibilizados.</div>
 
-          <div class="title" v-if="data.tipo == 'assinatura'">Confirmação de pagamento</div>
-          <div class="texto" v-if="data.tipo == 'assinatura'">Benefícios da assinatura disponibilizados.</div>
+          <div class="title" v-if="data.tipo == 'cancelado'">Pagamento recusado</div>
+          <div class="texto" v-if="data.tipo == 'cancelado'">Infelizmente, não conseguimos receber o seu pagamento.</div>
+          <div class="texto" v-if="data.tipo == 'cancelado'">Tente comprar novamente a assinatura!</div>
         </div>
       </div>
     </div>

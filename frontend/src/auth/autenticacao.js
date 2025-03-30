@@ -2,7 +2,6 @@
 import { createStore } from 'vuex';
 import axios from 'axios';
 import VueCookies from 'vue-cookies';
-
 export default createStore({
   state: {
     isVerified: false,
@@ -11,9 +10,9 @@ export default createStore({
     dadosPessoais: null,
     perfil: null,
     assinatura: null,
+    historicoPagamento: null,
     pagamentoAtivo: false,
     pagamentoAssinatura: null,
-    pagamentoFrete: null,
     apiUrl: 'http://localhost:3000',
     api: 'localhost:3000',
     cookieAccepted: false,
@@ -32,8 +31,8 @@ export default createStore({
     setPagamentoAssinatura(state, pagamentoAssinatura) {
       state.pagamentoAssinatura = pagamentoAssinatura;
     },
-    setPagamentoFrete(state, pagamentoFrete) {
-      state.pagamentoFrete = pagamentoFrete;
+    setHistoricoPagamento(state, historicoPagamento) {
+      state.historicoPagamento = historicoPagamento;
     },
     setisAutenticacao(state, autenticacao) {
       state.autenticacao = autenticacao;
@@ -67,14 +66,13 @@ export default createStore({
           context.commit('setPerfil', response.data.perfil);
           context.commit('setcookieAccepted', response.data.cookieAccepted);
           context.commit('setAssinatura', response.data.assinatura);
+          context.commit('setHistoricoPagamento', response.data.historicoPagamento);
           if (response.data.assinatura){
-            if (response.data.assinatura.idPagamentoFrete){
-              context.commit('setPagamentoAtivo', true);
-            }
-  
-            if (response.data.assinatura.codPagamento){
-              context.commit('setPagamentoAtivo', true);
-            }
+            response.data.assinatura.forEach(assinatura => {
+              if (assinatura.codPagamento){
+                context.commit('setPagamentoAtivo', true);
+              }
+            });
           }
          
           context.commit('setisAutenticacao', response.data.autenticacao);
@@ -88,6 +86,7 @@ export default createStore({
         context.commit('setisAutenticacao', null);
         context.commit('setPerfil', null);
         context.commit('setAssinatura', null);
+        context.commit('setHistoricoPagamento', null);
         context.commit('setisVerified', true);
       }
     },

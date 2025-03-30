@@ -664,7 +664,7 @@ export function calculonasc(datanasc){
         }
     }
     var con
-    con = `${contanos} anos, ${contameses} meses e ${contdias} dias.`
+    con = `${contanos} anos`
 }
 if (anocad < 1900){
     libera = false;

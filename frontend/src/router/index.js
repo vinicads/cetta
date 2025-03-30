@@ -18,21 +18,9 @@ const router = createRouter({
       beforeEnter: verificaLogin
     },
     {
-      path: '/cadastroGeral',
-      name: 'cadastroGeral',
-      component: () => import('../components/login/cadastroGeralTemp.vue'),
-      beforeEnter: verificaLogin
-    },
-    {
-      path: '/cadastro/empresa',
-      name: 'cadastroEmpresa',
-      component: () => import('../components/login/cadastroEmpresaTemp.vue'),
-      beforeEnter: verificaLogin
-    },
-    {
-      path: '/cadastro/motorista',
-      name: 'cadastroMotorista',
-      component: () => import('../components/login/cadastroMotoristaTemp.vue'),
+      path: '/cadastro',
+      name: 'cadastro',
+      component: () => import('../components/login/cadastroTemp.vue'),
       beforeEnter: verificaLogin
     },
     {

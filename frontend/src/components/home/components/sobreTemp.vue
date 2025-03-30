@@ -1,40 +1,57 @@
 <template>
     <div class="container">
-        <div class="title">Conheça a Encontrando Fretes</div>
-        <div class="subtitle">Facilitando a vida para motoristas e transportadoras</div>
+        <div class="title">Conheça o CETTA</div>
+        <div class="subtitle">O Centro de Educação e Tratamento do Tabagismo (CETTA) nasceu após mais de uma década de
+            estudos dedicados ao entendimento do tabagismo e das doenças pulmonares e cardíacas associadas ao uso do
+            cigarro.</div>
         <div class="cards">
             <div class="cardSobre">
-                <div class="imagem"><img src="../../../assets/images/caminhao.png" alt="Card Image"></div>
-                <h3>Motoristas</h3>
-                <p>Os motoristas podem se cadastrar para serem escolhidos por empresas</p>
+                <div class="imagem"><img src="../../../assets/icons/objetivo.png" alt="Card Image"></div>
+                <h3>Objetivo</h3>
+                <p>Temos o propósito de auxiliar você a viver
+                    uma vida com qualidade, livre do cigarro.
+                    Consequentemente, combatemos a
+                    maior causa evitável de mortes no
+                    mundo: o tabagismo. Vamos juntos!</p>
             </div>
             <div class="cardSobre">
-                <div class="imagem"><img src="../../../assets/images/meeting.png" alt="Card Image"></div>
-                <h3>Empresas</h3>
-                <p>As empresas podem se cadastrar e divulgar fretes, desbloqueando motoristas compativeis</p>
-            </div>
-            <div class="cardSobre">
-                <div class="imagem"><img src="../../../assets/images/enterprise.png" alt="Card Image"></div>
-                <h3>Encontrando Fretes</h3>
-                <p>Conectamos voce motorista autônomo a diversas empresas que precisam de transporte.</p>
+                <div class="imagem"><img src="../../../assets/icons/idea.png" alt="Card Image"></div>
+                <h3>Diferencial</h3>
+                <p>Desenvolvemos um programa focado em
+                    entregar soluções com eficácia.
+                    Para isso,
+                    implementamos
+                    um protocolo de
+                    atendimento diferenciado, cuidadosamente
+                    estruturado para aumentar as suas chances de sucesso!</p>
             </div>
         </div>
+        <div class="buttons">
+                <button @click="saibaMais()">Saiba mais</button>
+            </div>
     </div>
 </template>
 
 <script>
+export default {
+  methods: {
+    saibaMais() {
+      this.$router.push('/sobre');
+    },
+  },
+};
 </script>
 
 <style scoped>
 .container {
-    text-align: center;
+    text-align: left;
 }
 
 .title {
     color: var(--cor-preto);
     font-size: 2.5rem;
     margin-bottom: 1rem;
-    text-align: center;
+    text-align: left;
     font-weight: bold;
 }
 
@@ -42,7 +59,7 @@
     color: var(--cor-preto);
     font-size: 1.2rem;
     margin-bottom: 2rem;
-    text-align: center;
+    text-align: left;
 }
 
 .cards {
@@ -67,7 +84,7 @@
     transform: translateY(-5px);
 }
 
-.imagem{
+.imagem {
     background-color: var(--cor-principal);
     width: 100%;
     height: 10rem;
@@ -82,9 +99,13 @@
 
 .cardSobre .imagem img {
     padding: 5%;
-    width: 50%;
+    width: 7rem;
     height: auto;
     object-fit: cover;
+}
+
+.cardSobre:last-child .imagem img{
+    width: 12rem;
     filter: invert(100%);
 }
 
@@ -97,4 +118,32 @@
     font-size: 1rem;
     color: #555;
 }
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    width: 100%;
+    gap: 1%;
+}
+
+.buttons button {
+    border-radius: 15px;
+    border: none;
+    color: white;
+    padding: 10px;
+    width: 20%;
+    cursor: pointer;
+    background-color: var(--cor-principal);
+    border: 1px solid var(--cor-principal);
+    transition: 0.5s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+
+.buttons button:hover {
+    background-color: var(--cor-branco);
+    color: var(--cor-principal);
+}
+
 </style>

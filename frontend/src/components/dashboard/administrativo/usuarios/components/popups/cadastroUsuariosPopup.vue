@@ -11,10 +11,9 @@
             <div class="form-group">
 
                 <label for="modelo">Perfil</label>
-                <select id="perfil" class="form-control" @change="verificaTipoDocumento" v-model="perfil" required>
-                    <option class="select-option" value="Motorista">Motorista </option>
-                    <option class="select-option" value="Empresa">Empresa</option>
-                    <option class="select-option" value="Recrutador">Recrutador</option>
+                <select id="perfil" class="form-control" v-model="perfil" required>
+                    <option class="select-option" value="Usuario">Usuário</option>
+                    <option class="select-option" value="Nutricionista">Nutricionista</option>
                     <option class="select-option" value="Admin">Admin</option>
                 </select>
             </div>
@@ -26,48 +25,16 @@
                         maxlength="45" required>
                 </div>
                 <div class="form-group">
-                    <label for="documento">Documento</label>
-                    <input id="documento" type="text" v-model="documento" name="documento"
-                        :maxlength="tipoDocumento == 'CPF' ? 14 : 18" @keyup.enter="cadastrarUsuario"
-                        @input="mascaraDocumentoInput" @paste="colarDocumentoInput" required>
-                </div>
-                <div class="form-group">
-                    <label for="cep">CEP</label>
-                    <input id="cep" type="cep" name="cep" v-model="cep" @keyup.enter="cadastrarUsuario" maxlength="9"
-                        @input="mascaraCEPInput" @paste="colarCEPInput" required>
-                </div>
-                <div class="form-group">
                     <label for="telefone">Celular</label>
                     <input id="telefone" type="telefone" maxlength="14" @keyup.enter="cadastrarUsuario"
                         v-model="telefone" name="telefone" @input="mascaraTelefoneInput" @paste="colarTelefoneInput"
                         required>
                 </div>
-                <div class="form-group" v-if="perfil == 'Motorista'">
-                    <label for="tipoVeiculo">Tipo de veículo</label>
-                    <div class="radioGroup">
-                        <div class="radio"> <input id="CargaSeca" type="radio" v-model="tipoVeiculo" name="CargaSeca" value="CargaSeca"
-                                required> Carga Seca</div>
-                        <div class="radio"> <input id="Refrigerado" type="radio" v-model="tipoVeiculo" name="Refrigerado" value="Refrigerado"
-                                required> Refrigerado</div>
-                    </div>
-                </div>
-                <div class="form-group" v-if="perfil == 'Motorista'">
-                    <label for="antt">ANTT</label>
-                    <div class="radioGroup">
-                        <div class="radio"> <input id="anttT" type="radio" v-model="antt" name="antt" value="true"
-                                required> Sim</div>
-                        <div class="radio"> <input id="anttF" type="radio" v-model="antt" name="antt" value="false"
-                                required> Não</div>
-                    </div>
-                </div>
-                <div class="form-group" v-if="perfil == 'Motorista'">
-                    <label for="firstname">MEI</label>
-                    <div class="radioGroup">
-                        <div class="radio"> <input id="meiT" type="radio" v-model="mei" value="true" name="mei"
-                                required> Sim</div>
-                        <div class="radio"> <input id="meiF" type="radio" v-model="mei" name="mei" value="false"
-                                required> Não</div>
-                    </div>
+                <div class="form-group">
+                    <label for="data_nasc">Data de nascimento</label>
+                    <input id="data_nasc" type="date" maxlength="14"
+                        v-model="data_nasc" name="data_nasc"
+                        required>
                 </div>
                 <div class="form-group">
                     <label for="email">E-mail</label>
@@ -117,82 +84,20 @@ export default {
             mensagemSucesso: '',
             mensagemAlerta: '',
             nome: '',
-            documento: '',
-            tipoDocumento: 'CPF',
-            perfil: 'Recrutador',
-            cep: '',
+            perfil: 'Usuario',
             telefone: '',
+            data_nasc: '',
             foto: 'semFoto',
-            antt: '',
-            mei: '',
-            tipoVeiculo: '',
             email: '',
             senha: '',
             loading: false,
         }
     },
     methods: {
-        verificaTipoDocumento() {
-            if (this.perfil == 'Empresa') {
-                this.tipoDocumento = 'CNPJ'
-            } else {
-                this.tipoDocumento = 'CPF'
-            }
-            if (this.documento) {
-                this.documento = ''
-            }
-        },
         fecharModal() {
             this.mensagemErro = '';
             this.mensagemAlerta = '';
             this.mensagemSucesso = '';
-        },
-        mascaraDocumentoInput(event) {
-            if (this.tipoDocumento == 'CPF') {
-                if (this.documento.length == 14) {
-                    this.documento = colarCPF(this.documento, event)
-                } else {
-                    this.documento = MascaraCPF(this.documento.replace(/\s/g, ''), event);
-                }
-            } else {
-                if (this.documento.length == 18) {
-                    this.documento = colarCNPJ(this.documento, event)
-                } else {
-                    this.documento = MascaraCNPJ(this.documento.replace(/\s/g, ''), event);
-                }
-            }
-
-        },
-        colarDocumentoInput(event) {
-            if (this.tipoDocumento == 'CPF') {
-                var aux = colarCPF(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-                this.documento = aux;
-            } else {
-                var aux = colarCNPJ(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-                this.documento = aux;
-            }
-
-        },
-        colarDocumentoRetorno(documento) {
-            if (this.tipoDocumento == 'CPF') {
-                var aux = colarCPF(documento, event);
-                return aux
-            } else {
-                var aux = colarCNPJ(documento, event);
-                return aux
-            }
-
-        },
-        mascaraCEPInput(event) {
-            if (this.cep.length == 9) {
-                this.cep = colarCEP(this.cep, event)
-            } else {
-                this.cep = MascaraCEP(this.cep.replace(/\s/g, ''), event);
-            }
-        },
-        colarCEPInput(event) {
-            var aux = colarCEP(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-            this.cep = aux;
         },
         mascaraTelefoneInput(event) {
             if (this.telefone.length == 14) {
@@ -212,61 +117,9 @@ export default {
             this.mensagemSucesso = '';
 
 
-            let cep, documento, telefone
-            if (this.cep) {
-                cep = RemoveMascaraCEP(this.cep)
-                let verifica = await verificaCEP(cep)
-
-                if (!verifica) {
-                    this.fecharModal()
-                    this.mensagemErro = "Insira um CEP valido.";
-                    this.loading = false;
-                    return;
-                }
-            }
-
-            if (this.documento) {
-                if (this.tipoDocumento == 'CNPJ') {
-                    documento = RemoveMascaraCNPJ(this.documento)
-                } else {
-                    documento = RemoveMascaraCPF(this.documento)
-                }
-
-            }
-
+            let telefone
             if (this.telefone) {
                 telefone = RemoveMascaraContato(this.telefone)
-            }
-
-            let mei, antt, tipoVeiculo
-
-
-            if (this.perfil == 'Motorista') {
-                if (!this.mei || !this.antt) {
-                    this.mensagemErro = 'ANTT e MEI devem ser preenchidos no perfil motorista.';
-                    this.loading = false;
-                    return;
-                }
-
-                if (!this.tipoVeiculo){
-                    this.mensagemErro = 'Tipo de veículo deve ser preenchido no perfil motorista';
-                    this.loading = false;
-                    return;
-                }
-                if (this.antt) {
-                    antt = this.antt === 'true';
-                }
-
-                if (this.mei) {
-                    mei = this.mei === 'true';
-                }
-
-                if (this.tipoVeiculo){
-                    tipoVeiculo = this.tipoVeiculo
-                }
-            } else {
-                antt = null;
-                mei = null;
             }
 
 
@@ -278,15 +131,10 @@ export default {
                 },
                 "conta": {
                     "nome": this.nome,
-                    "tipoDocumento": this.tipoDocumento,
-                    "documento": documento,
-                    "cep": cep,
-                    "contato": telefone,
+                    "celular": telefone,
                     "foto": this.foto,
                     "perfil": this.perfil,
-                    "antt": antt,
-                    "mei": mei,
-                    "tipoVeiculo": tipoVeiculo
+                    "data_nasc": this.data_nasc
                 }
             }
 
@@ -301,6 +149,7 @@ export default {
                     this.loading = false;
                     this.fecharModal()
                     this.mensagemSucesso = "Conta criada com sucesso"
+                    this.closePopup()
                 })
                 .catch((error) => {
 

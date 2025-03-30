@@ -269,6 +269,7 @@ export class PagamentosService {
             gruopId = externalReference.gruopId;
             accountId = externalReference.userId;
             status = paymentData.status;
+            console.log(status)
             const contaInfo = await this.prisma.contas.findFirst({
               where: {
                 idConta: Number(accountId)

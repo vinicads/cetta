@@ -16,7 +16,7 @@
                 <h4>{{ plano.descricao }}</h4>
                 <div class="valor">
                     <span>R$</span>
-                    <strong>{{ aplicarMascaraValorRetorno(plano.valorSemestral.toString()) }}</strong>
+                    <strong>{{ aplicarMascaraValorRetorno(plano.valorTotal.toString()) }}</strong>
                     <span>/mês</span>
                 </div>
                 <div class="button">

@@ -159,8 +159,8 @@ export class UsersController {
     throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
   }
 
-  @Put('assinatura')
-  async updateAssinatura(@Res() res: Response, @Param('id') id: number,
+  @Put('atualizar/assinatura')
+  async updateAssinatura(@Res() res: Response,
     @Body("assinatura") assinatura: AssinaturaDTO,
     @Req() req: Request) {
     const resultado = await this.authFunctions.verifyProfile(req, ["Admin"]);

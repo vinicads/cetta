@@ -12,13 +12,13 @@
 }
 
 :root {
-  --cor-principal: #D94141;
-  --cor-secundaria: #D95F5F;
-  --cor-terciaria: #F28D8D;
-  --cor-quaternaria: #F2B3B3;
+  --cor-principal: #023440;
+  --cor-secundaria: #3C6973;
+  --cor-terciaria: #49F2F2;
+  --cor-quaternaria: #55CCD9;
   --cor-branco: #F2F2F2;
-  --cor-preto: #2F2929;
-  --cor-preto-secundaria: #453E3E;
+  --cor-preto: #0b0b0b;
+  --cor-preto-secundaria: #1f1f1f;
 } 
 
 

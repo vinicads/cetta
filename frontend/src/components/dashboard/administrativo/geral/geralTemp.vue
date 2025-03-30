@@ -26,27 +26,10 @@
           </div>
         </div>
         <div class="form-group">
-          <h2>Frete individual:</h2>
+          <h2>Médico:</h2>
           <div class="form-group">
-            <label for="valorFreteIndividual">Valor:</label>
-            <input type="text" class="form-control" id="valorFreteIndividual" @focus="removerMascaraValor"
-              @blur="aplicarMascaraValor" v-model="valorFreteIndividual" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <h2>Exibição:</h2>
-          <div class="form-group">
-            <label for="qtdeEmpresa">Quantidade de Empresas:</label>
-            <input type="number" class="form-control" id="qtdeEmpresa" v-model="qtdeEmpresa" required>
-          </div>
-          <div class="form-group">
-            <label for="qtdeFretes">Quantidade de Fretes:</label>
-            <input type="number" class="form-control" id="qtdeFretes" v-model="qtdeFretes" required>
-          </div>
-          <div class="form-group">
-            <label for="qtdeContatos">Quantidade de Contatos:</label>
-            <input type="number" class="form-control" id="qtdeContatos" v-model="qtdeContatos" required>
+            <label for="emailMedico">E-mail:</label>
+            <input type="text" class="form-control" maxlength="100" id="emailMedico" v-model="emailMedico" required>
           </div>
         </div>
       </div>
@@ -84,12 +67,9 @@ export default {
       mensagemSucesso: '',
       mensagemAlerta: '',
       data: null,
-      valorFreteIndividual: '',
+      emailMedico: '',
       emailContato: '',
       numeroContato: '',
-      qtdeContatos: '',
-      qtdeEmpresa: '',
-      qtdeFretes: '',
     }
   },
   mounted() {
@@ -107,38 +87,6 @@ export default {
     });
   },
   methods: {
-    aplicarMascaraValor() {
-      let valorNumerico = this.valorFreteIndividual.replace(/\D/g, '');
-
-      let valorFormatado = parseFloat(valorNumerico / 100).toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      });
-
-      this.valorFreteIndividual = valorFormatado;
-    },
-    aplicarMascaraValorRetorno(valor) {
-      let valorNumerico = valor.replace(/[^\d,.-]/g, '');
-      valorNumerico = valorNumerico.replace(',', '.');
-      let valorFloat = parseFloat(valorNumerico);
-
-      let valorFormatado = valorFloat.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-      });
-
-      return valorFormatado;
-    },
-    removerMascaraValor() {
-      let valorNumerico = this.valorFreteIndividual.replace(/[^\d,]/g, '');
-
-      this.valorFreteIndividual = valorNumerico;
-    },
-    removerMascaraValorRetorno(valor) {
-      let valorNumerico = valor.replace(/[^\d,]/g, '').replace(',', '.');
-
-      return valorNumerico;
-    },
     mascaraTelefoneInput(event) {
       if (this.numeroContato.length == 14) {
         this.numeroContato = colarCelular(this.numeroContato, event)
@@ -153,12 +101,7 @@ export default {
     async atualizarConfig() {
       this.loading = true;
 
-      let valorFreteIndividual = '', numeroContato = ''
-
-
-      if (this.valorFreteIndividual){
-        valorFreteIndividual = this.removerMascaraValorRetorno(this.valorFreteIndividual)
-      }
+      let numeroContato = ''
 
       if(this.numeroContato){
         numeroContato = RemoveMascaraContato(this.numeroContato)
@@ -167,11 +110,8 @@ export default {
         "infoGeral": {
           "numeroContato": numeroContato,
           "emailContato": this.emailContato,
-          "qtdeEmpresa": this.qtdeEmpresa,
-          "qtdeContatos": this.qtdeContatos,
-          "qtdeFretes": this.qtdeFretes
-        },
-        "valorFrete": valorFreteIndividual
+          "emailMedico": this.emailMedico,
+        }
       }
 
       await axios.put(`${store.state.apiUrl}/infoGeral/${this.data.idGeral}`, data, {
@@ -202,12 +142,7 @@ export default {
     async cadastrarConfig() {
       this.loading = true;
 
-      let valorFreteIndividual = '', numeroContato = ''
-
-
-      if (this.valorFreteIndividual){
-        valorFreteIndividual = this.removerMascaraValorRetorno(this.valorFreteIndividual)
-      }
+      let numeroContato = ''
 
       if(this.numeroContato){
         numeroContato = RemoveMascaraContato(this.numeroContato)
@@ -216,12 +151,8 @@ export default {
         "infoGeral": {
           "numeroContato": numeroContato,
           "emailContato": this.emailContato,
-          "qtdeEmpresa": this.qtdeEmpresa,
-          "qtdeContatos": this.qtdeContatos,
-          "qtdeFretes": this.qtdeFretes,
-          "valorFreteIndividual": Number(valorFreteIndividual)
-        },
-        "valorFrete": valorFreteIndividual
+          "emailMedico": this.emailMedico,
+        }
       }
 
       await axios.post(`${store.state.apiUrl}/infoGeral`, data, {
@@ -260,10 +191,7 @@ export default {
           this.data = response.data;
           this.numeroContato = colarCelular(this.data.numeroContato)
           this.emailContato = this.data.emailContato
-          this.qtdeContatos = this.data.qtdeContatos
-          this.qtdeEmpresa = this.data.qtdeEmpresa
-          this.qtdeFretes = this.data.qtdeFretes
-          this.valorFreteIndividual = this.aplicarMascaraValorRetorno(this.data.valorFreteIndividual.toString())
+          this.emailMedico = this.data.emailMedico
           this.loading = false;
         })
         .catch((error) => {

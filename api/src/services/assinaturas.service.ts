@@ -12,15 +12,19 @@ export class AssinaturasService {
     }
 
     async update(assinatura: AssinaturaDTO) {
-        await this.prisma.assinatura.update({
-            where: {
-                idAssinatura: Number(assinatura.idAssinatura)
-            },
-            data: {
-                ativo: assinatura.ativo,
-                idPlanos: assinatura.idPlanos
-            }
-        });
+        try {
+            await this.prisma.assinatura.update({
+                where: {
+                    idAssinatura: Number(assinatura.idAssinatura)
+                },
+                data: {
+                    ativo: assinatura.ativo,
+                    idPlanos: assinatura.idPlanos
+                }
+            });
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     async create(idConta: number, idPlanos: number, ativo: boolean) {

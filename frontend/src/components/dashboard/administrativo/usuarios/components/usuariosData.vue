@@ -7,8 +7,6 @@
         @fechar-modal="fecharModal" />
     <cadastroUsuariosPopup :showCadastroUsuariosPopup="showCadastroUsuariosPopup"
         v-if="showCadastroUsuariosPopup" @close="closeCadastroUsuariosPopup" />
-        <enviarEmailGeralPopup :showEnviarEmailGeralPopup="showEnviarEmailGeralPopup"
-        v-if="showEnviarEmailGeralPopup" @close="closeEnviarEmailGeralPopup" />
     <editarUsuariosPopup :data="dataEdicao" :showEditarUsuariosPopup="showEditarUsuariosPopup"
         v-if="showEditarUsuariosPopup" @close="closeEditarUsuariosPopup" />
     <deletarUsuariosPopup :data="dataExclusao" :showDeleteUsuariosPopup="showDeleteUsuariosPopup"
@@ -23,10 +21,7 @@
                             @click="opencadastroUsuariosPopup">Novo <i class="fa fa-plus"
                                 aria-hidden="true"></i></button>
                     </div>
-                    <div class="cadastro"><button type="button" class="botaoPrimario"
-                            @click="openEnviarEmailGeralPopup">E-mail <i class="fa fa-envelope"
-                                aria-hidden="true"></i></button>
-                    </div>
+
 
                     <div class="itemsSelector">
                         <div>Itens por página:</div>
@@ -42,9 +37,8 @@
                     <thead>
                         <tr>
                             <th scope="col" class="acoes">Nome</th>
+                            <th scope="col" class="acoes">Idade</th>
                             <th scope="col" class="acoes">E-mail</th>
-                            <th scope="col" class="acoes">Documento</th>
-                            <th scope="col" class="acoes">Tipo</th>
                             <th scope="col" class="acoes">Perfil</th>
                             <th scope="col" class="acoes">Ações</th>
                         </tr>
@@ -52,23 +46,15 @@
                     <tbody>
                         <tr v-for="(item, index) in paginatedItems" :key="index">
                             <td data-label="Nome">{{ item.conta.nome }}</td>
-                            <td data-label="E-mail">{{ item.email }}</td>
-                            <td data-label="Documento">
-                                <span v-if="item.conta.documento.length === 11">
-                                    {{ colarCPFRetorno(item.conta.documento) }}
-                                </span>
-                                <span v-else>
-                                    {{ colarCNPJRetorno(item.conta.documento) }}
-                                </span>
-                            </td>
-                            <td data-label="Tipo">{{ item.conta.tipoDocumento }}</td>
+                            <td data-label="Idade">{{ item.conta.data_nasc ? calcularNascimento(item.conta.data_nasc) : '' }}</td>
+                            <td data-label="E-mail">{{ item.autenticacao.email }}</td>
                             <td data-label="Perfil">{{ item.conta.perfil }}</td>
                             <td data-label="Ações">
                                 <button type="button" title="Editar" class="btn" @click="openeditarUsuariosPopup(item)">
                                     <img src="@/assets/icons/editar.png" alt="Visualizar" class="btnEditar">
                                 </button>
                                 <button type="button" title="Deletar" class="btn"
-                                    @click="openDeleteusuariosPopup(item)"><img src="@/assets/icons/delete.png"
+                                    @click="openDeleteusuariosPopup(item.autenticacao)"><img src="@/assets/icons/delete.png"
                                         alt="Excluir" class="btnEditar"></button>
                             </td>
                         </tr>
@@ -104,11 +90,10 @@ import VueCookies from 'vue-cookies';
 import popupCarregamentoTemp from '../../../../popups/popupCarregamentoTemp.vue'
 import Mensagem from '../../../../alertas/mensagensTemp.vue';
 import cadastroUsuariosPopup from './popups/cadastroUsuariosPopup.vue'
-import enviarEmailGeralPopup from './popups/enviarEmailGeralPopup.vue'
 import deletarUsuariosPopup from './popups/deletarUsuariosPopup.vue'
 import editarUsuariosPopup from './popups/editarUsuariosPopup.vue'
 import { ref } from 'vue';
-import { fieldCollector, resetFieldBorders, removeField, verificaCEP, MascaraCPF, colarCPF, colarCEP, MascaraCEP, colarCNPJ,retornaCidade, MascaraCelular, colarCelular, validarCnpj, RemoveMascaraCPF, RemoveMascaraCEP, RemoveMascaraContato } from '@/utils/utils.js'
+import { fieldCollector, resetFieldBorders, removeField, verificaCEP, calculonasc, MascaraCPF, colarCPF, colarCEP, MascaraCEP, colarCNPJ,retornaCidade, MascaraCelular, colarCelular, validarCnpj, RemoveMascaraCPF, RemoveMascaraCEP, RemoveMascaraContato } from '@/utils/utils.js'
 export default {
     components: {
         Mensagem,
@@ -116,7 +101,6 @@ export default {
         cadastroUsuariosPopup,
         editarUsuariosPopup,
         deletarUsuariosPopup,
-        enviarEmailGeralPopup
     },
     props: {
         filters: {
@@ -146,7 +130,6 @@ export default {
             mensagemErro: '',
             mensagemSucesso: '',
             mensagemAlerta: '',
-            showEnviarEmailGeralPopup: false,
             showDeleteUsuariosPopup: false,
             showEditarUsuariosPopup: false,
             showCadastroUsuariosPopup: false,
@@ -194,6 +177,10 @@ export default {
         });
     },
     methods: {
+        calcularNascimento(data_nasc) {
+           return calculonasc(data_nasc)
+        },
+
         changeItemsPerPage() {
             this.currentPage = 1;
             this.getUsuarios();
@@ -211,16 +198,6 @@ export default {
                 }
             }
             this.getUsuarios();
-        },
-        openEnviarEmailGeralPopup() {
-            var html = document.documentElement;
-            html.classList.add('no-scroll');
-            this.showEnviarEmailGeralPopup = true;
-        },
-        closeEnviarEmailGeralPopup() {
-            var html = document.documentElement;
-            html.classList.remove('no-scroll');
-            this.showEnviarEmailGeralPopup = false;
         },
         opencadastroUsuariosPopup() {
             var html = document.documentElement;
@@ -257,30 +234,22 @@ export default {
             this.getUsuarios();
             this.showDeleteUsuariosPopup = false;
         },
-        colarCPFRetorno(cpf) {
-            var aux = colarCPF(cpf, event);
-            return aux
-        },
-        colarCNPJRetorno(cnpj) {
-            var aux = colarCNPJ(cnpj, event);
-            return aux
-        },
         async getUsuarios() {
             this.loading = true;
             this.semResultado = false;
 
-            let nome = '', cpf = '', cnpj = '', perfil = '', email = '', assinatura = ''
+            let nome = '', perfil = '', email = '', idadeInicio = '', idadeFim = ''
             if (this.filtersNovo) {
                 if (this.filtersNovo.nome) {
                     nome = this.filters.nome;
                 }
 
-                if (this.filtersNovo.cpf) {
-                    cpf = RemoveMascaraCPF(this.filters.cpf);
+                if (this.filtersNovo.idadeInicio) {
+                    idadeInicio = this.filters.idadeInicio;
                 }
 
-                if (this.filtersNovo.cnpj) {
-                    cnpj = RemoveMascaraCPF(this.filters.cnpj);
+                if (this.filtersNovo.idadeFim) {
+                    idadeFim = this.filters.idadeFim;
                 }
 
                 if (this.filtersNovo.perfil) {
@@ -291,15 +260,11 @@ export default {
                     email = this.filters.email
                 }
 
-                if (this.filtersNovo.assinatura) {
-                    assinatura = this.filters.assinatura
-                }
-
             }
 
 
             var start = (this.currentPage - 1) * this.itemsPerPage;
-            await axios.get(`${store.state.apiUrl}/users?&start=${start}&quantity=${this.itemsPerPage}&nome=${nome}&cpf=${cpf}&cnpj=${cnpj}&perfil=${perfil}&email=${email}&assinatura=${assinatura}`, {
+            await axios.get(`${store.state.apiUrl}/users?&start=${start}&quantity=${this.itemsPerPage}&nome=${nome}&perfil=${perfil}&email=${email}&idadeInicio=${idadeInicio}&idadeFim=${idadeFim}`, {
                 withCredentials: true,
             })
                 .then((response) => {

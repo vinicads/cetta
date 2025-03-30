@@ -28,7 +28,8 @@
             </div>
             <div v-if="selectedItem.id == 2">
                 <div v-if="assinatura">
-                    <div class="assinatura-info">
+                    {{ assinatura }}
+                    <!-- <div class="assinatura-info">
                         <p><strong>Plano:</strong> {{ assinatura.plano }}</p>
                         <p><strong>Prazo:</strong> {{ formatData(assinatura.prazo) }}</p>
                         <p><strong>Fretes disponíveis:</strong> {{ assinatura.qtdeFretes }}</p>
@@ -39,7 +40,7 @@
                         <p class="flex"><strong>Status:</strong> {{ assinatura.status }}
                         <div class="circle" :class="assinatura.status == 'Ativo' ? 'ativo' : 'inativo'"></div>
                         </p>
-                    </div>
+                    </div> -->
                 </div>
                 <div v-else>
                     <p>O usuário não tem nenhuma assinatura ativa.</p>

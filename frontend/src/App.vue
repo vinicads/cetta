@@ -6,9 +6,9 @@
       <div class="spinner"></div>
     </div>
     </div>
-    <navbarTemp v-if="$route.path != '/login' && !loading && $route.path != '/cadastroGeral' && $route.path != '/cadastro/motorista' && $route.path != '/cadastro/empresa'" />
+    <navbarTemp v-if="$route.path != '/login' && !loading && $route.path != '/cadastro'" />
     <RouterView />
-    <footerTemp v-if="$route.path != '/login' && !loading && $route.path != '/cadastroGeral' && $route.path != '/cadastro/motorista' && $route.path != '/cadastro/empresa'"/>
+    <footerTemp v-if="$route.path != '/login' && !loading && $route.path != '/cadastro'"/>
   </div>
 </template>
 

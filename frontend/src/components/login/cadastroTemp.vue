@@ -12,7 +12,7 @@
         </router-link>
         <div class="container">
             <div class="form-image">
-                <img src="../../assets/images/motorista.jpg" alt="">
+                <img src="../../assets/images/women.png" alt="">
             </div>
             <div class="form">
                 <form @submit="handleSubmit">
@@ -31,17 +31,6 @@
                         </div>
 
                         <div class="input-box">
-                            <label for="lastname">CPF</label>
-                            <input id="lastname" type="text" v-model="cpf" name="cpf" maxlength="14"
-                                @input="mascaraCPFInput" @paste="colarCPFInput" placeholder="000.000.000-00" required>
-                        </div>
-                        <div class="input-box">
-                            <label for="cep">CEP</label>
-                            <input id="cep" type="cep" name="cep" v-model="cep" maxlength="9" placeholder="00000-000"
-                                @input="mascaraCEPInput" @paste="colarCEPInput" required>
-                        </div>
-
-                        <div class="input-box">
                             <label for="number">Celular</label>
                             <input id="number" type="telefone" maxlength="14" v-model="telefone" name="number"
                                 @input="mascaraTelefoneInput" @paste="colarTelefoneInput" placeholder="(xx)xxxx-xxxx"
@@ -49,33 +38,9 @@
                         </div>
 
                         <div class="input-box">
-                            <label for="firstname">ANTT</label>
-                            <div class="radioGroup">
-                                <div class="radio"> <input id="anttT" type="radio" v-model="antt" name="antt"
-                                        value="true" required> Sim</div>
-                                <div class="radio"> <input id="anttF" type="radio" v-model="antt" name="antt"
-                                        value="false" required> Não</div>
-                            </div>
-                        </div>
-
-                        <div class="input-box">
-                            <label for="firstname">MEI</label>
-                            <div class="radioGroup">
-                                <div class="radio"> <input id="meiT" type="radio" v-model="mei" value="true" name="mei"
-                                        required> Sim</div>
-                                <div class="radio"> <input id="meiF" type="radio" v-model="mei" name="mei" value="false"
-                                        required> Não</div>
-                            </div>
-                        </div>
-
-                        <div class="input-box">
-                            <label for="tipoVeiculo">Tipo de veículo</label>
-                            <div class="radioGroup">
-                                <div class="radio"> <input id="CargaSeca" type="radio" v-model="tipoVeiculo"
-                                        name="tipoVeiculo" value="CargaSeca" required> Carga Seca</div>
-                                <div class="radio"> <input id="Refrigerado" type="radio" v-model="tipoVeiculo"
-                                        name="tipoVeiculo" value="Refrigerado" required> Refrigerado</div>
-                            </div>
+                            <label for="data_nasc">Data de nascimento</label>
+                            <input id="data_nasc" type="date" v-model="data_nasc" name="data_nasc"
+                                required>
                         </div>
 
                         <div class="input-box">
@@ -135,15 +100,10 @@ export default {
     data() {
         return {
             nome: '',
-            cpf: '',
-            tipoDocumento: 'CPF',
-            perfil: 'Motorista',
-            cep: '',
+            perfil: 'Usuario',
+            data_nasc: '',
             telefone: '',
             foto: 'semFoto',
-            antt: 'true',
-            tipoVeiculo: 'CargaSeca',
-            mei: 'true',
             email: '',
             termos: false,
             senha: '',
@@ -156,29 +116,7 @@ export default {
     methods: {
         handleSubmit(event) {
             event.preventDefault();
-            this.cadastrarMotorista()
-        },
-        mascaraCPFInput(event) {
-            if (this.cpf.length == 14) {
-                this.cpf = colarCPF(this.cpf, event)
-            } else {
-                this.cpf = MascaraCPF(this.cpf.replace(/\s/g, ''), event);
-            }
-        },
-        colarCPFInput(event) {
-            var aux = colarCPF(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-            this.cpf = aux;
-        },
-        mascaraCEPInput(event) {
-            if (this.cep.length == 9) {
-                this.cep = colarCEP(this.cep, event)
-            } else {
-                this.cep = MascaraCEP(this.cep.replace(/\s/g, ''), event);
-            }
-        },
-        colarCEPInput(event) {
-            var aux = colarCEP(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-            this.cep = aux;
+            this.cadastro()
         },
         mascaraTelefoneInput(event) {
             if (this.telefone.length == 14) {
@@ -193,7 +131,7 @@ export default {
         },
         cadastrar(event) {
             if (event.key == 'Enter') {
-                this.cadastrarMotorista();
+                this.cadastro();
             }
         },
         fecharModal() {
@@ -201,7 +139,7 @@ export default {
             this.mensagemAlerta = '';
             this.mensagemSucesso = '';
         },
-        async cadastrarMotorista() {
+        async cadastro() {
             if (!this.termos) {
                 this.fecharModal()
                 this.mensagemErro = "Aceite os termos antes de se cadastrar.";
@@ -214,35 +152,10 @@ export default {
             this.mensagemSucesso = '';
 
 
-            let cep, cpf, telefone
-            if (this.cep) {
-                cep = RemoveMascaraCEP(this.cep)
-                let verifica = await verificaCEP(cep)
-
-                if (!verifica) {
-                    this.fecharModal()
-                    this.mensagemErro = "Insira um CEP valido.";
-                    this.loading = false;
-                    return;
-                }
-            }
-
-            if (this.cpf) {
-                cpf = RemoveMascaraCPF(this.cpf)
-            }
+            let telefone
 
             if (this.telefone) {
                 telefone = RemoveMascaraContato(this.telefone)
-            }
-
-            let mei, antt
-
-            if (this.antt) {
-                antt = this.antt === 'true';
-            }
-
-            if (this.mei) {
-                mei = this.mei === 'true';
             }
 
 
@@ -254,13 +167,8 @@ export default {
                 },
                 "conta": {
                     "nome": this.nome.trim(),
-                    "tipoDocumento": this.tipoDocumento,
-                    "documento": cpf,
-                    "cep": cep,
-                    "antt": antt,
-                    "mei": mei,
-                    "tipoVeiculo": this.tipoVeiculo,
-                    "contato": telefone,
+                    "data_nasc": this.data_nasc,
+                    "celular": telefone,
                     "foto": this.foto,
                     "perfil": this.perfil
                 }
@@ -275,7 +183,7 @@ export default {
                 .then(async (response) => {
                     this.loading = false;
                     this.fecharModal()
-                    this.mensagemSucesso = "Conta criada com sucesso, faça login."
+                    window.location.reload();
                 })
                 .catch((error) => {
 
@@ -366,7 +274,7 @@ export default {
     width: 100%;
     height: 100%;
     border-radius: 15px;
-    object-fit: cover;
+    object-fit: contain;
 }
 
 .form {

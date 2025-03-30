@@ -7,12 +7,16 @@ export class contasFunctions {
     constructor(private prisma: PrismaService) { }
     
     async cadastrarConta(data) {
+        data.data_nasc = new Date(data.data_nasc);
        return await this.prisma.contas.create({
         data
        })
     }
 
     async atualizaConta(id, data) {
+        if (data.data_nasc){
+            data.data_nasc = new Date(data.data_nasc);
+        }
         return await this.prisma.contas.update({
             data,
             where: {
