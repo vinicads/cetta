@@ -39,7 +39,7 @@
                 <a @click="openPopupPlanos">Planos</a>
                 <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
                 <router-link :class="{ 'active': $route.path === '/sobre' }" to="/sobre">Sobre nós</router-link>
-                <router-link :class="{ 'active': $route.path === '/funciona' }" to="/sobre">Como funciona</router-link>
+                <router-link :class="{ 'active': $route.path === '/funciona' }" to="/funciona">Como funciona</router-link>
                 <div class="dropdown">
 
                     <a @click="toggleDropdown" @mouseenter="toggleDropdown" @mouseleave="toggleDropdown">
@@ -66,6 +66,8 @@
 
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
                 <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
+                <router-link :class="{ 'active': $route.path === '/sobre' }" to="/sobre">Sobre nós</router-link>
+                <router-link :class="{ 'active': $route.path === '/funciona' }" to="/funciona">Como funciona</router-link>
                 <div class="dropdown">
 
                     <a @click="toggleDropdown" @mouseenter="toggleDropdown" @mouseleave="toggleDropdown">
@@ -86,6 +88,8 @@
 
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
                 <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
+                <router-link :class="{ 'active': $route.path === '/sobre' }" to="/sobre">Sobre nós</router-link>
+                <router-link :class="{ 'active': $route.path === '/funciona' }" to="/funciona">Como funciona</router-link>
                 <router-link :class="{ 'active': $route.path === '/admin/planos' }"
                     to="/admin/planos">Planos</router-link>
                 <router-link :class="{ 'active': $route.path === '/admin/usuarios' }"

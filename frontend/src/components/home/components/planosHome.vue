@@ -1,42 +1,45 @@
 <template>
-    <planosTemp :idPlano="idPlano" v-if="showPlanosPopup" @close="closePopupPlanos"/>
+    <planosTemp :idPlano="idPlano" v-if="showPlanosPopup" @close="closePopupPlanos" />
     <div class="container">
-        <div class="title">Planos para Empresas</div>     
+        <div class="title" data-aos="fade-up" data-aos-duration="1000">FAÇA PARTE DO CETTA</div>     
     </div>
     <div class="containerPlanos">
-       
         <div class="loading" v-if="loading">
             <div class="loading-screen">
                 <div class="spinner"></div>
             </div>
         </div>
         <div v-if="!loading && !semResultado" class="planos-grid">
-            <div class="plano" v-for="(plano, index) in planos" :index="index">
+            <div 
+                class="plano" 
+                v-for="(plano, index) in planos" 
+                :key="plano.idPlanos"
+                data-aos="fade-up" 
+                :data-aos-delay="index * 200" 
+                data-aos-duration="1000"
+                data-aos-easing="ease-out-cubic"
+            >
                 <h1>{{ plano.nome }}</h1>
                 <h4>{{ plano.descricao }}</h4>
-                <div class="valor">
+                <div class="valor" v-if="isAuthenticated">
                     <span>R$</span>
                     <strong>{{ aplicarMascaraValorRetorno(plano.valorTotal.toString()) }}</strong>
                     <span>/mês</span>
                 </div>
                 <div class="button">
-                    <button @click="choosePlano(plano.idPlanos)">Assinar</button>
+                    <button @click="choosePlano(plano.idPlanos)" data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="500">Assinar</button>
                 </div>
                 <div class="linhaPlano"></div>
                 <div class="beneficios">
                     <h3>Benefícios</h3>
                     <ul>
-                        <li>
-                            <img src="../../../assets/icons/check.png" alt="">
-                            <span>{{ plano.qtdeContatos }} contatos</span>
+                        <li data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                            <img src="../../../assets/icons/check.png" alt="" />
+                            <span>{{ plano.meses > 1 ? `${plano.meses} meses de tratamento` : `${plano.meses} mês de tratamento` }}</span>
                         </li>
-                        <li>
-                            <img src="../../../assets/icons/check.png" alt="">
-                            <span>{{ plano.qtdeFrete }} anúncios de fretes</span>
-                        </li>
-                        <li>
-                            <img src="../../../assets/icons/check.png" alt="">
-                            <span>Recrutadores</span>
+                        <li data-aos="fade-left" data-aos-duration="1000" data-aos-delay="400">
+                            <img src="../../../assets/icons/check.png" alt="" />
+                            <span>{{ plano.tipo == 'Grupo' ? `Grupos com até ${plano.qtdePessoas} pessoas.` : `Sessões individuais` }}</span>
                         </li>
                     </ul>
                 </div>
@@ -46,12 +49,9 @@
             <p>Nenhum plano disponível no momento.</p>
         </div>
     </div>
-    <Mensagem :mensagem="mensagemErro" v-if="!mensagemSucesso && !mensagemAlerta" tipo="Erro"
-        @fechar-modal="fecharModal" />
-    <Mensagem :mensagem="mensagemSucesso" v-if="!mensagemErro && !mensagemAlerta" tipo="Sucesso"
-        @fechar-modal="fecharModal" />
-    <Mensagem :mensagem="mensagemAlerta" v-if="!mensagemErro && !mensagemSucesso" tipo="Alerta"
-        @fechar-modal="fecharModal" />
+    <Mensagem :mensagem="mensagemErro" v-if="!mensagemSucesso && !mensagemAlerta" tipo="Erro" @fechar-modal="fecharModal" />
+    <Mensagem :mensagem="mensagemSucesso" v-if="!mensagemErro && !mensagemAlerta" tipo="Sucesso" @fechar-modal="fecharModal" />
+    <Mensagem :mensagem="mensagemAlerta" v-if="!mensagemErro && !mensagemSucesso" tipo="Alerta" @fechar-modal="fecharModal" />
 </template>
 
 <script>
@@ -61,6 +61,8 @@ import Mensagem from '@/components/alertas/mensagensTemp.vue';
 import popupCarregamentoTemp from '@/components/popups/popupCarregamentoGeralTemp.vue';
 import planosTemp from '../../dashboard/planos/planosTemp.vue'
 import { verificaCEP, RemoveMascaraCEP } from '@/utils/utils.js';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 export default {
     components: {
@@ -73,6 +75,7 @@ export default {
         return {
             perfil: store.state.perfil,
             autenticacao: store.state.autenticacao,
+            isAuthenticated: store.state.isAuthenticated,
             mensagemErro: '',
             mensagemSucesso: '',
             mensagemAlerta: '',
@@ -170,6 +173,7 @@ export default {
     mounted() {
         this.loading = true;
         this.getPlanos();
+        AOS.init();
         document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', this.onEscKey);
     },
@@ -246,25 +250,26 @@ export default {
     flex-wrap: wrap;
     gap: 20px;
     width: 100%;
+    overflow-y: hidden;
     justify-content: center;
     align-items: center;
 }
 
 .plano {
-    border: 1px solid #d941413d;
+    border: 1px solid var(--cor-secundaria);
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s;
     display: flex;
-    width: 300px;
+    width: 450px;
     justify-content: center;
     align-content: center;
     flex-direction: column;
 }
 
 .linhaPlano {
-    background-color: #d941413d;
+    background-color: var(--cor-secundaria);
     height: 1.5px;
     width: 80%;
     margin: 2rem auto;
@@ -315,7 +320,7 @@ export default {
     background-color: var(--cor-principal);
     border: 1px solid var(--cor-principal);
     color: var(--cor-branco);
-    padding: 0.5rem 2rem;
+   
     border-radius: 15px;
     transition: 0.5s ease-in-out;
 }
@@ -359,6 +364,13 @@ export default {
     text-align: center;
     font-size: 1.5em;
     color: #666;
+}
+
+@media(max-width: 500px) {
+    .plano{
+        width: 90%;
+    }
+
 }
 
 @media(max-width: 425px) {

@@ -10,7 +10,7 @@ export class PlanosDTO {
 
     @IsString({ message: 'O subtitulo do plano deve ser uma string.' })
     @IsNotEmpty({ message: 'O subtitulo do plano precisa ser preenchida.' })
-    @MaxLength(255, { message: 'O subtitulo do plano não pode exceder 255 caracteres.' })
+    @MaxLength(100, { message: 'O subtitulo do plano não pode exceder 255 caracteres.' })
     subtitulo: string;
 
     @IsString({ message: 'A descrição do plano deve ser uma string.' })

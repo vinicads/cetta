@@ -1,11 +1,11 @@
 <template>
     <div class="container">
-        <div class="title">Conheça o CETTA</div>
-        <div class="subtitle">O Centro de Educação e Tratamento do Tabagismo (CETTA) nasceu após mais de uma década de
+        <div class="title" data-aos="fade-up">Conheça o CETTA</div>
+        <div class="subtitle" data-aos="fade-up" data-aos-delay="200">O Centro de Educação e Tratamento do Tabagismo (CETTA) nasceu após mais de uma década de
             estudos dedicados ao entendimento do tabagismo e das doenças pulmonares e cardíacas associadas ao uso do
             cigarro.</div>
         <div class="cards">
-            <div class="cardSobre">
+            <div class="cardSobre" data-aos="zoom-in" data-aos-delay="300">
                 <div class="imagem"><img src="../../../assets/icons/objetivo.png" alt="Card Image"></div>
                 <h3>Objetivo</h3>
                 <p>Temos o propósito de auxiliar você a viver
@@ -14,7 +14,7 @@
                     maior causa evitável de mortes no
                     mundo: o tabagismo. Vamos juntos!</p>
             </div>
-            <div class="cardSobre">
+            <div class="cardSobre" data-aos="zoom-in" data-aos-delay="500">
                 <div class="imagem"><img src="../../../assets/icons/idea.png" alt="Card Image"></div>
                 <h3>Diferencial</h3>
                 <p>Desenvolvemos um programa focado em
@@ -26,14 +26,20 @@
                     estruturado para aumentar as suas chances de sucesso!</p>
             </div>
         </div>
-        <div class="buttons">
-                <button @click="saibaMais()">Saiba mais</button>
-            </div>
+        <div class="buttons" data-aos="fade-up" data-aos-delay="400">
+            <button @click="saibaMais()">Saiba mais</button>
+        </div>
     </div>
 </template>
 
 <script>
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+
 export default {
+  mounted() {
+    AOS.init();
+  },
   methods: {
     saibaMais() {
       this.$router.push('/sobre');

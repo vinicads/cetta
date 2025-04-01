@@ -12,28 +12,54 @@
                 <div class="form-group">
 
                     <label for="modelo">Nome</label>
-                    <input type="text" class="form-control" @keyup.enter="atualizarPlano" id="nome" v-model="nome"
+                    <input type="text" class="form-control" @keyup.enter="cadastrarPlano" id="nome" v-model="nome"
                         maxlength="45" required>
                 </div>
                 <div class="form-group">
+                    <label for="placa">Subtítulo</label>
+                    <input type="text" class="form-control" @keyup.enter="cadastrarPlano" id="subtitulo" maxlength="100"
+                        v-model="subtitulo" required>
+                </div>
+                <div class="form-group">
                     <label for="placa">Descrição</label>
-                    <input type="text" class="form-control" @keyup.enter="atualizarPlano" id="descricao" maxlength="100"
+                    <input type="text" class="form-control" @keyup.enter="cadastrarPlano" id="descricao" maxlength="255"
                         v-model="descricao" required>
                 </div>
                 <div class="form-group">
-                    <label for="ano">Contatos</label>
-                    <input type="number" class="form-control" id="qtdeContatos" @keyup.enter="atualizarPlano"
-                        v-model="qtdeContatos" required>
+                    <label for="ano">Valor total</label>
+                    <input type="text" class="form-control" id="valorTotal" @keyup.enter="cadastrarPlano"
+                        v-model="valorTotal" @focus="removerMascaraValor" @blur="aplicarMascaraValor" required>
                 </div>
                 <div class="form-group">
-                    <label for="ano">Fretes</label>
-                    <input type="number" class="form-control" id="qtdeFrete" @keyup.enter="atualizarPlano"
-                        v-model="qtdeFrete" required>
+                    <label for="qtdePessoas">Quantidade máxima de pessoas</label>
+                    <input type="number" min="1" class="form-control" id="qtdePessoas" @keyup.enter="cadastrarPlano"
+                        v-model="qtdePessoas" required>
                 </div>
                 <div class="form-group">
-                    <label for="ano">Valor (mensal)</label>
-                    <input type="text" class="form-control" id="valor" @keyup.enter="atualizarPlano" v-model="valor"
-                        @focus="removerMascaraValor" @blur="aplicarMascaraValor" required>
+                    <label for="maxSessoes">Quantidade de sessões semanais</label>
+                    <input type="number" min="1" class="form-control" id="maxSessoes" @keyup.enter="cadastrarPlano"
+                        v-model="maxSessoes" required>
+                </div>
+                <div class="form-group">
+                    <label for="meses">Quantidade de meses</label>
+                    <input type="number" min="1" class="form-control" id="meses" @keyup.enter="cadastrarPlano"
+                        v-model="meses" required>
+                </div>
+                <div class="form-group">
+
+                    <label for="tipoFuncionalidade">Tipo de Funcionalidade</label>
+                    <select id="tipoFuncionalidade" class="form-control" v-model="tipoFuncionalidade" required>
+                        <option class="select-option" value="Nutricao">Nutrição</option>
+                        <option class="select-option" value="Tabaquismo">Tabaquismo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tipo</label>
+                    <select id="tipo" class="form-control" v-model="tipo" required>
+                        <option class="select-option" value="Individual">Individual</option>
+                        <option class="select-option" value="Grupo">Grupo</option>
+                        <option class="select-option" value="Mentoria">Mentoria</option>
+                    </select>
                 </div>
             </div>
             <div class="buttons">
@@ -71,10 +97,14 @@ export default {
             mensagemSucesso: '',
             mensagemAlerta: '',
             nome: '',
+            subtitulo: '',
             descricao: '',
-            qtdeContatos: 1,
-            qtdeFrete: 1,
-            valor: '',
+            tipoFuncionalidade: '',
+            qtdePessoas: '',
+            meses: '',
+            maxSessoes: '',
+            tipo: '',
+            valorTotal: '',
             loading: false,
         }
     },
@@ -89,14 +119,14 @@ export default {
             this.mensagemSucesso = '';
         },
         aplicarMascaraValor() {
-            let valorNumerico = this.valor.replace(/\D/g, '');
+            let valorNumerico = this.valorTotal.replace(/\D/g, '');
 
             let valorFormatado = parseFloat(valorNumerico / 100).toLocaleString('pt-BR', {
                 style: 'currency',
                 currency: 'BRL'
             });
 
-            this.valor = valorFormatado;
+            this.valorTotal = valorFormatado;
         },
         aplicarMascaraValorRetorno(valor) {
             let valorNumerico = valor.replace(/[^\d,.-]/g, '');
@@ -111,9 +141,9 @@ export default {
             return valorFormatado;
         },
         removerMascaraValor() {
-            let valorNumerico = this.valor.replace(/[^\d,]/g, '');
+            let valorNumerico = this.valorTotal.replace(/[^\d,]/g, '');
 
-            this.valor = valorNumerico;
+            this.valorTotal = valorNumerico;
         },
         removerMascaraValorRetorno(valor) {
             let valorNumerico = valor.replace(/[^\d,]/g, '').replace(',', '.');
@@ -123,28 +153,51 @@ export default {
         carregarDados() {
             if (this.data) {
                 this.nome = this.data.nome;
+                this.subtitulo = this.data.subtitulo;
                 this.descricao = this.data.descricao;
-                this.qtdeContatos = this.data.qtdeContatos;
-                this.qtdeFrete = this.data.qtdeFrete;
-                this.valor = this.aplicarMascaraValorRetorno(this.data.valorMensal.toString());
+                this.tipoFuncionalidade = this.data.tipoFuncionalidade;
+                this.tipo = this.data.tipo;
+                this.qtdePessoas = this.data.qtdePessoas;
+                this.meses = this.data.meses;
+                this.maxSessoes = this.data.maxSessoes;
+                this.valorTotal = this.aplicarMascaraValorRetorno(this.data.valorTotal.toString());
             }
         },
         atualizarPlano() {
             this.loading = true;
 
+            if (this.maxSessoes < 1) {
+                this.mensagemAlerta = 'A quantidade de sessões semanais deve ser maior que 0.';
+                this.loading = false;
+                return;
+            }
+            if (this.qtdePessoas < 1) {
+                this.mensagemAlerta = 'A quantidade máxima de pessoas deve ser maior que 0.';
+                this.loading = false;
+                return;
+            }
+            if (this.meses < 1) {
+                this.mensagemAlerta = 'A quantidade de meses deve ser maior que 0.';
+                this.loading = false;
+                return;
+            }
 
             let valor = ''
 
-            if (this.valor) {
-                valor = this.removerMascaraValorRetorno(this.valor)
+            if (this.valorTotal) {
+                valor = this.removerMascaraValorRetorno(this.valorTotal)
             }
             const data = {
                 "planos": {
-                    "nome": this.nome,
+                      "nome": this.nome,
+                    "subtitulo": this.subtitulo,
                     "descricao": this.descricao,
-                    "qtdeContatos": this.qtdeContatos,
-                    "qtdeFrete": this.qtdeFrete,
-                    "preco": Number(valor)
+                    "tipoFuncionalidade": this.tipoFuncionalidade,
+                    "tipo": this.tipo,
+                    "qtdePessoas": this.qtdePessoas,
+                    "meses": this.meses,
+                    "maxSessoes": this.maxSessoes,
+                    "valorTotal": Number(valor)
                 }
             }
 

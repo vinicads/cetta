@@ -38,16 +38,16 @@
               <thead>
                 <tr>
                   <th scope="col" class="acoes">Nome</th>
-                  <th scope="col" class="acoes">Contatos</th>
-                  <th scope="col" class="acoes">Fretes</th>
+                  <th scope="col" class="acoes">Funcionalidade</th>
+                  <th scope="col" class="acoes">Tipo</th>
                   <th scope="col" class="acoes">Ações</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="(item, index) in paginatedItems" :key="index">
                   <td data-label="Nome">{{ item.nome }}</td>
-                  <td data-label="Contatos">{{ item.qtdeContatos }}</td>
-                  <td data-label="Fretes">{{ item.qtdeFrete }}</td>
+                  <td data-label="Contatos">{{ item.tipoFuncionalidade == 'Nutricao' ? 'Nutrição' : item.tipoFuncionalidade }}</td>
+                  <td data-label="Fretes">{{ item.tipo }}</td>
                   <td data-label="Ações">
                     <button type="button" title="Editar" class="btn" @click="openEditarPlanosPopup(item)">
                       <img src="@/assets/icons/editar.png" alt="Visualizar" class="btnEditar">

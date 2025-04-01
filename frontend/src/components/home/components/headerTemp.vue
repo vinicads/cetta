@@ -1,33 +1,29 @@
 <template>
     <div class="home">
         <div class="contentHome">
-            <div>Faça por você!</div>
-            <h2>viva a vida</h2>
-            <h2 class="color">sem cigarro</h2>
+            <div data-aos="fade-right">Faça por você!</div>
+            <h2 data-aos="zoom-in">viva a vida</h2>
+            <h2 class="color" data-aos="zoom-in" data-aos-delay="500">sem cigarro</h2>
         </div>
         <div class="logo">
-            <img src="../../../assets/icons/logo.png" alt="">
+            <img src="../../../assets/icons/logo.png" alt="" data-aos="flip-up" data-aos-delay="900" />
         </div>
     </div>
 </template>
 
 <script>
-import store from '@/auth/autenticacao.js';
-import axios from 'axios';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 export default {
-    data() {
-        return {
-        };
-    },
     mounted() {
-    },
-    methods: {
-    },
+        AOS.init(); // Inicializa a biblioteca
+    }
 };
 </script>
 
 <style scoped>
+
 .home {
     width: 100%;
     min-height: 100vh;

@@ -16,21 +16,25 @@
         </div>
     </section>
 
+    <section class="display background" style="margin-bottom: 0;">
+        <quemSouEuTemp />
+    </section>
+
+    <section class="display">
+        <metodologiaTemp />
+    </section>
+
+    <section class="display background">
+        <comoFuncionaTemp />
+    </section>
+
+    <section class="display">
+        <transformeSuaJornadaTemp />
+    </section>
+
     <section class="planos" v-if="temPlanos">
         <div class="display">
             <planosHome  @semPlanos="temPlanos = false;"/>
-        </div>
-    </section>
-
-    <section>
-        <div class="display">
-            <cadastrosTemp />
-        </div>
-    </section>
-
-    <section class="mensagens">
-        <div class="display">
-            <avaliacaoTemp />
         </div>
     </section>
 
@@ -53,17 +57,21 @@ import { ref } from 'vue';
 import headerTemp from './components/headerTemp.vue'
 import sobreTemp from './components/sobreTemp.vue'
 import planosHome from './components/planosHome.vue'
-import cadastrosTemp from './components/cadastrosTemp.vue'
-import avaliacaoTemp from './components/avaliacoesTemp.vue'
 import faqTemp from './components/faqTemp.vue'
+import quemSouEuTemp from "./components/quemSouEuTemp.vue";
+import comoFuncionaTemp from "./components/comoFuncionaTemp.vue";
+import transformeSuaJornadaTemp from "./components/transformeSuaJornadaTemp.vue";
+import metodologiaTemp from "./components/metodologiaTemp.vue";
 export default {
     components: {
         Mensagem,
         headerTemp,
         sobreTemp,
         planosHome,
-        cadastrosTemp,
-        avaliacaoTemp,
+        quemSouEuTemp,
+        comoFuncionaTemp,
+        transformeSuaJornadaTemp,
+        metodologiaTemp,
         faqTemp
     },
     data() {
@@ -92,6 +100,13 @@ export default {
 .planos{
     background-color: #F9F9F9;
     padding: 5% 0;
+    margin-top: 0;
+}
+
+.background{
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
 }
 
 .mensagens{
