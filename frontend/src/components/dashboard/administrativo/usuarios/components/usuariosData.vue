@@ -342,14 +342,14 @@ export default {
     padding: 10px;
     width: 100%;
     cursor: pointer;
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     border: 1px solid var(--cor-principal);
     transition: 0.5s ease-in-out;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .botaoPrimario:hover {
-    background-color: var(--cor-branco);
+    background: var(--cor-branco);
     color: var(--cor-principal);
 }
 
@@ -473,7 +473,7 @@ table {
 }
 
 table thead tr {
-    background: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
 }
 
 table caption {

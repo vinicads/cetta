@@ -223,7 +223,7 @@ export default {
 .main-login {
   width: 100vw;
   height: 100vh;
-  background: var(--cor-principal);
+  background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -322,10 +322,15 @@ export default {
   font-weight: 800;
   letter-spacing: 3px;
   color: var(--cor-branco);
-  background: var(--cor-principal);
+  background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
   border: 1px solid var(--cor-principal);
   cursor: pointer;
   transition: 0.5s ease-in-out;
+}
+
+.btn-login:hover{
+  background: var(--cor-branco);
+  color: var(--cor-principal);
 }
 
 .forgot {

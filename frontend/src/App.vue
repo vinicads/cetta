@@ -52,7 +52,7 @@ watch(() => store.state.loading, (newValue) => {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: var(--cor-principal);
+  background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
   z-index: 9999;
   display: flex;
   justify-content: center;

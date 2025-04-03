@@ -248,7 +248,7 @@ export default {
 .main-login {
     width: 100vw;
     min-height: 100vh;
-    background: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -301,15 +301,15 @@ export default {
 .login-button button {
     border: none;
     color: var(--cor-branco);
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     padding: 0.4rem 1rem;
     border-radius: 5px;
     cursor: pointer;
 }
 
 .login-button button:hover {
-    background-color: var(--cor-secundaria);
-    color: var(--cor-branco);
+    background: var(--cor-branco);
+    color: var(--cor-principal);
 }
 
 .login-button button a {
@@ -323,7 +323,7 @@ export default {
     display: block;
     width: 5rem;
     height: 0.3rem;
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     margin: 0 auto;
     position: absolute;
     border-radius: 10px;
@@ -407,7 +407,8 @@ export default {
     width: 100%;
     margin-top: 2.5rem;
     border: none;
-    background-color: var(--cor-principal);
+    border: 1px solid var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     padding: 0.62rem;
     border-radius: 5px;
     cursor: pointer;
@@ -415,8 +416,8 @@ export default {
 }
 
 .continue-button button:hover {
-    background-color: var(--cor-secundaria);
-    color: #fff;
+    background: var(--cor-branco);
+    color: var(--cor-principal);
 }
 
 .continue-button button a {

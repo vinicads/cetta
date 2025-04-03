@@ -210,11 +210,11 @@
     width: 100%;
     padding: 10px;
     border: 1px solid var(--cor-principal);
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
   }
   
   .botaoFecharApagar button:hover {
-    background-color: transparent;
+    background: transparent;
     color: var(--cor-principal);
     transition: 0.2s;
   }

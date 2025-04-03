@@ -369,12 +369,12 @@ export default {
 }
 
 .buttons button:last-of-type {
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     border: 1px solid var(--cor-principal);
 }
 
 .buttons button:last-of-type:hover {
-    background-color: var(--cor-branco);
+    background: var(--cor-branco);
     color: var(--cor-principal);
 }
 
