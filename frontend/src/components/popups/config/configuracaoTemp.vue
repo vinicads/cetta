@@ -51,6 +51,7 @@ export default {
             autenticacao: store.state.autenticacao,
             dadosPessoais: store.state.dadosPessoais,
             assinatura: store.state.assinatura,
+            historicoPagamento: store.state.historicoPagamento,
             perfil: store.state.perfil,
             mensagemErro: '',
             mensagemSucesso: '',
@@ -94,10 +95,11 @@ export default {
             }
         },
         carregarDados(){
-            if (this.perfil == "Empresa"){
+            if (this.perfil == "Usuario"){
               this.items = [
                 { id: 1, name: 'Dados Pessoais'},
-                { id: 2, name: 'Assinatura'},
+                { id: 2, name: 'Assinaturas'},
+                { id: 3, name: 'Histórico de pagamentos'},
             ]
             }else{
                 this.items = [

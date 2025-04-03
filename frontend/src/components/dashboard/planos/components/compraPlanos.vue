@@ -246,7 +246,6 @@ export default {
                     const planos = response.data;
                     const planoEncontrado = planos.find(plano => plano.idPlanos === this.idPlano);
                     if (planoEncontrado) {
-                        console.log(planoEncontrado)
                         this.dadosPlano = planoEncontrado;
                         this.valorTotal = this.aplicarMascaraValorRetorno(this.dadosPlano.valorTotal)
                     } else {

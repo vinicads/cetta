@@ -37,6 +37,9 @@ export class LoginService {
                 assinaturas = await this.prisma.assinatura.findMany({
                   where: {
                     idConta: Number(resultado.conta.idConta)
+                  },
+                  include: {
+                    planos: true
                   }
                 })
 
@@ -116,19 +119,23 @@ async cookieAccepted(req, res){
       if (resultado){
         var newResultado = await this.usersFunctions.verifyEmailExists(resultado.email);
         let assinaturas, historicoPagamento
-              if (resultado.conta){
+              if (newResultado.conta){
                 assinaturas = await this.prisma.assinatura.findMany({
                   where: {
-                    idConta: Number(resultado.conta.idConta)
+                    idConta: Number(newResultado.conta.idConta)
+                  },
+                  include: {
+                    planos: true
                   }
                 })
 
                 historicoPagamento = await this.prisma.historicoPagamento.findMany({
                   where: {
-                    idConta: Number(resultado.conta.idConta)
+                    idConta: Number(newResultado.conta.idConta)
                   }
                 })
               }
+
         if(newResultado){
   
           const newDados= {

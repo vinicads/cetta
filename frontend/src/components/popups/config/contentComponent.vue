@@ -28,19 +28,32 @@
             </div>
             <div v-if="selectedItem.id == 2">
                 <div v-if="assinatura">
-                    {{ assinatura }}
-                    <!-- <div class="assinatura-info">
-                        <p><strong>Plano:</strong> {{ assinatura.plano }}</p>
-                        <p><strong>Prazo:</strong> {{ formatData(assinatura.prazo) }}</p>
-                        <p><strong>Fretes disponíveis:</strong> {{ assinatura.qtdeFretes }}</p>
-                        <p><strong>Contatos disponíveis:</strong> {{ assinatura.qtdeContatos }}</p>
-                        <p v-if="pagamentoAssinatura"><strong>Status do pagamento da assinatura:</strong> {{
-                            pagamentoAssinatura }}</p>
-                        <p v-if="pagamentoFrete"><strong>Status do pagamento do frete:</strong> {{ pagamentoFrete }}</p>
-                        <p class="flex"><strong>Status:</strong> {{ assinatura.status }}
-                        <div class="circle" :class="assinatura.status == 'Ativo' ? 'ativo' : 'inativo'"></div>
+                    <div class="assinatura-info" v-for="item in assinatura">
+                        <p><strong>Plano:</strong> {{ item.planos.nome }}</p>
+                        <p><strong>Iníciou em:</strong> {{ formatData(item.data_inicio) }}</p>
+                        <p><strong>Tipo de serviço:</strong> {{ item.planos.tipoFuncionalidade }}</p>
+                        <p><strong>Tipo:</strong> {{ item.planos.tipo }}</p>
+                        <p class="flex"><strong>Status:</strong> {{ item.ativo ? 'Ativo' : 'Inativo' }}
+                        <div class="circle" :class="item.ativo ? 'ativo' : 'inativo'"></div>
                         </p>
-                    </div> -->
+                    </div>
+                </div>
+                <div v-else>
+                    <p>O usuário não tem nenhuma assinatura ativa.</p>
+                </div>
+            </div>
+
+            <div v-if="selectedItem.id == 3">
+                <div v-if="historicoPagamento">
+                    <div class="assinatura-info" v-for="item in historicoPagamento">
+                        <p><strong>Nome:</strong> {{ item.nome }}</p>
+                        <p><strong>Descrição:</strong> {{ item.descricao }}</p>
+                        <p><strong>Data de pagamento:</strong> {{ formatData(item.data_inicio) }}</p>
+                        <p><strong>Valor total:</strong> {{ item.valorTotal ? formatarParaReais(item.valorTotal) : "Não informado." }}</p>
+                        <p class="flex"><strong>Status:</strong> {{ item.pago ? 'Pago' : 'Não pago' }}
+                        <div class="circle" :class="item.ativo ? 'ativo' : 'inativo'"></div>
+                        </p>
+                    </div>
                 </div>
                 <div v-else>
                     <p>O usuário não tem nenhuma assinatura ativa.</p>
@@ -82,8 +95,8 @@ export default {
             autenticacao: store.state.autenticacao,
             dadosPessoais: store.state.dadosPessoais,
             assinatura: store.state.assinatura,
+            historicoPagamento: store.state.historicoPagamento,
             pagamentoAssinatura: store.state.pagamentoAssinatura,
-            pagamentoFrete: store.state.pagamentoFrete,
             perfil: store.state.autenticacao.conta.perfil,
             email: store.state.autenticacao.email,
             senha: '',
@@ -100,6 +113,9 @@ export default {
             this.mensagemErro = '';
             this.mensagemAlerta = '';
             this.mensagemSucesso = '';
+        },
+        formatarParaReais(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         },
         async atualizarEmail() {
             if (!this.validarEmail(this.email)) {
@@ -129,26 +145,26 @@ export default {
                 }
             } catch (error) {
                 let mensagem;
-                if(error.responde.data){
+                if (error.responde.data) {
                     if (error.response.data.message) {
-                    if (typeof (error.response.data.message) == 'string') {
-                        mensagem = error.response.data.message;
+                        if (typeof (error.response.data.message) == 'string') {
+                            mensagem = error.response.data.message;
+                        } else {
+                            mensagem = error.response.data.message[0];
+                        }
                     } else {
-                        mensagem = error.response.data.message[0];
+                        mensagem = error.response.data;
                     }
+
+                    if (typeof (mensagem) == 'object') {
+                        mensagem = 'Método não encontrado.';
+                    }
+
+                    this.mensagemErro = mensagem;
                 } else {
-                    mensagem = error.response.data;
-                }
-
-                if (typeof (mensagem) == 'object') {
-                    mensagem = 'Método não encontrado.';
-                }
-
-                this.mensagemErro = mensagem;
-                }else{
                     this.mensagemErro = "Algo deu errado.";
                 }
-              
+
             }
         },
         formatData(dateString) {
@@ -270,6 +286,13 @@ export default {
     transform: scale(1.01);
 }
 
+.assinatura-info {
+    border: 1px solid var(--cor-secundaria);
+    padding: 0.5rem;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
 @media (max-width: 1120px) {
     .buttons {
         justify-content: center;
@@ -292,7 +315,7 @@ export default {
         width: 100%;
     }
 
-    .content-details{
+    .content-details {
         height: 70vh;
         overflow-y: auto;
     }
