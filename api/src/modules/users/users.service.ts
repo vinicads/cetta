@@ -244,7 +244,7 @@ export class UsersService {
 
       const myData = await this.authFunctions.getMyData(req);
 
-      if (myData.conta.perfil != 'Admin' && conta.perfil != "Admin") {
+      if (myData.conta.perfil != 'Admin' && conta.perfil == "Admin") {
         return res.status(401).send("Você não tem autorização para realizar essa ação.")
       }
 

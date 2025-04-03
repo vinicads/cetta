@@ -65,7 +65,6 @@ export default createStore({
           context.commit('setDadosPessoais', response.data.dadosPessoais);
           context.commit('setPerfil', response.data.perfil);
           context.commit('setcookieAccepted', response.data.cookieAccepted);
-          console.log(response.data)
           context.commit('setAssinatura', response.data.assinatura);
           context.commit('setHistoricoPagamento', response.data.historicoPagamento);
           if (response.data.assinatura){

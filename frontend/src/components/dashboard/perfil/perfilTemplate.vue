@@ -11,31 +11,6 @@
             <perfilTemp />
         </div>
     </section>
-
-    <section class="veiculos" v-if="perfil == 'Motorista'">
-        <div class="display">
-            <veiculosTemp />
-        </div>
-    </section>
-
-    <section class="veiculos" v-if="perfil == 'Empresa'">
-        <div class="display">
-            <contatosTemp />
-        </div>
-    </section>
-
-    <section class="veiculos" v-if="perfil === 'Empresa' || perfil === 'Recrutador'">
-        <div class="display">
-            <fretesComponent />
-        </div>
-    </section>
-
-    <section class="veiculos" v-if="perfil === 'Recrutador'">
-        <div class="display">
-            <empresasComponent />
-        </div>
-    </section>
-
 </template>
 
 <script>
@@ -46,20 +21,12 @@ import store from '@/auth/autenticacao.js'
 import VueCookies from 'vue-cookies';
 import Mensagem from '../../alertas/mensagensTemp.vue';
 import perfilTemp from './components/perfilComponent.vue'
-import veiculosTemp from './components/veiculosComponent.vue'
-import contatosTemp from './components/contatosComponent.vue'
-import fretesComponent from './components/fretesComponent.vue'
-import empresasComponent from './components/empresasComponent.vue'
 import { ref } from 'vue';
 
 export default {
   components: {
     Mensagem,
     perfilTemp,
-    veiculosTemp,
-    contatosTemp,
-    empresasComponent,
-    fretesComponent
   },
   data() {
     return {

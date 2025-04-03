@@ -7,8 +7,7 @@
         @fechar-modal="fecharModal" />
     <div class="containerSmall">
         <popupCarregamentoTemp v-if="loading" />
-        <div class="title">Informações pessoais - {{ perfil }}</div>
-        <avalicaoComponent :note="notaRecrutador" v-if="perfil == 'Recrutador'" :idRecrutador="autenticacao.idConta" />
+        <div class="title">Informações pessoais</div>
         <i class="fas fa-edit" @click="modoEdicao = true" v-if="!modoEdicao"></i>
         <div class="info">
             <div class="imagem">
@@ -26,59 +25,18 @@
                         maxlength="45" required>
                 </div>
                 <div class="form-group" style="text-align: left;">
-                    <label for="inputAddress">Documento - {{ tipoDocumento }}</label>
-                    <input type="text" class="form-control" :disabled="!modoEdicao" id="documento"
-                        :maxlength="tipoDocumento == 'CNPJ' ? 18 : 14" v-model="documento"
-                        @input="mascaraDocumentoInput" @paste="colarDocumentoInput" required>
-                </div>
-                <div class="form-group" style="text-align: left;">
                     <label for="inputAddress">Telefone</label>
                     <input type="text" class="form-control" @input="mascaraTelefoneInput" @paste="colarTelefoneInput"
-                        :disabled="!modoEdicao" id="contato" v-model="contato" maxlength="14" required>
+                        :disabled="!modoEdicao" id="celular" v-model="celular" maxlength="14" required>
                 </div>
                 <div class="form-group" style="text-align: left;">
-                    <label for="inputAddress">CEP</label>
-                    <input type="text" class="form-control" :disabled="!modoEdicao" @input="mascaraCEPInput"
-                        @paste="colarCEPInput" id="cep" v-model="cep" maxlength="9" required>
+                    <label for="data_nasc">Data de nascimento</label>
+                    <input type="date" class="form-control" :disabled="!modoEdicao" id="data_nasc" v-model="data_nasc"
+                        required>
                 </div>
-                <div class="form-group" style="text-align: left;" :disabled="!modoEdicao" v-if="perfil == 'Motorista'">
-                    <label>Tipo de veículo</label>
-                    <div>
-                        <label for="CargaSeca" class="radio-label">
-                            <input type="radio" id="CargaSeca" :disabled="!modoEdicao" value="CargaSeca" v-model="tipoVeiculo"> Carga Seca
-                        </label>
-                    </div>
-                    <div>
-                        <label for="Refrigerado" class="radio-label">
-                            <input type="radio" id="Refrigerado" :disabled="!modoEdicao" value="Refrigerado" v-model="tipoVeiculo"> Refrigerado
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group" style="text-align: left;" :disabled="!modoEdicao" v-if="perfil == 'Motorista'">
-                    <label>Possui MEI</label>
-                    <div>
-                        <label for="mei_sim" class="radio-label">
-                            <input type="radio" id="mei_sim" :disabled="!modoEdicao" value="true" v-model="mei"> Sim
-                        </label>
-                    </div>
-                    <div>
-                        <label for="mei_nao" class="radio-label">
-                            <input type="radio" id="mei_nao" :disabled="!modoEdicao" value="false" v-model="mei"> Não
-                        </label>
-                    </div>
-                </div>
-                <div class="form-group" style="text-align: left;" v-if="perfil == 'Motorista'">
-                    <label>Possui ANTT</label>
-                    <div>
-                        <label for="antt_sim" class="radio-label">
-                            <input type="radio" id="antt_sim" :disabled="!modoEdicao" value="true" v-model="antt"> Sim
-                        </label>
-                    </div>
-                    <div>
-                        <label for="antt_nao" class="radio-label">
-                            <input type="radio" id="antt_nao" :disabled="!modoEdicao" value="false" v-model="antt"> Não
-                        </label>
-                    </div>
+                <div class="form-group" style="text-align: left;">
+                    <label for="email">E-mail</label>
+                    <input type="email" class="form-control" disabled id="email" v-model="autenticacao.email" required>
                 </div>
             </div>
         </div>
@@ -95,7 +53,6 @@ import { useRouter } from 'vue-router';
 import router from '@/router/index.js'
 import store from '@/auth/autenticacao.js'
 import VueCookies from 'vue-cookies';
-import avalicaoComponent from './perfilsComponents/avalicaoComponent.vue'
 import popupCarregamentoTemp from '../../../popups/popupCarregamentoTemp.vue'
 import Mensagem from '../../../alertas/mensagensTemp.vue';
 import { fieldCollector, resetFieldBorders, removeField, verificaCEP, MascaraCPF, colarCPF, MascaraCNPJ, colarCNPJ, colarCEP, MascaraCEP, MascaraCelular, RemoveMascaraCNPJ, colarCelular, validarCnpj, RemoveMascaraCPF, RemoveMascaraCEP, RemoveMascaraContato } from '@/utils/utils.js'
@@ -105,7 +62,6 @@ export default {
     components: {
         Mensagem,
         popupCarregamentoTemp,
-        avalicaoComponent
     },
     name: 'perfilComponent',
     data() {
@@ -118,59 +74,35 @@ export default {
             mensagemAlerta: '',
             modoEdicao: false,
             nome: '',
-            documento: '',
-            tipoDocumento: '',
-            contato: '',
-            cep: '',
-            antt: '',
-            tipoVeiculo: '',
-            mei: '',
+            data_nasc: '',
+            celular: '',
             foto: '',
             fotoCompleta: '',
             loading: false,
-            notaRecrutador: 0,
         }
     },
     mounted() {
         this.carregarDados(0)
     },
     methods: {
+        formatarDataParaInput(dataBD) {
+            if (!dataBD) return ""; 
+
+            const data = new Date(dataBD);
+
+            const dataFormatada = data.toISOString().split('T')[0];
+
+            return dataFormatada;
+        },
         carregarDados(index) {
             this.modoEdicao = false;
             this.nome = this.autenticacao.conta.nome;
-            this.tipoDocumento = this.autenticacao.conta.tipoDocumento;
-            if (this.tipoDocumento == 'CPF') {
-                this.documento = colarCPF(this.autenticacao.conta.documento);
-            } else {
-                this.documento = colarCNPJ(this.autenticacao.conta.documento);
-            }
-            this.contato = colarCelular(this.autenticacao.conta.contato);
-            this.cep = colarCEP(this.autenticacao.conta.cep);
+            this.data_nasc = this.formatarDataParaInput(this.autenticacao.conta.data_nasc);
+            this.celular = colarCelular(this.autenticacao.conta.celular);
 
             if (index != 1) {
                 this.foto = this.autenticacao.conta.foto;
                 this.fotoCompleta = `${this.apiUrl}/public/files/${this.foto}`
-            }
-            if (this.perfil == 'Motorista') {
-                this.antt = this.autenticacao.conta.antt;
-                this.mei = this.autenticacao.conta.mei;
-                this.tipoVeiculo = this.autenticacao.conta.tipoVeiculo;
-            }
-
-            if (this.perfil == 'Recrutador') {
-                this.verificarNota()
-            }
-        },
-        async verificarNota() {
-            try {
-                const response = await axios.get(`${this.apiUrl}/avaliacoes/${this.autenticacao.idConta}`, {
-                    withCredentials: true,
-                });
-                if (response.status === 200) {
-                    this.notaRecrutador = response.data.nota
-                }
-            } catch (error) {
-                this.notaRecrutador = 0
             }
         },
         fecharModal() {
@@ -178,53 +110,16 @@ export default {
             this.mensagemAlerta = '';
             this.mensagemSucesso = '';
         },
-        mascaraDocumentoInput(event) {
-            if (this.tipoDocumento == 'CNPJ') {
-                if (this.documento.length == 18) {
-                    this.documento = colarCNPJ(this.documento, event)
-                } else {
-                    this.documento = MascaraCNPJ(this.documento.replace(/\s/g, ''), event);
-                }
-            } else {
-                if (this.documento.length == 14) {
-                    this.documento = colarCPF(this.documento, event)
-                } else {
-                    this.documento = MascaraCPF(this.documento.replace(/\s/g, ''), event);
-                }
-            }
-
-        },
-        colarDocumentoInput(event) {
-            if (this.tipoDocumento == 'CNPJ') {
-                var aux = colarCNPJ(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-                this.documento = aux;
-            } else {
-                var aux = colarCPF(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-                this.documento = aux;
-            }
-
-        },
-        mascaraCEPInput(event) {
-            if (this.cep.length == 9) {
-                this.cep = colarCEP(this.cep, event)
-            } else {
-                this.cep = MascaraCEP(this.cep.replace(/\s/g, ''), event);
-            }
-        },
-        colarCEPInput(event) {
-            var aux = colarCEP(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-            this.cep = aux;
-        },
         mascaraTelefoneInput(event) {
-            if (this.contato.length == 14) {
-                this.contato = colarCelular(this.contato, event)
+            if (this.celular.length == 14) {
+                this.celular = colarCelular(this.celular, event)
             } else {
-                this.contato = MascaraCelular(this.contato.replace(/\s/g, ''), event);
+                this.celular = MascaraCelular(this.celular.replace(/\s/g, ''), event);
             }
         },
         colarTelefoneInput(event) {
             var aux = colarCelular(event.clipboardData.getData('text').replace(/\s/g, ''), event);
-            this.contato = aux;
+            this.celular = aux;
         },
         openFileInput() {
             this.$refs.fileInput.click();
@@ -239,40 +134,10 @@ export default {
                 this.fecharModal()
 
 
-                let cep, documento, telefone
-                if (this.cep) {
-                    cep = RemoveMascaraCEP(this.cep)
-                    let verifica = await verificaCEP(cep)
+                let telefone
 
-                    if (!verifica) {
-                        this.fecharModal()
-                        this.mensagemErro = "Insira um CEP valido.";
-                        this.loading = false;
-                        return;
-                    }
-                }
-
-                if (this.documento) {
-                    if (this.tipoDocumento == 'CNPJ') {
-                        documento = RemoveMascaraCNPJ(this.documento)
-                    } else {
-                        documento = RemoveMascaraCPF(this.documento)
-                    }
-                }
-
-                if (this.contato) {
-                    telefone = RemoveMascaraContato(this.contato)
-                }
-
-                let mei, antt
-                if (this.perfil == 'Motorista') {
-                    if (this.antt) {
-                        antt = this.antt === 'true';
-                    }
-
-                    if (this.mei) {
-                        mei = this.mei === 'true';
-                    }
+                if (this.celular) {
+                    telefone = RemoveMascaraContato(this.celular)
                 }
 
 
@@ -283,13 +148,8 @@ export default {
                     },
                     "conta": {
                         "nome": this.nome,
-                        "tipoDocumento": this.tipoDocumento,
-                        "documento": documento,
-                        "cep": cep,
-                        "antt": antt,
-                        "mei": mei,
-                        "tipoVeiculo": this.tipoVeiculo,
-                        "contato": telefone,
+                        "data_nasc": this.data_nasc,
+                        "celular": telefone,
                         "perfil": this.perfil,
                     }
                 }
@@ -442,7 +302,7 @@ export default {
     font-size: 2rem;
     cursor: pointer;
     color: var(--cor-preto);
-    
+
 }
 
 .fa-edit:hover {
@@ -463,7 +323,7 @@ export default {
     font-weight: bold;
     font-size: 1rem;
     color: var(--cor-branco);
-    transition: 0.5s ease-in-out;
+    transition: 0.3s ease-in-out;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -475,12 +335,12 @@ export default {
 
 .atualizar {
     padding: 1rem 2rem;
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     border: 1px solid var(--cor-principal);
 }
 
 .atualizar:hover {
-    background-color: transparent;
+    background: transparent;
     color: var(--cor-principal);
 }
 
@@ -499,7 +359,7 @@ input[type="radio"] {
     border: 2px solid var(--cor-principal);
     transition: border-color 0.3s ease;
     box-sizing: border-box;
-    
+
 }
 
 input[type="radio"]:checked::after {
