@@ -3,6 +3,8 @@ import { Response } from 'express';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import { PublicRoutesService } from './publicRoutes.service';
+import { tipoFuncionalidade } from '@prisma/client';
+import { filter } from 'rxjs';
 
 @Controller('public')
 export class PublicRoutesController {
@@ -55,10 +57,11 @@ export class PublicRoutesController {
 
   @Get('/grupos')
   async findGrupos(
+    @Query('tipoFuncionalidade') tipoFuncionalidade: string,
     @Query('tipo') tipo: string,
     @Query('data_inicio') data_inicio: string,
     @Query('data_final') data_final: string,
-    @Query('dias') dias: string[],
+    @Query('dias') dias: string,
     @Query('start') start: number,
     @Query('quantity') quantity: number,
     @Res() res: Response,
@@ -67,6 +70,10 @@ export class PublicRoutesController {
 
     if (tipo){
       filters.tipo = tipo;
+    }
+
+    if(tipoFuncionalidade){
+      filters.tipoFuncionalidade = tipoFuncionalidade;
     }
     
     if (data_inicio || data_final) {
@@ -77,13 +84,8 @@ export class PublicRoutesController {
     }
 
     if (dias && dias.length > 0) {
-      filters.datas = {
-        some: {
-          dia: {
-            in: dias,
-          },
-        },
-      };
+      const diasBuscados = dias.split(",");
+      filters.datas = diasBuscados
     }
 
     return this.publicRoutesService.getGrupos(filters, start, quantity, req, res);

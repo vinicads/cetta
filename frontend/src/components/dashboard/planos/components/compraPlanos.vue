@@ -10,24 +10,33 @@
         <div class="compra">
             <div class="form-container">
                 <div class="form-group">
+                    <label>Descrição:</label>
+                    <input type="text" v-model="dadosPlano.subtitulo" disabled>
+                </div>
+                <div class="form-group">
                     <label>Preço:</label>
-                    <input type="text" v-model="precoAtual" disabled>
+                    <input type="text" v-model="valorTotal" disabled>
                 </div>
                 <div class="form-group">
-                    <label>Quantidade de Fretes</label>
-                    <input type="number" :value="qtdeFrete" disabled>
+                    <label>Tipo de serviço</label>
+                    <input type="text" :value="dadosPlano.tipoFuncionalidade" disabled>
                 </div>
                 <div class="form-group">
-                    <label>Quantidade de Contatos</label>
-                    <input type="number" :value="qtdeContatos" disabled>
+                    <label>Tipo</label>
+                    <input type="text" :value="dadosPlano.tipo" disabled>
                 </div>
                 <div class="form-group">
-                    <label>Quantidade de meses:</label>
-                    <select id="qtdeMeses" class="form-control" @change="verificaValor" v-model="qtdeMeses">
-                            <option value="1">1</option>
-                            <option value="3">3</option>
-                            <option value="6">6</option>
-                        </select>
+                    <label>Quantidade de sessões semanais:</label>
+                    <input type="text" :value="dadosPlano.maxSessoes" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Sessões com:</label>
+                    <input type="text"
+                        :value="dadosPlano.qtdePessoas + (dadosPlano.qtdePessoas > 1 ? ' pessoas' : 'pessoa')" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Duração em meses:</label>
+                    <input type="text" :value="dadosPlano.meses + (dadosPlano.meses > 1 ? ' meses' : 'mês')" disabled>
                 </div>
                 <div class="form-group">
                     <label>Informações úteis:</label>
@@ -37,32 +46,51 @@
                                 condições</router-link>.</li>
                         <li>Ao clicar em comprar, vamos redirecioná-lo ao formulário de compras.</li>
                         <li>Quando a compra for confirmada, você receberá os benefícios da assinatura.</li>
-                        <li>Na compra de um plano com vários meses, você receberá novos contatos e fretes adicionais a cada mês.</li>
+                        <li>Somente você poderá participar, dependendo do plano, haverá outras pessoas no mesmo horário.
+                        </li>
+                        <li>{{ dadosPlano.descricao }}</li>
                     </ul>
-                </div>
-                <div class="form-group">
-                    <div>Saldo atual: {{ valorDesconto }}</div>
-                    <div class="checkbox-grid">
-                        <label class="checkbox-label">
-                            <input type="checkbox" @change="verificarValorFinal" v-model="usarDesconto" />
-                            Usar saldo disponível
-                        </label>
-                    </div>
                 </div>
             </div>
             <div class="resumo-container">
+                <h3>Seleção de grupo</h3>
+                <p style="text-align: center;">Se você quiser, ao realizar a compra, já pode garantir a sua vaga em um grupo!</p>
+                <div class="resumo-item">
+                    <span>Grupo selecionado:</span>
+                    <span>{{ idGrupo ? idGrupo : 'Nenhum' }}</span>
+                </div>
+                <div class="buttons">
+                    <button @click="abrirGrupos" class="botaoPrimario">{{ !idGrupo ? 'Selecionar' : 'Trocar' }}</button>
+                </div>
+                <br>
                 <h3>Resumo da Compra</h3>
                 <div class="resumo-item">
                     <span>Plano:</span>
-                    <span>{{ qtdeMeses == 1 ? 'Mensal' : qtdeMeses == 3 ? 'Trimestral' : 'Semestral' }}</span>
+                    <span>{{ dadosPlano.nome }}</span>
                 </div>
                 <div class="resumo-item">
-                    <span>Preço do plano (por mês):</span>
-                    <span>{{ precoAtual }}</span>
+                    <span>Tipo de Serviço:</span>
+                    <span>{{ dadosPlano.tipoFuncionalidade }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span>Tipo:</span>
+                    <span>{{ dadosPlano.tipo }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span>Duração:</span>
+                    <span>{{ dadosPlano.meses + (dadosPlano.meses > 1 ? ' meses' : 'mês') }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span>Sessões semanais:</span>
+                    <span>{{ dadosPlano.maxSessoes }}</span>
+                </div>
+                <div class="resumo-item">
+                    <span>Sessões com:</span>
+                    <span>{{ dadosPlano.qtdePessoas + (dadosPlano.qtdePessoas > 1 ? ' pessoas' : 'pessoa') }}</span>
                 </div>
                 <div class="resumo-item">
                     <span>Valor Final:</span>
-                    <span>{{ valorFinal }}</span>
+                    <span>{{ valorTotal }}</span>
                 </div>
                 <div class="buttons">
                     <button @click="comprarAssinatura" class="botaoPrimario">Comprar</button>
@@ -72,7 +100,7 @@
     </div>
 
 
-
+    <gruposPopupTemp v-if="gruposPopup" @grupo-selecionado="selecionarGrupo" @fechar-popup="fecharGrupos()" />
     <Mensagem :mensagem="mensagemErro" v-if="!mensagemSucesso && !mensagemAlerta" tipo="Erro"
         @fechar-modal="fecharModal" />
     <Mensagem :mensagem="mensagemSucesso" v-if="!mensagemErro && !mensagemAlerta" tipo="Sucesso"
@@ -86,6 +114,7 @@ import store from '@/auth/autenticacao';
 import axios from 'axios';
 import Mensagem from '@/components/alertas/mensagensTemp.vue';
 import popupCarregamentoTemp from '@/components/popups/popupCarregamentoGeralTemp.vue';
+import gruposPopupTemp from './gruposPopupTemp.vue';
 import { verificaCEP, RemoveMascaraCEP } from '@/utils/utils.js';
 
 export default {
@@ -93,6 +122,7 @@ export default {
     components: {
         Mensagem,
         popupCarregamentoTemp,
+        gruposPopupTemp,
     },
     data() {
         return {
@@ -102,16 +132,10 @@ export default {
             mensagemSucesso: '',
             mensagemAlerta: '',
             dadosPlano: '',
-            valorMensal: '',
-            valorTrimensal: '',
-            valorSemestral: '',
-            precoAtual: '',
-            qtdeContatos: '',
-            qtdeFrete: '',
-            qtdeMeses: 6,
+            idGrupo: null,
+            valorTotal: '',
+            gruposPopup: false,
             valorFinal: 0,
-            usarDesconto: false,
-            valorDesconto: '',
             loading: false,
         }
     },
@@ -119,36 +143,25 @@ export default {
         emitirVoltar() {
             this.$emit('voltar');
         },
-        verificarValorFinal(){
-            let valorAtual = Number(this.removerMascaraValorRetorno(this.precoAtual))
+        verificarValorFinal() {
+            let valorAtual = Number(this.removerMascaraValorRetorno(this.valorTotal))
             let valorFinal = valorAtual * this.qtdeMeses;
-            if (this.usarDesconto){
-                let descontoAtual = Number(this.removerMascaraValorRetorno(this.valorDesconto))
-                if (descontoAtual >= valorFinal){
-                    this.valorFinal = this.aplicarMascaraValorRetorno('0')
-                }else{
-                    valorFinal = valorFinal - descontoAtual
-                    this.valorFinal = this.aplicarMascaraValorRetorno(valorFinal.toString())
-                }
-            }else{
-                this.valorFinal = this.aplicarMascaraValorRetorno(valorFinal.toString())
-            }
-        
         },
         aplicarMascaraValorRetorno(valor) {
-            let valorNumerico = parseFloat(valor.replace(',', '.').replace(/[^\d.,]/g, ''));
-            if (isNaN(valorNumerico)) {
-                return "0,00";
-            }
-            let valorFormatado = valorNumerico.toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            });
-            return valorFormatado;
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
         },
         removerMascaraValorRetorno(valor) {
             let valorNumerico = valor.replace(/[^\d,]/g, '').replace(',', '.');
             return valorNumerico;
+        },
+        abrirGrupos(){
+            this.gruposPopup = true;
+        },
+        fecharGrupos(){
+            this.gruposPopup = false;
+        },
+        selecionarGrupo(idGrupo){
+            this.idGrupo = idGrupo
         },
         fecharModal() {
             this.mensagemErro = '';
@@ -165,11 +178,10 @@ export default {
         async comprarAssinatura() {
             this.loading = true;
             const data = {
-              "assinatura": {
-                "idPlanos": this.idPlano,
-                "qtdeMeses": Number(this.qtdeMeses),
-                "usarDesconto": this.usarDesconto
-              }
+                "assinatura": {
+                    "idPlanos": this.idPlano,
+                    "idGrupo": this.idGrupo,
+                }
             };
 
             await axios.post(`${store.state.apiUrl}/pagamentos/assinatura`, data, {
@@ -192,20 +204,20 @@ export default {
                 })
                 .catch(error => {
                     this.fecharModal();
-                    if (!store.state.isAuthenticated){
-                        if (error.response.status == 403){
-                        this.$router.push({name: 'login'})
-                        return;
-                    }
+                    if (!store.state.isAuthenticated) {
+                        if (error.response.status == 403) {
+                            this.$router.push({ name: 'login' })
+                            return;
+                        }
                     }
                     if (error.response.data) {
                         if (error.response.data.message) {
-                            if (Array.isArray(error.response.data.message) && error.response.data.message.length > 0){
+                            if (Array.isArray(error.response.data.message) && error.response.data.message.length > 0) {
                                 this.mensagemErro = error.response.data.message[0];
-                            }else{
+                            } else {
                                 this.mensagemErro = error.response.data.message;
                             }
-             
+
                         } else {
                             this.mensagemErro = error.response.data;
                         }
@@ -226,29 +238,6 @@ export default {
                 this.closePopup();
             }
         },
-        verificaValor(){
-            if(this.qtdeMeses == 1){
-                this.precoAtual = this.aplicarMascaraValorRetorno(this.valorMensal.toString());
-            }else if(this.qtdeMeses == 3){
-                this.precoAtual = this.aplicarMascaraValorRetorno(this.valorTrimestral.toString());
-            }else{
-                this.precoAtual = this.aplicarMascaraValorRetorno(this.valorSemestral.toString());
-            }
-            this.verificarValorFinal()
-        },
-        async getDesconto() {
-            await axios.get(`${store.state.apiUrl}/desconto/meuDesconto`, {
-                withCredentials: true,
-            })
-                .then((response) => {
-                    this.valorDesconto = this.aplicarMascaraValorRetorno(response.data.valor.toString());
-                })
-                .catch((error) => {
-                    this.valorDesconto = this.aplicarMascaraValorRetorno('0');
-                    this.semResultado = true;
-                    this.loading = false;
-                });
-        },
         async getPlano() {
             await axios.get(`${store.state.apiUrl}/public/planos`, {
                 withCredentials: true,
@@ -257,13 +246,9 @@ export default {
                     const planos = response.data;
                     const planoEncontrado = planos.find(plano => plano.idPlanos === this.idPlano);
                     if (planoEncontrado) {
+                        console.log(planoEncontrado)
                         this.dadosPlano = planoEncontrado;
-                        this.qtdeContatos = this.dadosPlano.qtdeContatos;
-                        this.qtdeFrete = this.dadosPlano.qtdeFrete;
-                        this.valorMensal = this.dadosPlano.valorMensal;
-                        this.valorTrimestral = this.dadosPlano.valorTrimestral;
-                        this.valorSemestral = this.dadosPlano.valorSemestral;
-                        this.verificaValor()
+                        this.valorTotal = this.aplicarMascaraValorRetorno(this.dadosPlano.valorTotal)
                     } else {
                         this.emitirVoltar()
                         this.semResultado = true;
@@ -279,7 +264,6 @@ export default {
     },
     mounted() {
         this.loading = true;
-        this.getDesconto();
         this.getPlano();
         document.body.style.overflow = 'hidden';
         document.addEventListener('keydown', this.onEscKey);
@@ -394,12 +378,11 @@ export default {
 }
 
 .compras {
-    max-width: 100%;
     display: flex;
     justify-content: center;
     align-items: start;
     overflow-y: auto;
-    min-width: 30vw;
+    width: 80vw;
     margin-top: 1rem;
     flex-direction: column;
     min-height: 50vh;
@@ -410,20 +393,25 @@ export default {
     display: flex;
     justify-content: space-between;
     max-height: 70vh;
+    width: 100%;
 }
 
 .resumo-container {
     margin-left: 20px;
     padding: 10px;
     background-color: #f9f9f9;
-    border-radius: 5px;
-    width: 100%;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 40%;
     padding: 2%;
-    max-width: 300px;
 }
 
 .resumo-item {
     display: flex;
+    width: 100%;
     justify-content: space-between;
     margin-bottom: 10px;
 }
@@ -497,14 +485,14 @@ export default {
     padding: 10px;
     width: 100%;
     cursor: pointer;
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     border: 1px solid var(--cor-principal);
     transition: 0.5s ease-in-out;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .botaoPrimario:hover {
-    background-color: var(--cor-branco);
+    background: transparent;
     color: var(--cor-principal);
 }
 

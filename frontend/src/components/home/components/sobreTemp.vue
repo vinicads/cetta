@@ -1,7 +1,8 @@
 <template>
     <div class="container">
         <div class="title" data-aos="fade-up">Conheça o CETTA</div>
-        <div class="subtitle" data-aos="fade-up" data-aos-delay="200">O Centro de Educação e Tratamento do Tabagismo (CETTA) nasceu após mais de uma década de
+        <div class="subtitle" data-aos="fade-up" data-aos-delay="200">O Centro de Educação e Tratamento do Tabagismo
+            (CETTA) nasceu após mais de uma década de
             estudos dedicados ao entendimento do tabagismo e das doenças pulmonares e cardíacas associadas ao uso do
             cigarro.</div>
         <div class="cards">
@@ -29,22 +30,29 @@
         <div class="buttons" data-aos="fade-up" data-aos-delay="400">
             <button @click="saibaMais()">Saiba mais</button>
         </div>
+        <div class="cardSobre" style="width: 100%; margin-top: 2rem;" data-aos="fade-up" data-aos-delay="200">
+            <videoPlayer></videoPlayer>
+            <p style="margin-top: 2rem;">Assista ao vídeo e conheça mais sobre o CETTA!</p>
+        </div>
     </div>
 </template>
 
 <script>
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-
+import videoPlayer from '@/components/home/components/videoPlayerTemp.vue';
 export default {
-  mounted() {
-    AOS.init();
-  },
-  methods: {
-    saibaMais() {
-      this.$router.push('/sobre');
+    components: {
+        videoPlayer,
     },
-  },
+    mounted() {
+        AOS.init();
+    },
+    methods: {
+        saibaMais() {
+            this.$router.push('/sobre');
+        },
+    },
 };
 </script>
 
@@ -91,7 +99,7 @@ export default {
 }
 
 .imagem {
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     width: 100%;
     height: 10rem;
     display: flex;
@@ -110,7 +118,7 @@ export default {
     object-fit: cover;
 }
 
-.cardSobre:last-child .imagem img{
+.cardSobre:last-child .imagem img {
     width: 12rem;
     filter: invert(100%);
 }
@@ -140,7 +148,7 @@ export default {
     padding: 10px;
     width: 20%;
     cursor: pointer;
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     border: 1px solid var(--cor-principal);
     transition: 0.5s ease-in-out;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
@@ -151,5 +159,4 @@ export default {
     background-color: var(--cor-branco);
     color: var(--cor-principal);
 }
-
 </style>

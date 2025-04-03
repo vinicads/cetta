@@ -27,6 +27,13 @@ export class GruposController {
     }
   }
 
+  @Get(':id')
+  async findOne(@Res() res: Response,
+    @Body("idGrupo") idGrupo: number,
+    @Req() req: Request) {
+    return this.GruposService.findOne(idGrupo, res, req);
+  }
+
   @Post()
   @UsePipes(ValidationPipe)
   async create(@Res() res: Response,

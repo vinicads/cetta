@@ -61,7 +61,7 @@ export default {
             this.valorFrete = valorFormatado;
         },
         changePlano(data){
-            if(this.perfil != 'Empresa'){
+            if(this.perfil != 'Usuario'){
                 this.$router.push({name: 'login'})
             }
             this.idPlanoAtual = data.idPlanos;
@@ -178,7 +178,7 @@ export default {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100vw;
     height: 100%;
     display: flex;
     justify-content: center;
@@ -193,7 +193,7 @@ export default {
     background: var(--cor-branco);
     padding: 20px;
     border-radius: 15px;
-    max-width: 90%;
+    max-width: 100%;
     overflow-y: hidden;
     display: flex;
     justify-content: center;

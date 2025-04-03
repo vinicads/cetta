@@ -317,16 +317,15 @@ export default {
     font-size: 2em;
     font-weight: bold;
     width: 70%;
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     border: 1px solid var(--cor-principal);
     color: var(--cor-branco);
-   
     border-radius: 15px;
-    transition: 0.5s ease-in-out;
+    transition: 0.3s ease-in-out !important;
 }
 
 .button button:hover {
-    background-color: transparent;
+    background: none;
     color: var(--cor-principal);
 }
 

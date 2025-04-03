@@ -94,7 +94,7 @@ export default {
 }
 
 .accordion-header {
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     color: white;
     padding: 15px;
     border-radius: 15px;

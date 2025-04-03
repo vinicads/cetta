@@ -11,27 +11,23 @@
                 <h4>{{ plano.descricao }}</h4>
                 <div class="valor">
                     <span>R$</span>
-                    <strong>{{ aplicarMascaraValorRetorno(plano.valorSemestral.toString()) }}</strong>
+                    <strong>{{ aplicarMascaraValorRetorno(plano.valorTotal.toString()) }}</strong>
                     <span>/mês</span>
                 </div>
                 <div class="button">
-                    <button @click="choosePlano(plano.idPlanos)">Assinar</button>
+                    <button @click="choosePlano(plano.idPlanos)" data-aos="zoom-in" data-aos-duration="1000" data-aos-delay="500">Assinar</button>
                 </div>
                 <div class="linhaPlano"></div>
                 <div class="beneficios">
                     <h3>Benefícios</h3>
                     <ul>
-                        <li>
-                            <img src="../../../../assets/icons/check.png" alt="">
-                            <span>{{ plano.qtdeContatos }} contatos</span>
+                        <li data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                            <img src="../../../../assets/icons/check.png" alt="" />
+                            <span>{{ plano.meses > 1 ? `${plano.meses} meses de tratamento` : `${plano.meses} mês de tratamento` }}</span>
                         </li>
-                        <li>
-                            <img src="../../../../assets/icons/check.png" alt="">
-                            <span>{{ plano.qtdeFrete }} anúncios de fretes</span>
-                        </li>
-                        <li>
-                            <img src="../../../../assets/icons/check.png" alt="">
-                            <span>Recrutadores</span>
+                        <li data-aos="fade-left" data-aos-duration="1000" data-aos-delay="400">
+                            <img src="../../../../assets/icons/check.png" alt="" />
+                            <span>{{ plano.tipo == 'Grupo' ? `Grupos com até ${plano.qtdePessoas} pessoas.` : `Sessões individuais` }}</span>
                         </li>
                     </ul>
                 </div>
@@ -223,7 +219,7 @@ export default {
 }
 
 .plano {
-    border: 1px solid #d941413d;
+    border: 1px solid var(--cor-secundaria);;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -234,11 +230,12 @@ export default {
     width: 320px;
     height: 40rem;
     overflow-y: auto;
+    overflow-x: hidden;
     flex-direction: column;
 }
 
 .linhaPlano {
-    background-color: #d941413d;
+    background-color: var(--cor-secundaria);;
     height: 1.5px;
     width: 80%;
     margin: 2rem auto;
@@ -286,16 +283,16 @@ export default {
     font-size: 2em;
     font-weight: bold;
     width: 70%;
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     border: 1px solid var(--cor-principal);
     color: var(--cor-branco);
     padding: 0.5rem 2rem;
     border-radius: 15px;
-    transition: 0.5s ease-in-out;
+    transition: 0.3s ease-in-out !important;
 }
 
-.button button:hover {
-    background-color: transparent;
+button:hover {
+    background: transparent !important;
     color: var(--cor-principal);
 }
 

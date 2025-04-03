@@ -30,20 +30,9 @@ const router = createRouter({
       beforeEnter: authGuard
     },
     {
-      path: '/recrutadores',
-      name: 'recrutadores',
-      component: () => import('../components/dashboard/recrutadores/recrutadoresTemp.vue'),
-    },
-    {
-      path: '/recrutadores/:id',
-      name: 'recrutador',
-      component: () => import('../components/dashboard/recrutadores/recrutadorUnico/recrutadorUnicoTemp.vue'),
-      beforeEnter: authGuard
-    },
-    {
-      path: '/fretes',
-      name: 'fretes',
-      component: () => import('../components/dashboard/fretes/fretesTemp.vue'),
+      path: '/grupos',
+      name: 'grupos',
+      component: () => import('../components/dashboard/grupos/gruposTemp.vue'),
     },
     {
       path: '/politicas',

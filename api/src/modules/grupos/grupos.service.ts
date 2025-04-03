@@ -235,6 +235,57 @@ export class GruposService {
     }
 
   }
+  
+  async findOne(idGrupo: number, res, req) {
+    try {
+      const resultado = await this.prisma.grupos.findFirst({
+        where: {
+          idGrupo: Number(idGrupo)
+        },
+        include: {
+          planos: true,
+          datas: true
+        }
+      });
+
+      if (!resultado) {
+        return res.status(404).send("Nenhum grupo cadastrado com esse ID")
+      };
+
+      const contasGrupo = await this.prisma.grupoConta.findMany({
+        where: {
+          idGrupo: Number(resultado.idGrupo)
+        }
+      });
+
+      let contas = [];
+      if (contasGrupo.length > 0) {
+        await Promise.all(contasGrupo.map(async (conta) => {
+          const contaData = await this.prisma.contas.findFirst({
+            where: {
+              idConta: Number(conta.idConta)
+            },
+            include: {
+              autenticacao: true
+            }
+          });
+          if (contaData) {
+            contas.push(contaData)
+          }
+        }
+        ));
+      }
+
+      const newData = {
+        ...resultado,
+        contas: contas
+      }
+
+      return res.status(200).send(newData);
+    } catch (error) {
+      return res.status(500).send("Algo deu errado.");
+    }
+  }
 
   async inserirUsuario(idGrupo, contasIDS: number[], res, req) {
     try {

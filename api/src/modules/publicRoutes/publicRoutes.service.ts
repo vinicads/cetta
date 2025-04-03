@@ -40,12 +40,7 @@ export class PublicRoutesService {
 
   async getGrupos(filters, start, quantity, req, res) {
     try {
-      let contagem = await this.prisma.grupos.findMany({
-        where: filters,
-        include: {
-          datas: true 
-        }
-      });
+      let contagem = 0;
 
       if (!start) {
         start = 0;
@@ -56,21 +51,84 @@ export class PublicRoutesService {
       }
 
       var data = await this.prisma.grupos.findMany({
-        where: filters,
-        skip: Number(start),
-        take: Number(quantity),
+        where: {
+          dataInicio: filters.dataInicio
+        },
         orderBy: {
           dataInicio: 'desc'
+        },
+        include: {
+          datas: true,
+          planos: true
         }
       });
 
       if (!data || data.length === 0) {
+        console.log(data)
         return res.status(404).send("Nenhum grupo encontrado.");
       }
 
+      let grupos = []
+      await Promise.all(data.map(async (grupo) => {
+        try {
+          let datas = await this.prisma.datas.findMany({
+            where: {
+              idGrupo: grupo.idGrupo,
+              dia: {
+                in: filters.datas
+              }
+            }
+          })
+          if (datas.length == 0){
+            return;
+          }
+  
+          let planos = await this.prisma.planos.findFirst({
+            where: {
+              idPlanos: grupo.idPlanos,
+              tipo: filters.tipo,
+              tipoFuncionalidade: filters.tipoFuncionalidade
+            }
+          });
+  
+          if (!planos){
+            return;
+          }
+  
+          let dataGrupo = {
+            ...grupo,
+            datas,
+            planos
+          }
+  
+          grupos.push(dataGrupo)
+  
+        } catch (error) {
+          console.log(error)
+        }
+      }));
+
+      contagem = grupos.length;
+      grupos = grupos.slice(start, start + quantity);
+      
+      if (!grupos || grupos.length === 0) {
+        return res.status(404).send("Nenhum grupo encontrado.");
+      }
+
+      let contasCount = 0;
+      await Promise.all(grupos.map(async (grupo) => {
+        contasCount = await this.prisma.grupoConta.count({
+          where: {
+            idGrupo: grupo.idGrupo
+          },
+        });
+
+        grupo['contasCount'] = contasCount;
+      }));
+
       var newData = {
-        grupos: data,
-        count: contagem.length
+        grupos: grupos,
+        count: contagem
       }
 
 

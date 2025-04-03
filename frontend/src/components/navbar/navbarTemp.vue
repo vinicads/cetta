@@ -414,7 +414,7 @@ nav {
 
     letter-spacing: 2px;
     color: #fff;
-    background-color: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
 }
 
 nav.fixed::after {
@@ -429,7 +429,8 @@ nav.fixed::after {
 }
 
 
-nav.home {
+nav.home:not(.fixed) {
+    background: none;
     background-color: transparent;
 }
 
