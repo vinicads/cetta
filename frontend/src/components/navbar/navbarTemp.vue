@@ -15,7 +15,7 @@
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
                 <a @click="openPopupPlanos">Planos</a>
                 <router-link :class="{ 'active': $route.path === '/sobre' }" to="/sobre">Sobre nós</router-link>
-                <router-link :class="{ 'active': $route.path === '/funciona' }" to="/sobre">Como funciona</router-link>
+                <router-link :class="{ 'active': $route.path === '/funciona' }" to="/funciona">Como funciona</router-link>
                 <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
                 <div class="dropdown">
 

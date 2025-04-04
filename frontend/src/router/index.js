@@ -30,6 +30,16 @@ const router = createRouter({
       beforeEnter: authGuard
     },
     {
+      path: '/sobre',
+      name: 'sobre',
+      component: () => import('../components/sobre/sobreTemp.vue'),
+    },
+    {
+      path: '/funciona',
+      name: 'funciona',
+      component: () => import('../components/funciona/funcionaTemp.vue'),
+    },
+    {
       path: '/grupos',
       name: 'grupos',
       component: () => import('../components/dashboard/grupos/gruposTemp.vue'),
