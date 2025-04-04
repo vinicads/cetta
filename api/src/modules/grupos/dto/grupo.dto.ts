@@ -7,6 +7,10 @@ export class GrupoDTO {
     @IsNotEmpty({ message: "Data de início precisa ser preenchida." })
     dataInicio: Date;
 
+    @IsString({ message: "Link de reunião deve ser do tipo string." })
+    @IsOptional()
+    link: string;
+
     @IsDateString(undefined, { message: "Data final deve ser uma data válida." })
     @IsOptional()
     dataFinal: Date;

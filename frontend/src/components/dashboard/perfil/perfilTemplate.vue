@@ -11,6 +11,12 @@
             <perfilTemp />
         </div>
     </section>
+
+    <section class="profile">
+        <div class="display">
+            <testeComponent />
+        </div>
+    </section>
 </template>
 
 <script>
@@ -21,12 +27,14 @@ import store from '@/auth/autenticacao.js'
 import VueCookies from 'vue-cookies';
 import Mensagem from '../../alertas/mensagensTemp.vue';
 import perfilTemp from './components/perfilComponent.vue'
+import testeComponent from "./components/testeComponent.vue";
 import { ref } from 'vue';
 
 export default {
   components: {
     Mensagem,
     perfilTemp,
+    testeComponent,
   },
   data() {
     return {

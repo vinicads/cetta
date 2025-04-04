@@ -28,6 +28,11 @@ export class questionarioDTO {
     @IsNotEmpty({message: "Questão 5 precisa ser preenchido."})
     questao5: string;
 
+    @MaxLength(45, {message: "O limite de dígitos de questão 6 foi atingido."})
+    @IsString({message:"Questão 6 deve ser uma string."})
+    @IsNotEmpty({message: "Questão 6 precisa ser preenchido."})
+    questao6: string;
+
     @IsOptional()
     idQuestionario: number;
 }

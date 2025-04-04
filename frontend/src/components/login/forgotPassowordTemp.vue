@@ -248,6 +248,7 @@ export default {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
+    border: none !important;
     color: var(--cor-preto) !important;
     background: none !important;
 }
@@ -279,14 +280,16 @@ export default {
     padding: 10px 15px;
     border: none;
     border-radius: 15px;
-    background: var(--cor-principal);
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     color: var(--cor-branco);
+    border: 1px solid var(--cor-principal);
     cursor: pointer;
     transition: 0.5s ease-in-out;
 }
 
 .popup-content button:hover {
-    transform: scale(1.02);
+   background: transparent;
+   color: var(--cor-principal);
 }
 
 .loading-screen {

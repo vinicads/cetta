@@ -150,13 +150,13 @@ export default {
     cursor: pointer;
     background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
     border: 1px solid var(--cor-principal);
-    transition: 0.5s ease-in-out;
+    transition: 0.3s ease-in-out;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 
 .buttons button:hover {
-    background-color: var(--cor-branco);
+    background: var(--cor-branco);
     color: var(--cor-principal);
 }
 </style>

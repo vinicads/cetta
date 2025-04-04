@@ -421,6 +421,15 @@ export class UsersService {
             data: questionario
           });
 
+          await this.prisma.contas.update({
+            where: {
+              idConta: Number(myData.idConta)
+            },
+            data: {
+              fagerstrom: false
+            }
+          })
+
           return res.status(200).send("Respostas do questionário atualizadas com sucesso.");
         }
       }
@@ -434,11 +443,46 @@ export class UsersService {
           idConta: Number(myData.idConta)
         },
         data: {
-          idQuestionario: questionarioCriado.idQuestionario
+          idQuestionario: questionarioCriado.idQuestionario,
+          fagerstrom: false
         }
       })
 
       return res.status(200).send("Respostas do questionário respondidas com sucesso!");
+
+    } catch (error) {
+      return res.status(500).send(error);
+    }
+  }
+
+  async getQuestionario(res, req) {
+    try {
+      const myData = await this.authFunctions.getMyData(req);
+      if (!myData) {
+        return res.status(404).send("Não encontramos seus dados no sistema.");
+      }
+
+      let questionarioExists
+      if (myData.conta.idQuestionario) {
+        questionarioExists = await this.prisma.questionario.findFirst({
+          where: {
+            idQuestionario: Number(myData.conta.idQuestionario)
+          }
+        })
+
+        if (questionarioExists){
+          let dataReturn = {
+            questionario: questionarioExists
+          }
+
+          return res.status(200).send(dataReturn);
+        }
+     
+      }
+
+      if (!questionarioExists) {
+        return res.status(404).send("Questionário não encontrado.");
+      }
 
     } catch (error) {
       return res.status(500).send(error);

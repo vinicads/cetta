@@ -96,6 +96,14 @@ export class UsersController {
     }
   }
 
+  @Get('questionario')
+  @UsePipes(ValidationPipe)
+
+  async getQuestionario(@Res() res: Response,
+    @Req() req: Request) {
+    return this.usersService.getQuestionario(res, req);
+  }
+
   @Post('questionario')
   @UsePipes(ValidationPipe)
 

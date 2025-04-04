@@ -55,8 +55,7 @@
                                 placeholder="Digite sua senha" required>
                         </div>
                         <div class="termos">
-                            <label>Ao se cadastrar, você concorda com os <router-link to="/politicas">termos e condições</router-link> e autoriza o sistema a compartilhar
-                                seus dados com empresas que buscam por motoristas.</label>
+                            <label>Ao se cadastrar, você concorda com os <router-link to="/politicas">termos e condições</router-link> e autoriza o sistema a salvar seus dados, utilizar cookies e alguns termos a mais.</label>
 
                             <div class="checkbox-group">
                                 <label>

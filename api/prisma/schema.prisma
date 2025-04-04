@@ -90,6 +90,7 @@ model grupos {
   idGrupo    Int      @id @default(autoincrement())
   dataInicio DateTime @db.Date
   dataFinal  DateTime @db.Date
+  link       String?   @db.Text
   planos     planos   @relation(fields: [idPlanos], references: [idPlanos], onDelete: Restrict, onUpdate: Cascade)
   idPlanos   Int
   datas      datas[]
