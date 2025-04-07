@@ -27,11 +27,11 @@ export class GruposController {
     }
   }
 
-  @Get(':id')
+  @Get(':idGrupo')
   async findOne(@Res() res: Response,
-    @Body("idGrupo") idGrupo: number,
+    @Param("idGrupo") idGrupo: number,
     @Req() req: Request) {
-    return this.GruposService.findOne(idGrupo, res, req);
+    return this.GruposService.findOne(Number(idGrupo), res, req);
   }
 
   @Post()

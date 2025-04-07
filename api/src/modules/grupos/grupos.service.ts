@@ -238,6 +238,10 @@ export class GruposService {
   
   async findOne(idGrupo: number, res, req) {
     try {
+      const myData = await this.authFunctions.getMyData(req);
+      if (!myData) {
+        return res.status(404).send("Não encontramos seus dados no sistema.");
+      }
       const resultado = await this.prisma.grupos.findFirst({
         where: {
           idGrupo: Number(idGrupo)
@@ -251,6 +255,20 @@ export class GruposService {
       if (!resultado) {
         return res.status(404).send("Nenhum grupo cadastrado com esse ID")
       };
+
+      
+      if (myData.conta.perfil == 'Usuario'){
+        const membro = await this.prisma.grupoConta.findFirst({
+          where: {
+            idConta: Number(myData.conta.idConta),
+            idGrupo: idGrupo
+          }
+        })
+
+        if (!membro){
+          return res.status(404).send("Você não faz parte desse grupo.");
+        }
+      }
 
       const contasGrupo = await this.prisma.grupoConta.findMany({
         where: {

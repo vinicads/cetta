@@ -116,18 +116,7 @@ export default {
             this.mensagemAlerta = '';
             this.mensagemSucesso = '';
         },
-     
-        openCadastroFretesPopup() {
-            var html = document.documentElement;
-            html.classList.add('no-scroll');
-            this.showCadastroFretesPopup = true;
-        },
-        closeCadastroFretesPopup() {
-            var html = document.documentElement;
-            html.classList.remove('no-scroll');
-            this.getFretes();
-            this.showCadastroFretesPopup = false;
-        },
+    
     }
 }
 </script>

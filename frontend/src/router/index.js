@@ -45,6 +45,12 @@ const router = createRouter({
       component: () => import('../components/dashboard/grupos/gruposTemp.vue'),
     },
     {
+      path: '/grupos/:id', 
+      name: 'grupoUnico',
+      component: () => import('../components/dashboard/grupoUnico/grupoUnicoTemp.vue'),
+      props: true,
+    },
+    {
       path: '/politicas',
       name: 'politicas',
       component: () => import('../components/politicas/politicasTemp.vue'),
