@@ -72,6 +72,10 @@ import popupCarregamentoTemp from '../../../popups/popupCarregamentoTemp.vue'
 import { fieldCollector, resetFieldBorders, removeField, verificaCEP, MascaraCPF, retornaCidade, colarCPF, MascaraCNPJ, colarCNPJ, colarCEP, MascaraCEP, MascaraCelular, RemoveMascaraCNPJ, colarCelular, validarCnpj, RemoveMascaraCPF, RemoveMascaraCEP, RemoveMascaraContato } from '@/utils/utils.js'
 import { ref } from 'vue';
 export default {
+    props: {
+        tipoFuncionalidade: String,
+        tipo: String
+    },
     data() {
         return {
             gruposData: [],
@@ -117,7 +121,7 @@ export default {
 
             var start = (this.currentPage - 1) * 1;
             try {
-                const response = await axios.get(`${store.state.apiUrl}/public/grupos?&start=${start}&quantity=${this.itemsPerPage}`, {
+                const response = await axios.get(`${store.state.apiUrl}/public/grupos?&start=${start}&quantity=${this.itemsPerPage}&tipoFuncionalidade=${this.tipoFuncionalidade}&tipo=${this.tipo}`, {
                     withCredentials: true,
                 });
 

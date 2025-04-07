@@ -100,7 +100,7 @@
     </div>
 
 
-    <gruposPopupTemp v-if="gruposPopup" @grupo-selecionado="selecionarGrupo" @fechar-popup="fecharGrupos()" />
+    <gruposPopupTemp v-if="gruposPopup" :tipoFuncionalidade="dadosPlano.tipoFuncionalidade" :tipo="dadosPlano.tipo" @grupo-selecionado="selecionarGrupo" @fechar-popup="fecharGrupos()" />
     <Mensagem :mensagem="mensagemErro" v-if="!mensagemSucesso && !mensagemAlerta" tipo="Erro"
         @fechar-modal="fecharModal" />
     <Mensagem :mensagem="mensagemSucesso" v-if="!mensagemErro && !mensagemAlerta" tipo="Sucesso"

@@ -381,7 +381,7 @@ p {
     color: var(--cor-preto);
 }
 
-input[type="radio" :disabled="!fagerstrom"] {
+input[type="radio"] {
     position: relative;
     appearance: none;
     -webkit-appearance: none;
@@ -394,7 +394,7 @@ input[type="radio" :disabled="!fagerstrom"] {
 
 }
 
-input[type="radio" :disabled="!fagerstrom"]:checked::after {
+input[type="radio"]:checked::after {
     content: "";
     position: absolute;
     top: 50%;

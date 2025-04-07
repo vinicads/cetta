@@ -235,7 +235,7 @@ export default {
 }
 
 .estrutura-item.destaque {
-    border-left: 6px solid #5cb85c;
+    border-left: 6px solid var(--cor-quaternaria);
     background: #f9fdf9;
 }
 
