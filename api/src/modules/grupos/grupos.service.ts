@@ -287,8 +287,40 @@ export class GruposService {
               autenticacao: true
             }
           });
+          const assinaturas = await this.prisma.assinatura.findMany({
+            where: {
+              idConta: conta.idConta
+            },
+            include: {
+              planos: true
+            }
+          });
+
+          const historico = await this.prisma.historicoPagamento.findMany({
+            where: {
+              idConta: conta.idConta
+            }
+          });
+
+          let questionario = null;
+
+          if (contaData.idQuestionario){
+            questionario = await this.prisma.questionario.findFirst({
+              where: {
+                idQuestionario: contaData.idQuestionario
+              }
+            })
+          }
+
+          let dataConta = {
+            ...contaData,
+            assinaturas,
+            historico,
+            questionario
+          }
+
           if (contaData) {
-            contas.push(contaData)
+            contas.push(dataConta)
           }
         }
         ));

@@ -16,10 +16,45 @@
                             </button>
                         </div>
                     </div>
+
                     <div class="buttons" v-if="perfil != 'Usuario'">
                         <button @click="adicionarParticipante" class="action-button">
                             <i class="fas fa-user-plus mr-2"></i> Adicionar Participantes
                         </button>
+                    </div>
+                </div>
+
+                <div class="card-grupo">
+                    <div class="cabecalho">
+                        <h3>📆 Dias & Horários</h3>
+                        <ul>
+                            <li v-for="data in grupo.datas" :key="data.idData">
+                                <i class="fas fa-calendar-day"></i> {{ data.dia }}
+                                <i class="fas fa-clock"></i> {{ data.hora }}
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="data-final">
+                        <i class="fas fa-flag-checkered"></i>
+                        <span>Iniciou em: {{ formatarData(grupo.dataInicio) }}</span>
+                    </div>
+
+                    <div class="data-final">
+                        <i class="fas fa-flag-checkered"></i>
+                        <span>Termina em: {{ formatarData(grupo.dataFinal) }}</span>
+                    </div>
+
+                    <div class="participantes">
+                        <i class="fas fa-users" style="margin-right: 10px;"></i>
+                        <span>
+                            {{ grupo.contas?.length }} / {{ grupo.planos?.qtdePessoas }} participantes
+                            <span v-if="excedeuLimite" class="alerta">⚠️ Limite excedido!</span>
+                        </span>
+                        <div class="barra">
+                            <div class="progresso" :style="{ width: progresso + '%' }"
+                                :class="{ vermelho: excedeuLimite }"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -34,10 +69,10 @@
                 <!-- Conteúdo -->
                 <div class="tab-content animate-fade-in">
                     <div v-if="currentTab === 'Participantes'">
-                        <p class="tab-text">Lista de participantes ou componente relacionado aqui</p>
+                        <usuariosTemp v-if="idGrupo" :idGrupo="idGrupo" />
                     </div>
                     <div v-else-if="currentTab === 'Arquivos'">
-                        <arquivosTemp :idGrupo="idGrupo" />
+                        <arquivosTemp v-if="idGrupo" :idGrupo="idGrupo" />
                     </div>
                 </div>
             </div>
@@ -61,12 +96,14 @@ import Mensagem from '../../alertas/mensagensTemp.vue';
 import copyLinkTemp from './popups/copyLinkTemp.vue';
 import arquivosTemp from './components/arquivosTemp.vue'
 import selecionarUsuarioPopup from './popups/selecionarUsuarioPopup.vue';
+import usuariosTemp from './components/usuariosTemp.vue';
 export default {
     components: {
         Mensagem,
         copyLinkTemp,
         arquivosTemp,
-        selecionarUsuarioPopup
+        selecionarUsuarioPopup,
+        usuariosTemp
     },
     data() {
         return {
@@ -88,6 +125,16 @@ export default {
         this.perfil = store.state.perfil;
         this.getGrupo();
         this.idGrupo = this.$route.params.id;
+    },
+    computed: {
+        progresso() {
+            const atual = this.grupo.contas?.length;
+            const max = this.grupo.planos?.qtdePessoas;
+            return Math.min(100, (atual / max) * 100);
+        },
+        excedeuLimite() {
+            return this.grupo.contas?.length > this.grupo.planos?.qtdePessoas;
+        }
     },
     methods: {
         fecharModal() {
@@ -121,6 +168,14 @@ export default {
         },
         adicionarParticipante() {
             this.selecionarUsuario = true;
+        },
+        formatarData(data) {
+            const d = new Date(data)
+            return d.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            })
         }
     }
 };
@@ -133,12 +188,13 @@ export default {
 }
 
 .grupo-container {
-    background: linear-gradient(to bottom, #f0f0f0, #fff);
     padding: 2rem;
     display: flex;
     border-radius: 15px;
     justify-content: center;
     position: relative;
+    margin-block: 1rem;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .content-wrapper {
@@ -176,6 +232,7 @@ export default {
 .group-header {
     border-radius: 20px;
     padding: 2rem;
+    padding-inline: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -292,6 +349,80 @@ export default {
     animation: fadeIn 0.4s ease-out;
 }
 
+.card-grupo {
+    background: #f9fbff;
+    border: 1px solid var(--cor-principal);
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 64, 128, 0.1);
+    width: 100%;
+    margin: auto;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.card-grupo h3 {
+    margin-bottom: 8px;
+    color: var(--cor-principal);
+}
+
+.card-grupo ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.card-grupo li {
+    margin-bottom: 6px;
+    font-size: 15px;
+    color: #333;
+}
+
+.data-final {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #444;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.participantes {
+    margin-top: 16px;
+    font-size: 14px;
+    color: #444;
+}
+
+.barra {
+    height: 10px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.progresso {
+    height: 100%;
+    background: radial-gradient(circle, #07608a 0%, var(--cor-principal) 100%);
+    transition: width 0.4s ease;
+}
+
+.participantes.excedido span {
+  color: #d40000;
+  font-weight: bold;
+}
+
+.alerta {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #d40000;
+  font-style: italic;
+}
+
+.progresso.vermelho {
+  background: linear-gradient(to right, #ff5e5e, #d40000);
+}
+
+
 @media (max-width: 842px) {
     .grupo-container {
         flex-direction: column;
@@ -308,10 +439,11 @@ export default {
     .group-header {
         flex-direction: column;
         padding: 0.5rem;
+        padding-inline: 0;
         margin-top: 1rem;
     }
 
-    .tab-content{
+    .tab-content {
         padding: 0.5rem;
     }
 }
@@ -333,6 +465,10 @@ export default {
     .icon-button {
         width: 100%;
         border-radius: 10px;
+    }
+
+    .tab-button {
+        padding: 0.3rem;
     }
 
 }
