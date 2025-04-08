@@ -1,17 +1,11 @@
 <template>
     <div class="display" style="margin-top: 8rem;">
         <div class="grupo-container">
-            <div class="top-bar">
-                <button @click="adicionarParticipante" class="action-button">
-                    <i class="fas fa-user-plus mr-2"></i> Adicionar Participantes
-                </button>
-            </div>
             <div class="content-wrapper">
                 <!-- Header -->
                 <div class="group-header">
                     <h1 class="group-title">Grupo {{ grupo.idGrupo }}</h1>
-
-                    <div class="link-wrapper">
+                    <div class="link-wrapper" v-if="grupo.link">
                         <input v-model="grupo.link" type="text" readonly class="link-input" />
                         <div class="link-buttons">
                             <button @click="copiarLink" class="icon-button">
@@ -21,6 +15,11 @@
                                 <i class="fas fa-external-link-alt"></i>
                             </button>
                         </div>
+                    </div>
+                    <div class="buttons" v-if="perfil != 'Usuario'">
+                        <button @click="adicionarParticipante" class="action-button">
+                            <i class="fas fa-user-plus mr-2"></i> Adicionar Participantes
+                        </button>
                     </div>
                 </div>
 
@@ -45,6 +44,7 @@
         </div>
     </div>
 
+    <copyLinkTemp v-if="copyLinkPopup" @closed="copyLinkPopup = false" />
     <Mensagem :mensagem="mensagemErro" v-if="!mensagemSucesso && !mensagemAlerta" tipo="Erro"
         @fechar-modal="fecharModal" />
     <Mensagem :mensagem="mensagemSucesso" v-if="!mensagemErro && !mensagemAlerta" tipo="Sucesso"
@@ -57,9 +57,11 @@
 import store from '@/auth/autenticacao';
 import axios from 'axios';
 import Mensagem from '../../alertas/mensagensTemp.vue';
+import copyLinkTemp from './popups/copyLinkTemp.vue';
 export default {
     components: {
-        Mensagem
+        Mensagem,
+        copyLinkTemp
     },
     data() {
         return {
@@ -68,6 +70,7 @@ export default {
             tabs: ['Participantes', 'Arquivos'],
             contas: [],
             plano: {},
+            copyLinkPopup: false,
             mensagemErro: '',
             mensagemSucesso: '',
             mensagemAlerta: '',
@@ -89,11 +92,11 @@ export default {
                 const id = this.$route.params.id;
                 const response = await axios.get(`${store.state.apiUrl}/grupos/${id}`, { withCredentials: true, });
 
-                if (response.status == 200){
+                if (response.status == 200) {
                     this.grupo = response.data;
                     this.contas = response.data.contas;
                     this.plano = response.data.plano;
-                }else{
+                } else {
                     this.mensagemErro = 'Algo deu errado';
                 }
             } catch (error) {
@@ -103,7 +106,7 @@ export default {
         },
         copiarLink() {
             navigator.clipboard.writeText(this.grupo.link);
-            alert('Link copiado!');
+            this.copyLinkPopup = true
         },
         abrirLink() {
             window.open(this.grupo.link, '_blank');
@@ -163,7 +166,6 @@ export default {
 }
 
 .group-header {
-    margin-top: 2rem;
     border-radius: 20px;
     padding: 2rem;
     display: flex;
