@@ -21,7 +21,7 @@
                         <div class="icone" @click.stop="abrirUsuario(usuario)" title="Abrir">
                             <i class="fas fa-eye"></i>
                         </div>
-                        <div class="icone" @click.stop="excluirUsuario(usuario.idConta)" title="Excluir">
+                        <div class="icone" v-if="perfil == 'Admin'" @click.stop="excluirUsuario(usuario.idConta)" title="Excluir">
                             <i class="fas fa-trash-alt"></i>
                         </div>
                     </div>

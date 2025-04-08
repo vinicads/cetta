@@ -348,7 +348,7 @@ export default {
 
 .drop-zone.dragging, .drop-zone:hover {
     background: linear-gradient(to bottom right, #e0f2fe, #bae6fd);
-    border-color: #3b82f6;
+    border-color: var(--cor-secundaria);
 }
 
 .drop-content {
@@ -359,7 +359,7 @@ export default {
 
 .upload-icon {
     font-size: 2.5rem;
-    color: #3b82f6;
+    color: var(--cor-principal);
     margin-bottom: 0.75rem;
 }
 

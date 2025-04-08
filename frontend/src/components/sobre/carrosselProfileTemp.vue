@@ -83,7 +83,7 @@ const perfis = [
         ]
     },
     {
-        nome: 'Rúbua',
+        nome: 'Rúbia',
         foto: fotoRubia,
         titulo: 'Dra. Rúbia Pereira Nunes Holanda de Melo',
         descricao: 'Atuo com foco na promoção da saúde e do bem-estar por meio de uma abordagem nutricional individualizada. Tenho experiência em atendimentos em consultório, oferecendo um acompanhamento próximo, humanizado e baseado nas necessidades específicas de cada paciente.\nBusco constantemente me atualizar, e já concluí cursos nas áreas de gestão do peso, prescrição de micronutrientes e probióticos, interpretação de exames laboratoriais e a relação entre micronutrientes, neurotransmissores, ansiedade e estresse.\nAcredito que a nutrição vai muito além do prato — é ferramenta de cuidado, equilíbrio e qualidade de vida.',
