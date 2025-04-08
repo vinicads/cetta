@@ -11,7 +11,7 @@
         <i class="fas fa-edit" @click="modoEdicao = true" v-if="!modoEdicao"></i>
         <div class="info">
             <div class="imagem">
-                <img :src="fotoCompleta" v-if="foto != 'semFoto'" alt="">
+                <img :src="fotoCompleta" v-if="foto && foto != 'semFoto'" alt="">
                 <img src="../../../../assets/icons/semFoto.png" v-else alt="">
                 <input type="file" ref="fileInput" style="display: none" @change="handleFileUpload">
                 <div class="overlay" @click="openFileInput">

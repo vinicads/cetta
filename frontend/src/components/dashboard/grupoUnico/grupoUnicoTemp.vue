@@ -37,13 +37,14 @@
                         <p class="tab-text">Lista de participantes ou componente relacionado aqui</p>
                     </div>
                     <div v-else-if="currentTab === 'Arquivos'">
-                        <p class="tab-text">Lista de arquivos ou componente relacionado aqui</p>
+                        <arquivosTemp :idGrupo="idGrupo" />
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <selecionarUsuarioPopup v-if="selecionarUsuario" :idGrupo="idGrupo" @fechar="selecionarUsuario = false;" />
     <copyLinkTemp v-if="copyLinkPopup" @closed="copyLinkPopup = false" />
     <Mensagem :mensagem="mensagemErro" v-if="!mensagemSucesso && !mensagemAlerta" tipo="Erro"
         @fechar-modal="fecharModal" />
@@ -58,19 +59,25 @@ import store from '@/auth/autenticacao';
 import axios from 'axios';
 import Mensagem from '../../alertas/mensagensTemp.vue';
 import copyLinkTemp from './popups/copyLinkTemp.vue';
+import arquivosTemp from './components/arquivosTemp.vue'
+import selecionarUsuarioPopup from './popups/selecionarUsuarioPopup.vue';
 export default {
     components: {
         Mensagem,
-        copyLinkTemp
+        copyLinkTemp,
+        arquivosTemp,
+        selecionarUsuarioPopup
     },
     data() {
         return {
             grupo: {},
+            idGrupo: null,
             currentTab: 'Participantes',
             tabs: ['Participantes', 'Arquivos'],
             contas: [],
             plano: {},
             copyLinkPopup: false,
+            selecionarUsuario: false,
             mensagemErro: '',
             mensagemSucesso: '',
             mensagemAlerta: '',
@@ -80,6 +87,7 @@ export default {
     mounted() {
         this.perfil = store.state.perfil;
         this.getGrupo();
+        this.idGrupo = this.$route.params.id;
     },
     methods: {
         fecharModal() {
@@ -112,7 +120,7 @@ export default {
             window.open(this.grupo.link, '_blank');
         },
         adicionarParticipante() {
-            alert('Abrir modal ou redirecionar para adicionar participante');
+            this.selecionarUsuario = true;
         }
     }
 };
@@ -301,6 +309,10 @@ export default {
         flex-direction: column;
         padding: 0.5rem;
         margin-top: 1rem;
+    }
+
+    .tab-content{
+        padding: 0.5rem;
     }
 }
 

@@ -157,7 +157,6 @@ export default {
     },
     methods: {
         async carregarDados() {
-            console.log(this.fagerstrom)
             if (this.perfil == 'Usuario') {
                 await axios.get(`${store.state.apiUrl}/users/questionario`, {
                 withCredentials: true,

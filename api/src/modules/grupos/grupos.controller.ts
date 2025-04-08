@@ -92,8 +92,14 @@ export class GruposController {
   @Get('arquivos/:idGrupo')
   async getArquivos(@Res() res: Response,
     @Param('idGrupo') idGrupo: number,
+    @Query('caminho') caminho: string | string[] = [],
     @Req() req: Request) {
-    return this.GruposService.getArquivos(idGrupo, res, req);
+      const caminhoArray: string[] = Array.isArray(caminho)
+      ? caminho
+      : caminho
+      ? [caminho]
+      : [];  
+    return this.GruposService.getArquivos(idGrupo, caminhoArray, res, req);
   }
 
   @Post('criarPasta')
@@ -112,11 +118,28 @@ export class GruposController {
     }
   }
 
+  @Post('arquivos/apagar')
+  async apagarArquivos(
+    @Body("idGrupo") idGrupo: number,
+    @Body("caminho") caminho: string[],
+    @Body("nome") nome: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const resultado = await this.authFunctions.verifyProfile(req, ["Admin", "Nutricionista"]);
+    if (resultado) {
+      return this.GruposService.apagarArquivos(idGrupo, caminho, nome, res, req);
+    } else {
+      throw new HttpException("Você não tem autorização para realizar essa ação.", HttpStatus.UNAUTHORIZED);
+    }
+  }
+
   @Post('arquivos')
   @UseInterceptors(FilesInterceptor('arquivos'))
   async postArquivos(
     @Res() res: Response,
     @Body("idGrupo") idGrupo: number,
+    @Body("caminho") caminho: string[],
     @UploadedFiles() arquivos: MulterFile[],
     @Req() req: Request,
   ) {
@@ -140,7 +163,7 @@ export class GruposController {
           })
         );
 
-        return this.GruposService.sendFiles(idGrupo, arquivos, res, req);
+        return this.GruposService.sendFiles(idGrupo, arquivos, caminho, res, req);
       } catch (error) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }

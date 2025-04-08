@@ -6,7 +6,7 @@ import { GrupoDTO } from './dto/grupo.dto';
 import { DataDTO } from './dto/data.dto';
 import { addMonths } from 'date-fns';
 import { contasFunctions } from '../users/functions/contas.functions';
-import path from 'path';
+import * as path from 'path';
 import * as fs from 'fs';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
@@ -235,7 +235,7 @@ export class GruposService {
     }
 
   }
-  
+
   async findOne(idGrupo: number, res, req) {
     try {
       const myData = await this.authFunctions.getMyData(req);
@@ -256,8 +256,8 @@ export class GruposService {
         return res.status(404).send("Nenhum grupo cadastrado com esse ID")
       };
 
-      
-      if (myData.conta.perfil == 'Usuario'){
+
+      if (myData.conta.perfil == 'Usuario') {
         const membro = await this.prisma.grupoConta.findFirst({
           where: {
             idConta: Number(myData.conta.idConta),
@@ -265,7 +265,7 @@ export class GruposService {
           }
         })
 
-        if (!membro){
+        if (!membro) {
           return res.status(404).send("Você não faz parte desse grupo.");
         }
       }
@@ -329,9 +329,15 @@ export class GruposService {
             where: {
               idConta: Number(conta.idConta)
             }
-          })
+          });
+
+          if (conta.perfil != 'Usuario'){
+            return;
+          }
+          
           let assinatura = await this.assinaturaService.get(conta.idConta, resultado.idPlanos);
-          if (assinatura) {
+
+          if (!assinatura) {
             await this.assinaturaService.create(conta.idConta, resultado.idPlanos, true);
           } else {
             let assinaturaDTO = new AssinaturaDTO();
@@ -371,6 +377,7 @@ export class GruposService {
 
       return res.status(200).send("Usuários inseridos no grupo.")
     } catch (error) {
+      console.log(error)
       return res.status(500).send("Algo deu errado.");
     }
   }
@@ -488,9 +495,19 @@ export class GruposService {
     }
   }
 
-  async sendFiles(idGrupo: number, arquivos, res, req) {
+  async sendFiles(idGrupo: number, arquivos, caminho: string[], res, req) {
     try {
-      const caminhoGrupo = path.join('grupos', idGrupo.toString());
+      let partesCaminho = ['grupos', idGrupo.toString()];
+
+      if (caminho) {
+        if (typeof caminho === 'string') {
+          partesCaminho = [...partesCaminho, caminho];
+        } else if (Array.isArray(caminho)) {
+          partesCaminho = [...partesCaminho, ...caminho];
+        }
+      }
+
+      const caminhoGrupo = path.join(...partesCaminho);
       if (arquivos) {
         await this.geralFunctions.saveFiles(arquivos, caminhoGrupo);
       }
@@ -501,12 +518,24 @@ export class GruposService {
     }
   }
 
-  async getArquivos(idGrupo, res, req) {
+  async getArquivos(idGrupo, caminho: string[], res, req) {
     try {
       if (!idGrupo) {
         return res.status(400).send("O ID do grupo deve ser enviado.");
       }
-      const caminhoGrupo = path.join('grupos', idGrupo.toString());
+
+      let partesCaminho = ['src', 'arquivos', 'grupos', idGrupo.toString()];
+
+      if (caminho) {
+        if (typeof caminho === 'string') {
+          partesCaminho = [...partesCaminho, caminho];
+        } else if (Array.isArray(caminho)) {
+          partesCaminho = [...partesCaminho, ...caminho];
+        }
+      }
+
+      const caminhoGrupo = path.join(...partesCaminho);
+
       const arquivos = await this.geralFunctions.getFilesAndFolders(caminhoGrupo);
 
       if (arquivos.length == 0) {
@@ -516,7 +545,7 @@ export class GruposService {
       return res.status(200).send(arquivos)
 
     } catch (error) {
-      return res.status(500).send("Algo deu errado.");
+      return res.status(404).send("Nenhum arquivo ou pasta encontrado.");
     }
   }
 
@@ -527,14 +556,60 @@ export class GruposService {
         return res.status(400).send("O ID do grupo deve ser enviado.");
       }
 
-      const caminhoGrupo = path.join('grupos', idGrupo.toString());
-      const caminhoCompleto = path.join(caminhoGrupo, ...caminho, nomePasta);
+      let partesCaminho = ['src', 'arquivos', 'grupos', idGrupo.toString()];
 
+      if (caminho) {
+        if (typeof caminho === 'string') {
+          partesCaminho = [...partesCaminho, caminho];
+        } else if (Array.isArray(caminho)) {
+          partesCaminho = [...partesCaminho, ...caminho];
+        }
+      }
+
+      const caminhoGrupo = path.join(...partesCaminho);
+      const caminhoCompleto = path.join(caminhoGrupo, nomePasta);
       if (!fs.existsSync(caminhoCompleto)) {
         fs.mkdirSync(caminhoCompleto, { recursive: true });
         return res.status(201).send(`Pasta criada com sucesso: ${caminhoCompleto}`);
       } else {
         return res.status(400).send('A pasta já existe.');
+      }
+    } catch (error) {
+      return res.status(500).send("Algo deu errado.");
+    }
+  }
+
+  async apagarArquivos(idGrupo: number, caminho: string[], nome: string, res, req) {
+    try {
+
+      if (!idGrupo) {
+        return res.status(400).send("O ID do grupo deve ser enviado.");
+      }
+
+      let partesCaminho = ['src', 'arquivos', 'grupos', idGrupo.toString()];
+
+      if (caminho) {
+        if (typeof caminho === 'string') {
+          partesCaminho = [...partesCaminho, caminho];
+        } else if (Array.isArray(caminho)) {
+          partesCaminho = [...partesCaminho, ...caminho];
+        }
+      }
+
+      const caminhoGrupo = path.join(...partesCaminho);
+      const caminhoCompleto = path.join(caminhoGrupo, nome);
+      if (!fs.existsSync(caminhoCompleto)) {
+        return res.status(404).send("Arquivo ou pasta não encontrada.");
+      } else {
+        const stats = fs.statSync(caminhoCompleto);
+
+        if (stats.isDirectory()) {
+          fs.rmSync(caminhoCompleto, { recursive: true, force: true });
+        } else {
+          fs.unlinkSync(caminhoCompleto);
+        }
+
+        return res.status(200).send("Arquivo ou pasta deletado com sucesso.");
       }
     } catch (error) {
       return res.status(500).send("Algo deu errado.");

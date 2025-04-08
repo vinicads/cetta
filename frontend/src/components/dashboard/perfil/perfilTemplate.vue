@@ -12,7 +12,7 @@
         </div>
     </section>
 
-    <section class="profile">
+    <section class="profile" v-if="perfil == 'Usuario'">
         <div class="display">
             <testeComponent />
         </div>
