@@ -70,7 +70,7 @@ export class GruposService {
 
   async create(grupo: GrupoDTO, datas: DataDTO[], res, req) {
     try {
-      if (datas.length < 1) {
+      if (!datas || datas.length < 1) {
         return res.status(400).send("Cada grupo deve ter pelo menos uma sessão semanal.");
       }
 
@@ -109,7 +109,7 @@ export class GruposService {
       }
 
       grupo.dataFinal = addMonths(new Date(), planoExists.meses), 'yyyy-MM-dd';
-
+      grupo.dataInicio = new Date(grupo.dataInicio)
       const grupoNovo = await this.prisma.grupos.create({
         data: grupo
       });
@@ -165,9 +165,15 @@ export class GruposService {
         }
       }
 
-      const grupoNovo = await this.prisma.grupos.create({
-        data: grupo
-      });
+      await this.prisma.grupos.update({
+        where: {
+          idGrupo: Number(id)
+        },
+        data: {
+          dataFinal: new Date(grupo.dataFinal),
+          link: grupo.link,
+        }
+      })
 
       for (const data of datas) {
         await this.prisma.datas.update({
@@ -181,7 +187,7 @@ export class GruposService {
 
       return res.status(200).send("Atualizado com sucesso.");
     } catch (error) {
-
+      console.log(error)
       return res.status(400).send("Dados incorretos.");
     }
   }

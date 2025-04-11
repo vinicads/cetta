@@ -1,7 +1,7 @@
 <template>
     <div class="containerData">
         <popupCarregamentoTemp v-if="loading" />
-        <div class="title">{{ totalItems }} grupos disponíveis </div>
+        <div class="title">Meus grupos </div>
         <div class="info" v-if="!semResultado" style="width: 100%;">
             <div v-for="grupo in grupos" :key="grupo.idGrupo" style="padding: 1rem; border-radius: 8px;"
                 class="bg-gradient-to-br from-white to-gray-50 p-8 min-h-[270px] rounded-2xl shadow-lg border border-gray-300 hover:shadow-2xl transform hover:scale-[1.03] transition duration-300">
@@ -18,20 +18,15 @@
                             {{ data.hora }}</span>
                     </div>
                     <div class="flex items-center text-gray-700 bg-gray-100 px-4 py-3 rounded-lg shadow-sm">
-                        <i class="fas fa-clock text-blue-500 mr-3"></i>
-                        <span class="font-medium text-md" style="font-weight: 400;">Início: {{
-                            formatarData(grupo.dataInicio) }}</span>
+                        <i class="fas fa-clock text-blue-500 mr-3"></i> 
+                        <span class="font-medium text-md" style="font-weight: 400;">Início: {{ formatarData(grupo.dataInicio) }}</span>
                     </div>
-
+                   
                 </div>
 
                 <div class="mt-9 flex justify-between items-center"
                     style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-top: 2rem;">
-                    <div style="width: 50%; border: transparent;"
-                        class="flex items-center text-gray-700 text-lg font-semibold bg-gray-100rounded-lg">
-                        <i class="fas fa-user text-blue-500 mr-2"></i>
-                        {{ grupo.contasCount }}/{{ grupo.planos.qtdePessoas }}
-                    </div>
+    
                     <div class="buttons">
                         <button @click="visualizarGrupo(grupo.idGrupo)">
                             {{ perfil == 'Usuario' || !perfil ? 'Entrar' : 'Abrir' }}
@@ -43,22 +38,7 @@
         <div class="aviso" v-if="semResultado">
             Não há nenhum grupo disponível :(
         </div>
-        <div class="divNavigation" v-if="!semResultado">
-            <div class="pagination">
-                <button @click="changePage(1)">Início</button>
-                <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1">Anterior</button>
-                <div class="paginationText"> <b>{{ currentPage }}</b> de {{ totalPages }}</div>
-                <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages">Próxima</button>
-                <button @click="changePage(totalPages)">Fim</button>
-            </div>
-        </div>
     </div>
-    <Mensagem :mensagem="mensagemErro" v-if="!mensagemSucesso && !mensagemAlerta" tipo="Erro"
-        @fechar-modal="fecharModal" />
-    <Mensagem :mensagem="mensagemSucesso" v-if="!mensagemErro && !mensagemAlerta" tipo="Sucesso"
-        @fechar-modal="fecharModal" />
-    <Mensagem :mensagem="mensagemAlerta" v-if="!mensagemErro && !mensagemSucesso" tipo="Alerta"
-        @fechar-modal="fecharModal" />
 </template>
 
 <script>
@@ -70,12 +50,10 @@ import VueCookies from 'vue-cookies';
 import popupCarregamentoTemp from '../../../popups/popupCarregamentoTemp.vue'
 import { fieldCollector, resetFieldBorders, removeField, verificaCEP, MascaraCPF, retornaCidade, colarCPF, MascaraCNPJ, colarCNPJ, colarCEP, MascaraCEP, MascaraCelular, RemoveMascaraCNPJ, colarCelular, validarCnpj, RemoveMascaraCPF, RemoveMascaraCEP, RemoveMascaraContato } from '@/utils/utils.js'
 import { ref } from 'vue';
-import Mensagem from '@/components/alertas/mensagensTemp.vue';
 
 export default {
     components: {
         popupCarregamentoTemp,
-        Mensagem
     },
     name: 'componentgrupos',
     data() {
@@ -85,62 +63,20 @@ export default {
             perfil: store.state.perfil,
             autenticacao: store.state.autenticacao,
             grupos: [],
-            mensagemErro: '',
-            mensagemSucesso: '',
-            mensagemAlerta: '',
             semResultado: false,
             loading: false,
-            filtersNovo: '',
-            itemsPerPage: 5,
-            totalItems: 0,
-            currentPage: 1,
         }
     },
-    props: {
-        filters: {
-            type: Object,
-            required: false
-        },
-    },
     watch: {
-        filters: {
-            immediate: true,
-            handler(newVal) {
-                this.filtersNovo = newVal || [];
-                this.getgrupos()
-            },
-        },
         '$store.state.perfil'(newItem, oldItem) {
             this.perfil = store.state.perfil;
             this.autenticacao = store.state.autenticacao;
         },
     },
     mounted() {
-        this.filtersNovo = this.filters;
         this.getgrupos()
     },
-    computed: {
-        paginatedItems() {
-            if (!this.grupos || !Array.isArray(this.grupos)) {
-                return [];
-            }
-
-            return this.grupos;
-        },
-        totalPages() {
-            var aux = Math.ceil(this.totalItems / this.itemsPerPage);
-            if (aux == 0) {
-                aux = 1;
-            }
-            return aux;
-        },
-    },
     methods: {
-        fecharModal() {
-            this.mensagemErro = '';
-            this.mensagemAlerta = '';
-            this.mensagemSucesso = '';
-        },
         formatarDiaSemana(dia) {
             const dias = {
                 "Segunda": "Segundas",
@@ -173,7 +109,6 @@ export default {
                     .then(response => {
                         this.mensagemSucesso = response.data;
                         this.loading = false;
-                        console.log(idGrupo)
                         this.$router.push(`/grupos/${idGrupo}`);
                     })
                     .catch(error => {
@@ -195,41 +130,14 @@ export default {
         async getgrupos() {
             this.semResultado = false;
             this.grupos = [];
-            this.totalItems = 0;
-            let tipo = '', tipoFuncionalidade = '', data_inicio = '', dias = '', data_final = ''
-            if (this.filtersNovo) {
-                if (this.filtersNovo.tipo) {
-                    tipo = this.filters.tipo;
-                }
 
-                if (this.filtersNovo.tipoFuncionalidade) {
-                    tipoFuncionalidade = this.filters.tipoFuncionalidade;
-                }
-
-                if (this.filtersNovo.data_inicio) {
-                    data_inicio = this.filters.data_inicio
-                }
-
-                if (this.filtersNovo.data_final) {
-                    data_final = this.filters.data_final
-                }
-
-                if (this.filtersNovo.dias) {
-                    dias = this.filters.dias
-                }
-
-            }
-
-
-            var start = (this.currentPage - 1) * 1;
             try {
-                const response = await axios.get(`${store.state.apiUrl}/public/grupos?&start=${start}&quantity=${this.itemsPerPage}&tipo=${tipo}&tipoFuncionalidade=${tipoFuncionalidade}&data_inicio=${data_inicio}&data_final=${data_final}&dias=${dias}`, {
+                const response = await axios.get(`${store.state.apiUrl}/grupos`, {
                     withCredentials: true,
                 });
 
                 if (response.status === 200) {
-                    this.grupos = response.data.grupos;
-                    this.totalItems = response.data.count;
+                    this.grupos = response.data;
                     this.loading = false;
 
 
@@ -246,35 +154,20 @@ export default {
             const options = { day: "2-digit", month: "short", year: "numeric" };
             return new Date(data).toLocaleDateString("pt-BR", options);
         },
-        changePage(page) {
-            if (page >= 1 && page <= this.totalPages) {
-                this.currentPage = page;
-            } else {
-                if (page < 1) {
-                    this.currentPage = 1;
-                }
-                if (page > this.totalPages) {
-                    this.currentPage = this.totalPages;
-                }
-            }
-            this.getgrupos()
-        },
     }
 }
 </script>
 
 <style scoped>
+
 .containerData {
     width: 95%;
-    min-height: 100vh;
     border-radius: 15px;
-    padding: 0;
+    padding: 5%;
+    background-color: #F2F2F2;
+    margin: 5rem auto;
     position: relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: start;
-    padding-bottom: 1%;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .card {
@@ -355,8 +248,6 @@ export default {
     position: relative;
     padding: 16px;
     border-radius: 8px;
-    background: #f8f9fa;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .imagem {
@@ -688,7 +579,7 @@ select option:hover {
         padding: 1%;
     }
 
-    .buttons {
+    .buttons{
         justify-content: end;
     }
 

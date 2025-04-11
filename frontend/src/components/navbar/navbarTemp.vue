@@ -65,7 +65,7 @@
             <ul class="navigation" id="navigation" v-if="isAuthenticated && perfil == 'Nutricionista'">
 
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
-                <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
+                <router-link :class="{ 'active': $route.path === '/admin/grupos' }" to="/admin/grupos">Grupos</router-link>
                 <router-link :class="{ 'active': $route.path === '/sobre' }" to="/sobre">Sobre nós</router-link>
                 <router-link :class="{ 'active': $route.path === '/funciona' }" to="/funciona">Como funciona</router-link>
                 <div class="dropdown">
@@ -87,7 +87,7 @@
             <ul class="navigation" id="navigation" v-if="isAuthenticated && perfil == 'Admin'">
 
                 <router-link :class="{ 'active': $route.path === '/' }" to="/">Home</router-link>
-                <router-link :class="{ 'active': $route.path === '/grupos' }" to="/grupos">Grupos</router-link>
+                <router-link :class="{ 'active': $route.path === '/admin/grupos' }" to="/admin/grupos">Grupos</router-link>
                 <router-link :class="{ 'active': $route.path === '/sobre' }" to="/sobre">Sobre nós</router-link>
                 <router-link :class="{ 'active': $route.path === '/funciona' }" to="/funciona">Como funciona</router-link>
                 <router-link :class="{ 'active': $route.path === '/admin/planos' }"
@@ -176,7 +176,7 @@ export default {
                 path: '/socket.io',
             };
 
-            this.socket = io(`wss://cetta.com`, options);
+            this.socket = io(`wss://localhost.com`, options);
 
             this.socket.on('connect', () => {
                 console.log('Aguardando pagamento');

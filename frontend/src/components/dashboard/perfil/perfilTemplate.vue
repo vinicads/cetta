@@ -14,6 +14,12 @@
 
     <section class="profile" v-if="perfil == 'Usuario'">
         <div class="display">
+            <gruposComponent />
+        </div>
+    </section>
+
+    <section class="profile" v-if="perfil == 'Usuario'">
+        <div class="display">
             <testeComponent />
         </div>
     </section>
@@ -28,6 +34,7 @@ import VueCookies from 'vue-cookies';
 import Mensagem from '../../alertas/mensagensTemp.vue';
 import perfilTemp from './components/perfilComponent.vue'
 import testeComponent from "./components/testeComponent.vue";
+import gruposComponent from "./components/gruposComponent.vue";
 import { ref } from 'vue';
 
 export default {
@@ -35,6 +42,7 @@ export default {
     Mensagem,
     perfilTemp,
     testeComponent,
+    gruposComponent
   },
   data() {
     return {

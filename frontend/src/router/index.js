@@ -68,6 +68,12 @@ const router = createRouter({
       beforeEnter: authGuard
     },
     {
+      path: '/admin/grupos',
+      name: 'gruposAdmin',
+      component: () => import('../components/dashboard/administrativo/grupos/gruposTemp.vue'),
+      beforeEnter: authGuard
+    },
+    {
       path: '/admin/geral',
       name: 'geralAdmin',
       component: () => import('../components/dashboard/administrativo/geral/geralTemp.vue'),
