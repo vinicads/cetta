@@ -46,20 +46,6 @@
     },
     mounted() {
         this.fecharAutomatico();
-        if (this.data.tipo == 'assinatura'){
-            let assinatura = this.assinatura;
-            assinatura.qtdeContatos = this.data.qtdeContatos
-            assinatura.qtdeFretes = this.data.qtdeFretes
-            assinatura.prazo = this.data.prazo
-            assinatura.status = this.data.status
-            store.commit('setAssinatura', assinatura);
-        }
-
-        if (this.data.tipo == 'frete'){
-            let frete = this.assinatura;
-            frete.qtdeFretes = this.data.qtdeFretes
-            store.commit('setAssinatura', frete);
-        }
     },
     watch: {
       mensagem(newMensagem) {

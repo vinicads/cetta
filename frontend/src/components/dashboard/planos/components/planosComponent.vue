@@ -76,14 +76,6 @@ export default {
                 idPlanos: idPlanos
             });
         },
-        aplicarMascaraValor() {
-            let valorNumerico = this.valorFrete.replace(/\D/g, '');
-            let valorFormatado = parseFloat(valorNumerico / 100).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            });
-            this.valorFrete = valorFormatado;
-        },
         aplicarMascaraValorRetorno(valor) {
             let valorNumerico = valor.replace(/[^\d.]/g, '');
 
@@ -96,10 +88,6 @@ export default {
             let valorFormatado = numero.toFixed(2).replace('.', ',');
 
             return valorFormatado;
-        },
-        removerMascaraValor() {
-            let valorNumerico = this.valorFrete.replace(/[^\d,]/g, '');
-            this.valorFrete = valorNumerico;
         },
         removerMascaraValorRetorno(valor) {
             let valorNumerico = valor.replace(/[^\d,]/g, '');

@@ -373,15 +373,16 @@ export class MailService {
         );
 
         const mailOptions = {
-            from: `"Encontrando Fretes" <${process.env.SMTP_USER}>`,
+            from: `"CETTA" <${process.env.SMTP_USER}>`,
             to: to,
-            subject: 'Redefinição de senha',
+            subject: 'Novas notícias!',
             html: html,
         };
 
 
         try {
             const info = await transporter.sendMail(mailOptions);
+            console.log(info)
             return;
         } catch (error) {
             console.log(error)

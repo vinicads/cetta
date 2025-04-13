@@ -52,14 +52,6 @@ export default {
         }
     },
     methods: {
-        aplicarMascaraValor() {
-            let valorNumerico = this.valorFrete.replace(/\D/g, '');
-            let valorFormatado = parseFloat(valorNumerico / 100).toLocaleString('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            });
-            this.valorFrete = valorFormatado;
-        },
         changePlano(data){
             if(this.perfil != 'Usuario'){
                 this.$router.push({name: 'login'})
@@ -79,10 +71,6 @@ export default {
                 currency: 'BRL'
             });
             return valorFormatado;
-        },
-        removerMascaraValor() {
-            let valorNumerico = this.valorFrete.replace(/[^\d,]/g, '');
-            this.valorFrete = valorNumerico;
         },
         removerMascaraValorRetorno(valor) {
             let valorNumerico = valor.replace(/[^\d,]/g, '');

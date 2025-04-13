@@ -9,9 +9,6 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn'],
   });
-
- 
-  //ajustar as rotas de cookies no login e no service dos users e no publicRoutes, na de Get do frete
   
 
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));

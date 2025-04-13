@@ -47,7 +47,7 @@
                 <tr v-for="(item, index) in paginatedItems" :key="index">
                   <td data-label="Nome">{{ item.nome }}</td>
                   <td data-label="Contatos">{{ item.tipoFuncionalidade == 'Nutricao' ? 'Nutrição' : item.tipoFuncionalidade }}</td>
-                  <td data-label="Fretes">{{ item.tipo }}</td>
+                  <td data-label="Tipo">{{ item.tipo }}</td>
                   <td data-label="Ações">
                     <button type="button" title="Editar" class="btn" @click="openEditarPlanosPopup(item)">
                       <img src="@/assets/icons/editar.png" alt="Visualizar" class="btnEditar">

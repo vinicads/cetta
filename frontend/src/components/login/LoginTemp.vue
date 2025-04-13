@@ -114,23 +114,7 @@ export default {
         }
       })
         .then(async (response) => {
-          store.commit('setDadosPessoais', response.data.dadosPessoais);
-          store.commit('setPerfil', response.data.perfil);
-          store.commit('setcookieAccepted', response.data.cookieAccepted);
-          store.commit('setAssinatura', response.data.assinatura);
-          store.commit('setisAutenticacao', response.data.autenticacao);
-          store.commit('setAuthenticated', true);
-          if (response.data.assinatura) {
-            if (response.data.assinatura.idPagamentoFrete) {
-              store.commit('setPagamentoAtivo', true);
-            }
-            if (response.data.assinatura.codPagamento) {
-              store.commit('setPagamentoAtivo', true);
-            }
-          }
-          store.commit('setisVerified', true);
-          this.loading = false;
-          this.$router.push({ name: 'home' });
+            location.reload()
         })
         .catch((error) => {
           if(error.response.data){
