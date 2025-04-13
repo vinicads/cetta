@@ -23,6 +23,7 @@
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import imagem from '../../../assets/images/rebeca.jpg';
+import rubia from '../../../assets/images/rubia.jpg'
 
 export default {
     data() {
@@ -35,17 +36,11 @@ export default {
                     subtitulo: 'Doutora em Fisioterapia Cardiopulmonar'
                 },
                 {
-                    imagem: imagem,
-                    nome: 'Carlos',
-                    titulo: 'Cardiologista',
-                    subtitulo: 'Especialista em Saúde Cardiovascular'
-                },
-                {
-                    imagem: imagem,
-                    nome: 'Dra. Rúbia Pereira N. H. de Melo',
+                    imagem: rubia,
+                    nome: 'Dra. Rúbia Pereira Nunes Holanda de Melo',
                     titulo: 'Nutricionista',
-                    subtitulo: 'Especialista em Xxxxxxx'
-                }
+                    subtitulo: 'Pós-graduanda em Nutrição Clínica'
+                },
             ]
         };
     },

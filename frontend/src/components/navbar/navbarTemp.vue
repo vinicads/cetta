@@ -176,7 +176,7 @@ export default {
                 path: '/socket.io',
             };
 
-            this.socket = io(`wss://localhost.com`, options);
+            this.socket = io(`wss://programacetta.com`, options);
 
             this.socket.on('connect', () => {
                 console.log('Aguardando pagamento');
