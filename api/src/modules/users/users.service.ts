@@ -62,11 +62,11 @@ export class UsersService {
       if (!myData){
         var token = await this.loginFunctions.generateToken(data.email);
         res.cookie('meuToken', token, {
-          secure: false,
+          secure: true,
           httpOnly: true,
           withCredentials: true,
           sameSite: 'lax',
-          // domain: 'encontrandofretes.com',
+          domain: 'programacetta.com',
           maxAge: Number(String(process.env.tempoCookie)),
           path: "/",
         });
@@ -191,11 +191,11 @@ export class UsersService {
 
         var token = await this.loginFunctions.generateToken(email);
         res.cookie('meuToken', token, {
-          secure: false,
+          secure: true,
           httpOnly: true,
           withCredentials: true,
           sameSite: 'lax',
-          //domain: 'encontrandofretes.com',
+          domain: 'programacetta.com',
           maxAge: Number(String(process.env.tempoCookie)),
           path: "/",
         })
@@ -262,11 +262,11 @@ export class UsersService {
         if (autenticacaoExists.email != data.email) {
           var token = await this.loginFunctions.generateToken(data.email);
           res.cookie('meuToken', token, {
-            secure: false,
+            secure: true,
             httpOnly: true,
             withCredentials: true,
             sameSite: 'lax',
-            //domain: 'encontrandofretes.com',
+            domain: 'programacetta.com',
             maxAge: Number(String(process.env.tempoCookie)),
             path: "/",
           })
@@ -379,10 +379,10 @@ export class UsersService {
       if (samePerson) {
         res.cookie('meuToken', "token", {
           maxAge: 1,
-          secure: false,
+          secure: true,
           httpOnly: true,
           sameSite: 'lax',
-          //domain: 'encontrandofretes.com',
+          domain: 'programacetta.com',
           withCredentials: true,
           path: "/",
         });
