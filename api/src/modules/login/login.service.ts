@@ -60,11 +60,11 @@ export class LoginService {
               };
         
               res.cookie('meuToken', token, {
-                secure: false,
+                secure: true,
                 httpOnly: true,
                 withCredentials: true,
                 sameSite: 'lax',
-               //domain: 'programacetta.com',
+               domain: 'programacetta.com',
                 maxAge: Number(String(process.env.tempoCookie)),
                 path: "/",
               });
@@ -97,10 +97,10 @@ export class LoginService {
 async cookieAccepted(req, res){
   res.cookie('cookieAccepted', "true", {
     maxAge: 1000 * 60 * 60 * 24 * 365,
-    secure: false,
+    secure: true,
     httpOnly: true,
     sameSite: 'lax',
-   //domain: 'programacetta.com',
+   domain: 'programacetta.com',
     withCredentials: true,
     path: "/",
   });
@@ -156,10 +156,10 @@ async cookieAccepted(req, res){
         }else{
           return res.cookie('meuToken', "token", {
             maxAge: 1,
-            secure: false,
+            secure: true,
             httpOnly: true,
             sameSite: 'lax',
-           //domain: 'programacetta.com',
+           domain: 'programacetta.com',
             withCredentials: true,
             path: "/",
           }).status(400).send("Token invalido.");
@@ -168,10 +168,10 @@ async cookieAccepted(req, res){
       }else {
          res.cookie('meuToken', "token", {
         maxAge: 1,
-        secure: false,
+        secure: true,
         httpOnly: true,
         sameSite: 'lax',
-       //domain: 'programacetta.com',
+       domain: 'programacetta.com',
         withCredentials: true,
         path: "/",
       });
@@ -196,9 +196,9 @@ async cookieAccepted(req, res){
     if (cookies.meuToken) {
       res.cookie('meuToken', "token", {
         maxAge: 1,
-        secure: false,
+        secure: true,
         sameSite: 'lax',
-       //domain: 'programacetta.com',
+       domain: 'programacetta.com',
         httpOnly: true,
         withCredentials: true,
         path: "/",
@@ -236,11 +236,11 @@ async forgotPassword(email, req, res){
   let codeEncrypt =  await this.usersFunctions.encryptCode(code)
   let token = await this.loginFunctions.generateTokenCode(codeEncrypt, email);
   res.cookie('secureCode', token, {
-    secure: false,
+    secure: true,
     httpOnly: true,
     withCredentials: true,
     sameSite: 'lax',
-   //domain: 'programacetta.com',
+   domain: 'programacetta.com',
     maxAge: 30 * 60 * 1000,
     path: "/",
   })
@@ -280,9 +280,9 @@ async changePassword(dados, code, req, res){
       })
       res.cookie('secureCode', "code", {
         maxAge: 1,
-        secure: false,
+        secure: true,
         sameSite: 'lax',
-       //domain: 'programacetta.com',
+       domain: 'programacetta.com',
         httpOnly: true,
         withCredentials: true,
         path: "/",

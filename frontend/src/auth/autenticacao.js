@@ -13,7 +13,7 @@ export default createStore({
     historicoPagamento: null,
     pagamentoAtivo: false,
     pagamentoAssinatura: null,
-    apiUrl: 'http://localhost:3000',
+    apiUrl: 'https://programacetta.com/api',
     api: 'programacetta.com/api',
     cookieAccepted: false,
     loading: false
