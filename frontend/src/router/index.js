@@ -35,8 +35,8 @@ const router = createRouter({
       component: () => import('../components/sobre/sobreTemp.vue'),
     },
     {
-      path: '/funciona',
-      name: 'funciona',
+      path: '/comoFunciona',
+      name: 'comoFunciona',
       component: () => import('../components/funciona/funcionaTemp.vue'),
     },
     {
@@ -88,10 +88,11 @@ const router = createRouter({
       name: 'paginaNaoEncontrada',
       component: () => import('../components/errors/notFound.vue'),
     },
-  ]
+  ],
 })
 
 router.beforeEach((to, from, next) => {
+  window.scrollTo(0, 0);
   store.commit('setLoading', true);
   next();
 });

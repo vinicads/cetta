@@ -6,10 +6,10 @@
                data-aos="fade-up" 
                :data-aos-delay="index * 200" 
                data-aos-duration="1000">
-              <img :src="item.image" :alt="item.title" class="card-image" />
+              <img :src="item.image"  :style="index === 1 ? { objectPosition: 'bottom left', objectFit: 'cover' } : {}" :alt="item.title" class="card-image" />
               <h3 class="card-title">{{ item.title }}</h3>
               <div class="buttons">
-                  <button @click="$router.push('/funciona')">Saiba mais</button>
+                <button @click="$router.push({ path: '/comoFunciona', query: { index: item.index } })">Saiba mais</button>
               </div>
           </div>
       </div>
@@ -19,6 +19,7 @@
 <script>
 import image1 from '@/assets/images/quebrandoCigarro.jpg';
 import image2 from '@/assets/images/pratos.jpg';
+import image3 from '@/assets/icons/zoom.png';
 import { useRouter } from 'vue-router';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -28,8 +29,9 @@ export default {
       const router = useRouter();
 
       const cards = [
-          { title: 'Tratamento para parar de fumar', image: image1 },
-          { title: 'Acompanhamento nutricional para o paciente em processo de parada', image: image2 }
+          { title: 'Tratamento para parar de fumar', image: image1, index: 0 },
+          { title: 'Acompanhamento nutricional', image: image2, index: 1 },
+          { title: 'Como usar o ZOOM', image: image3, index: 2 },
       ];
 
       AOS.init();
@@ -89,7 +91,7 @@ export default {
     border: none;
     color: var(--cor-principal);
     padding: 10px;
-    width: 30%;
+    width: 20rem;
     cursor: pointer;
     background-color: var(--cor-branco);
     border: 1px solid var(--cor-branco);
@@ -100,6 +102,12 @@ export default {
 .buttons button:hover {
     background-color: transparent;
     color: var(--cor-branco);
+}
+
+@media (max-width: 768px){
+    .buttons button{
+        width: 100%;
+    }
 }
 
 @media (max-width: 768px) {

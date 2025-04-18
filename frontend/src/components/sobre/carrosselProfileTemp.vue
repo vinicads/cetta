@@ -1,11 +1,11 @@
 <template>
     <div class="perfil-container">
         <div class="display">
-            <h1 style="margin-block: 1rem; text-align: center;">NOSSA EQUIPE</h1>
+            <h1 style="margin-block: 1rem; text-align: center; font-family: 'Poppins';">NOSSA EQUIPE</h1>
             <!-- Seletor de perfis -->
             <div class="perfil-selector">
                 <div v-for="(perfil, index) in perfis" :key="index" @click="perfilSelecionado = index"
-                    :class="['perfil-btn', { active: perfilSelecionado === index }]">
+                    :class="['perfil-btn', { active: perfilSelecionado == index }]">
                     {{ perfil.nome }}
                 </div>
             </div>
@@ -13,7 +13,7 @@
             <!-- Perfil selecionado -->
             <div class="perfil-info">
                 <div class="perfil-imagem">
-                    <img :src="perfis[perfilSelecionado].foto" alt="Foto Perfil" />
+                    <img :src="perfis[perfilSelecionado].foto" alt="Foto Perfil" :style="perfilSelecionado == 0 ? { objectPosition: 'bottom right !important', objectFit: 'cover' } : {}" />
                 </div>
                 <div class="perfil-texto">
                     <h2>{{ perfis[perfilSelecionado].titulo }}</h2>
@@ -24,10 +24,10 @@
             <!-- Cards de formação -->
             <div class="cards-grid">
                 <div class="card" v-for="(formacao, index) in perfis[perfilSelecionado].formacoes" :key="index">
-                    <div class="card-imagens" :class="{ unica: formacao.imagens.length === 1 }">
+                    <div class="card-imagens" :class="{ unica: formacao.imagens.length === 1, mais: formacao.imagens.length > 1 }">
                         <img v-for="(img, i) in formacao.imagens" :key="i" :src="img" alt="Imagem Formação" />
                     </div>
-
+                    <p style="font-weight: bold; color: #000;">{{formacao.nome}}</p>
                     <h4>{{ formacao.titulo }}</h4>
                     <ul>
                         <li v-for="(curso, i) in formacao.cursos" :key="i">
@@ -41,8 +41,8 @@
 </template>
 
 
-<script setup>
-import { ref } from 'vue'
+<script>
+import { ref, onMounted } from 'vue'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
@@ -51,60 +51,93 @@ import fotoRebeca from '../../assets/images/rebeca.jpg'
 import fotoRubia from '../../assets/images/rubia.jpg'
 import unesp from '../../assets/icons/unesp.png'
 import unimi from '../../assets/icons/unimi.png'
-import lundiquist from '../../assets/icons/lundquist.png'
+import lundiquist from '../../assets/icons/lundquist.jpg'
 import ufscar from '../../assets/icons/ufscar.png'
 import ucla from '../../assets/icons/ucla.png'
 import imip from '../../assets/icons/imip.png'
-import unifg from '../../assets/icons/unifg.png'
+import unifg from '../../assets/icons/unifg.jpg'
+import faveni from '../../assets/icons/faveni.png'
 import inades from '../../assets/icons/inades.png'
-const perfis = [
-    {
-        nome: 'Rebeca',
-        foto: fotoRebeca,
-        titulo: 'Dra. Rebeca Nunes Silva',
-        descricao: 'Dos 13 anos da minha carreira como pesquisadora, 7 foram dedicados ao estudo do tabagismo, entendendo como ele age no organismo humano e quais são as melhores estratégias para ajudar as pessoas a pararem de fumar.\nDurante o meu tempo na UNESP, tive o privilégio de ajudar mais de 300 pessoas a pararem de fumar.\nAinda, quando estive na UCLA, tive a honra de visitar um dos maiores e mais importantes centros de tratamento do tabagismo no mundo, que fica no hospital Mayo Clinic, em Minnesota, EUA.\nApós esses 7 anos, dediquei os outros 6 anos da minha carreira ao estudo das doenças pulmonares e cardíacas associadas ao tabagismo, principalmente a doença pulmonar obstrutiva crônica (DPOC, ou enfisema pulmonar) e a insuficiência cardíaca.',
-        formacoes: [
-            {
-                imagens: [unesp],
-                cursos: ['Graduanda em Fisioterapia', 'Mestra em Fisioterapia Respiratória', 'Psicopatologia Aplicada']
-            },
-            {
-                imagens: [unimi, lundiquist],
-                cursos: ['Mestra em Fisioterapia Respiratória', 'Doutora em Fisioterapia Cardiopulmonar', 'Instituto Lundquist']
-            },
-            {
-                imagens: [ufscar],
-                cursos: ['Doutora em Fisioterapia Cardiopulmonar']
-            },
-            {
-                imagens: [ucla],
-                cursos: ['Pós-Doutorado em Cardiologia']
-            },
-        ]
-    },
-    {
-        nome: 'Rúbia',
-        foto: fotoRubia,
-        titulo: 'Dra. Rúbia Pereira Nunes Holanda de Melo',
-        descricao: 'Atuo com foco na promoção da saúde e do bem-estar por meio de uma abordagem nutricional individualizada. Tenho experiência em atendimentos em consultório, oferecendo um acompanhamento próximo, humanizado e baseado nas necessidades específicas de cada paciente.\nBusco constantemente me atualizar, e já concluí cursos nas áreas de gestão do peso, prescrição de micronutrientes e probióticos, interpretação de exames laboratoriais e a relação entre micronutrientes, neurotransmissores, ansiedade e estresse.\nAcredito que a nutrição vai muito além do prato — é ferramenta de cuidado, equilíbrio e qualidade de vida.',
-        formacoes: [
-            {
-                imagens: [unifg],
-                cursos: ['Graduanda em Nutrição']
-            },
-            {
-                imagens: [inades],
-                cursos: ['Pós-graduanda em Fisioterapia']
-            },
-            {
-                imagens: [imip],
-                cursos: ['Pós-graduanda em Nutrição Clínica']
-            },
-        ]
-    },
-]
+import { useRoute } from 'vue-router';
 
-const perfilSelecionado = ref(0)
+export default {
+    data() {
+        return {
+            index: this.$route.query.index,
+            perfis: [
+                {
+                    nome: 'Dra. Rebeca Nunes',
+                    foto: fotoRebeca,
+                    titulo: 'Dra. Rebeca Nunes Silva',
+                    descricao: 'Dos 13 anos da minha carreira como pesquisadora, 7 foram dedicados ao estudo do tabagismo, entendendo como ele age no organismo humano e quais são as melhores estratégias para ajudar as pessoas a pararem de fumar.\nDurante o meu tempo na UNESP, tive o privilégio de ajudar mais de 300 pessoas a pararem de fumar.\nAinda, quando estive na UCLA, tive a honra de visitar um dos maiores e mais importantes centros de tratamento do tabagismo no mundo, que fica no hospital Mayo Clinic, em Minnesota, EUA.\nApós esses 7 anos, dediquei os outros 6 anos da minha carreira ao estudo das doenças pulmonares e cardíacas associadas ao tabagismo, principalmente a doença pulmonar obstrutiva crônica (DPOC, ou enfisema pulmonar) e a insuficiência cardíaca.',
+                    formacoes: [
+                        {
+                            imagens: [unesp],
+                            nome: "UNESP",
+                            cursos: ['Fisioterapeuta', 'Mestra em Fisioterapia Respiratória']
+                        },
+                        {
+                            imagens: [ucla, lundiquist],
+                            nome: "UCLA",
+                            cursos: ['Mestra em Fisioterapia Respiratória (Division of Respiratory Medicine at Harbor-UCLA Medical Center – David Geffen School of Medicine)', 'Doutora em Fisioterapia Cardiopulmonar e Fisiologia do Exercício (Division of Respiratory Medicine at Harbor-UCLA Medical Center – David Geffen School of Medicine)']
+                        },
+                        {
+                            imagens: [ufscar],
+                            nome: "UFSCAR",
+                            cursos: ['Doutora em Fisioterapia Cardiopulmonar']
+                        },
+                        {
+                            imagens: [unimi],
+                            nome: "UNIMI",
+                            cursos: ['Pós-Doutorado em Cardiologia e Fisiologia do Exercício']
+                        },
+                    ]
+                },
+                {
+                    nome: 'Dra. Rúbia Holanda',
+                    foto: fotoRubia,
+                    titulo: 'Dra. Rúbia Pereira Nunes Holanda de Melo',
+                    descricao: 'Atuo com foco na promoção da saúde e do bem-estar por meio de uma abordagem nutricional individualizada. Tenho experiência em atendimentos em consultório, oferecendo um acompanhamento próximo, humanizado e baseado nas necessidades específicas de cada paciente.\nBusco constantemente me atualizar, e já concluí cursos nas áreas de gestão do peso, prescrição de micronutrientes e probióticos, interpretação de exames laboratoriais e a relação entre micronutrientes, neurotransmissores, ansiedade e estresse.\nAcredito que a nutrição vai muito além do prato — é ferramenta de cuidado, equilíbrio e qualidade de vida.',
+                    formacoes: [
+                        {
+                            imagens: [unifg],
+                            nome: "UNIFG",
+                            cursos: ['Nutricionista']
+                        },
+                        {
+                            imagens: [inades],
+                            nome: "INADES",
+                            cursos: ['Especialização em Fitoterapia']
+                        },
+                        {
+                            imagens: [imip],
+                            nome: "IMIP",
+                            cursos: ['Especialização em Nutrição Clínica']
+                        },
+                        {
+                            imagens: [faveni],
+                            nome: "FAVENI",
+                            cursos: ['Especialização em Nutrição Clínica, Metabolismo, Prática e Terapia Nutricional']
+                        },
+                    ]
+                },
+            ],
+            index: this.$route.query.index,
+            perfilSelecionado: 0,
+        }
+    },
+    mounted() {
+        if (this.index){
+            this.perfilSelecionado = this.index;
+        }
+    }
+};
+
+
+
+
+
+
 </script>
 
 <style scoped>
@@ -225,8 +258,21 @@ const perfilSelecionado = ref(0)
     width: 45%;
 }
 
+.card-imagens.mais{
+    flex-direction: column;
+   
+}
+
+.card-imagens.mais img{
+    width: 100%;
+    height: 10rem;
+    object-fit: contain;
+}
+
 .card-imagens.unica img {
     width: 100%;
+    height: auto;
+    object-fit: contain;
 }
 
 .card h4 {

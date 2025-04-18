@@ -4,6 +4,9 @@
             <div data-aos="fade-right">Faça por você!</div>
             <h2 data-aos="zoom-in">viva a vida</h2>
             <h2 class="color" data-aos="zoom-in" data-aos-delay="500">sem cigarro</h2>
+            <div class="buttons" data-aos="zoom-in" data-aos-delay="800">
+                <button @click="sendToRegister()">Cadastre-se no nosso site</button>
+            </div>
         </div>
         <div class="logo">
             <img src="../../../assets/icons/logo.png" alt="" data-aos="flip-up" data-aos-delay="900" />
@@ -18,6 +21,11 @@ import 'aos/dist/aos.css';
 export default {
     mounted() {
         AOS.init(); // Inicializa a biblioteca
+    },
+    methods: {
+        sendToRegister(){
+            this.$router.push({ path: '/cadastro'});
+        }
     }
 };
 </script>
@@ -118,6 +126,32 @@ export default {
 .logo img{
     width: 35rem;
     object-fit: contain;
+}
+
+.buttons{
+    width: auto;
+    margin-top: 1rem;
+    padding: 0 !important;
+    background-color: transparent !important;
+}
+
+.buttons button {
+    border-radius: 15px;
+    border: none;
+    color: var(--cor-principal);
+    padding: 20px;
+    width: 100%;
+    cursor: pointer;
+    background: var(--cor-branco);
+    border: 1px solid var(--cor-branco);
+    transition: 0.3s ease-in-out;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+
+.buttons button:hover {
+    background: transparent;
+    color: var(--cor-branco);
 }
 
 @media (max-width: 1200px) {

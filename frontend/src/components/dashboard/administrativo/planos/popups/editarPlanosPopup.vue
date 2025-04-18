@@ -50,7 +50,7 @@
                     <label for="tipoFuncionalidade">Tipo de Funcionalidade</label>
                     <select id="tipoFuncionalidade" class="form-control" v-model="tipoFuncionalidade" required>
                         <option class="select-option" value="Nutricao">Nutrição</option>
-                        <option class="select-option" value="Tabaquismo">Tabaquismo</option>
+                        <option class="select-option" value="Tabaquismo">Tabagismo</option>
                     </select>
                 </div>
                 <div class="form-group">

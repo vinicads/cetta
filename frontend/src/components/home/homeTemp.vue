@@ -32,7 +32,7 @@
         <transformeSuaJornadaTemp />
     </section>
 
-    <section class="planos" v-if="temPlanos">
+    <section class="planos background" v-if="temPlanos">
         <div class="display">
             <planosHome  @semPlanos="temPlanos = false;"/>
         </div>

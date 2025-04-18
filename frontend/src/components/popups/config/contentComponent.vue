@@ -31,7 +31,7 @@
                     <div class="assinatura-info" v-for="item in assinatura">
                         <p><strong>Plano:</strong> {{ item.planos.nome }}</p>
                         <p><strong>Iníciou em:</strong> {{ formatData(item.data_inicio) }}</p>
-                        <p><strong>Tipo de serviço:</strong> {{ item.planos.tipoFuncionalidade }}</p>
+                        <p><strong>Tipo de serviço:</strong> {{ item.planos.tipoFuncionalidade == 'Nutricao' ? 'Nutrição' : 'Tabagismo' }}</p>
                         <p><strong>Tipo:</strong> {{ item.planos.tipo }}</p>
                         <p class="flex"><strong>Status:</strong> {{ item.ativo ? 'Ativo' : 'Inativo' }}
                         <div class="circle" :class="item.ativo ? 'ativo' : 'inativo'"></div>

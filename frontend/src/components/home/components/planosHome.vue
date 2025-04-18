@@ -2,6 +2,7 @@
     <planosTemp :idPlano="idPlano" v-if="showPlanosPopup" @close="closePopupPlanos" />
     <div class="container">
         <div class="title" data-aos="fade-up" data-aos-duration="1000">FAÇA PARTE DO CETTA</div>     
+        <div class="subtitle" data-aos="fade-up" data-aos-duration="1200">Cadastre-se e fique por dentro das modalidades de atendimento e planos de tratamento do CETTA</div>     
     </div>
     <div class="containerPlanos">
         <div class="loading" v-if="loading">
@@ -174,11 +175,19 @@ export default {
 
 <style scoped>
 .title {
-    color: var(--cor-preto);
+    color: var(--cor-branco);
     font-size: 2.5rem;
     margin-bottom: 1rem;
     text-align: center;
     font-weight: bold;
+}
+
+.subtitle {
+    color: var(--cor-branco);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: bold; 
 }
 
 
@@ -244,6 +253,7 @@ export default {
 }
 
 .plano {
+    background-color: var(--cor-branco);
     border: 1px solid var(--cor-secundaria);
     border-radius: 8px;
     padding: 20px;

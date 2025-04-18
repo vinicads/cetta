@@ -21,7 +21,7 @@
                     </div>
                     <div>
                         <label for="Tabaquismo" class="radio-label">
-                            <input type="radio" id="Tabaquismo" value="Tabaquismo" v-model="tipoFuncionalidade"> Tabaquismo
+                            <input type="radio" id="Tabaquismo" value="Tabaquismo" v-model="tipoFuncionalidade"> Tabagismo
                         </label>
                     </div>
                 </div>

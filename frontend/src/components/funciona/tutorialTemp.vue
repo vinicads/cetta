@@ -1,7 +1,7 @@
 <template>
     <div class="pagina-tutorial">
         <div class="display">
-            <h1 class="titulo" data-aos="fade-up">Guia para acessar as reuniões por Zoom</h1>
+            <h1 class="titulo" data-aos="fade-up">Guia para acessar as reuniões pela plataforma Zoom</h1>
             <p class="descricao" data-aos="fade-up" data-aos-delay="100">
                 Olá! Preparamos este guia para te ajudar a acessar as sessões online do nosso programa com facilidade.
                 Siga os passos para participar das reuniões pela plataforma Zoom. 😊

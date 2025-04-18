@@ -12,7 +12,7 @@
         </router-link>
         <div class="container">
             <div class="form-image">
-                <img src="../../assets/images/women.png" alt="">
+                <img src="../../assets/images/cadastrese.jpg" alt="">
             </div>
             <div class="form">
                 <form @submit="handleSubmit">
@@ -27,7 +27,7 @@
                         <div class="input-box">
                             <label for="firstname">Nome completo</label>
                             <input id="firstname" type="text" v-model="nome" maxlength="45" name="nome"
-                                placeholder="Digite seu primeiro nome" required>
+                                placeholder="Digite seu nome completo" required>
                         </div>
 
                         <div class="input-box">
@@ -70,7 +70,7 @@
                         <button type="submit">Continuar</button>
 
                     </div>
-                    <div class="jacadastrado"> Possui cadastro? <router-link to="/login">Clique aqui.</router-link>
+                    <div class="jacadastrado"> Já possui cadastro?  <router-link to="/login">Clique aqui.</router-link>
                     </div>
                 </form>
             </div>
@@ -273,7 +273,7 @@ export default {
     width: 100%;
     height: 100%;
     border-radius: 15px;
-    object-fit: contain;
+    object-fit: cover;
 }
 
 .form {

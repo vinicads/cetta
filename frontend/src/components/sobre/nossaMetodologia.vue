@@ -4,22 +4,15 @@
   
       <!-- Primeira seção -->
       <div class="bloco bloco-invertido" data-aos="fade-right" data-aos-duration="1000">
-        <img class="foto" src="@/assets/images/respirando.jpg" alt="Foto Metodologia 1" data-aos="zoom-in" data-aos-duration="1000"/>
+        <img class="foto" src="@/assets/images/idosos.jpg" alt="Foto Metodologia 1" data-aos="zoom-in" data-aos-duration="1000"/>
         <p class="texto" data-aos="fade-left" data-aos-delay="200">
           Trabalhamos com acompanhamento online, garantindo um atendimento de qualidade
           e com a comodidade de estarmos sempre com você, aonde quer que você esteja.
-        </p>
-      </div>
-  
-      <!-- Segunda seção -->
-      <div class="bloco" data-aos="fade-left" data-aos-duration="1000">
-        <p class="texto" data-aos="fade-right" data-aos-delay="200">
           Nosso tratamento é baseado em evidências científicas e conta com um modelo de
           abordagem elaborado após 13 anos de estudos dedicados ao entendimento do tabagismo
           e das doenças relacionadas ao uso do cigarro, principalmente enfisema pulmonar
           (ou doença pulmonar obstrutiva crônica - DPOC) e insuficiência cardíaca.
         </p>
-        <img class="foto" src="@/assets/images/quebrandoCigarro.jpg" alt="Foto Metodologia 2" data-aos="zoom-in" data-aos-duration="1000"/>
       </div>
   
       <!-- Terceira seção -->
@@ -32,17 +25,18 @@
           terapia medicamentosa, mas também terapias que abordem a mudança de comportamento
           e aconselhamento profissional próximo do paciente.
         </p>
-        <img class="foto" src="@/assets/images/pessoasFelizes1.jpg" alt="Foto Metodologia 3" data-aos="zoom-in" data-aos-duration="1000"/>
+        <img class="foto" src="@/assets/images/medicos.jpg" alt="Foto Metodologia 3" data-aos="zoom-in" data-aos-duration="1000"/>
       </div>
   
       <!-- Quarta seção -->
       <div class="bloco" data-aos="fade-left" data-aos-duration="1000">
+     
+        <img class="foto" src="../../assets/images/online.jpg" alt="Foto Metodologia 4" data-aos="zoom-in" data-aos-duration="1000"/>
         <p class="texto" data-aos="fade-right" data-aos-delay="200">
           Ainda, por compreendermos a complexidade da doença, a nossa equipe conta com profissionais
           de áreas distintas, qualificados para ajudar você a viver uma vida livre do cigarro e com
           mais qualidade!
         </p>
-        <img class="foto" src="../../assets/images/idosos.jpg" alt="Foto Metodologia 4" data-aos="zoom-in" data-aos-duration="1000"/>
       </div>
     </section>
   </template>
@@ -76,7 +70,7 @@
   .bloco {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     margin-bottom: 3rem;
     gap: 2rem;
     flex-wrap: wrap;

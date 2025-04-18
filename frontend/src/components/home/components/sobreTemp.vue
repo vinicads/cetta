@@ -159,4 +159,10 @@ export default {
     background: var(--cor-branco);
     color: var(--cor-principal);
 }
+
+@media (max-width: 768px){
+    .buttons button{
+        width: 100%;
+    }
+}
 </style>

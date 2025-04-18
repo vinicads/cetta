@@ -14,8 +14,7 @@
             </div>
         </section>
 
-        <!-- Sessão Criativa -->
-        <section class="tratamento-section" data-aos="fade-up">
+        <section class="tratamento-section" v-if="!index || index == 0" data-aos="fade-up">
             <div class="tratamento-image" data-aos="zoom-in">
                 <img src="../../assets/images/quebrandoCigarro.jpg" alt="Parar de fumar" />
             </div>
@@ -34,13 +33,25 @@
         </section>
     </div>
 
-    <section class="estrutura-section" data-aos="fade-up">
+    <section class="estrutura-section" v-if="!index || index == 0" data-aos="fade-up">
         <div class="display">
             <h2 class="titulo">Estrutura do Programa CETTA</h2>
             <div class="estrutura-grid">
+                <div class="estrutura-item destaque" data-aos="fade-left">
+                    <h3>Consultoria Individual</h3>
+                    <p>
+                        Essa modalidade de atendimento é estruturada para pessoas que desejam realizar apenas uma <strong>consulta única
+                            com um profissional especialista</strong> no tratamento do tabagismo.
+                    </p>
+                    <p>
+                        Assim, você pode contar com aconselhamento profissional e conversar sobre o que mais for
+                        importante para o seu processo de parada.
+                    </p>
+                </div>
+
                 <div class="estrutura-item" data-aos="fade-right">
                     <p>
-                        O nosso programa conta com um total de <strong>21 sessões com profissional
+                        O nosso programa conta com um total de <strong>22 sessões com profissional
                             especialista</strong>, realizadas ao longo de <strong>6 meses</strong>.
                     </p>
                     <p>
@@ -48,11 +59,11 @@
                     </p>
                     <ul>
                         <li>
-                            Participação em todas as 21 sessões (individual ou em grupo, conforme a modalidade
+                            Participação em todas as 22 sessões (individual ou em grupo, conforme a modalidade
                             escolhida), realizadas via Zoom
                         </li>
                         <li>
-                            4 aulas educacionais explicando tudo sobre o tabagismo, dependências e terapia medicamentosa
+                            4 aulas educacionais explicando tudo sobre o tabagismo, tipos de dependências e terapia medicamentosa
                         </li>
                         <li>
                             Consulta médica para prescrição dos medicamentos utilizados no seu tratamento
@@ -66,24 +77,14 @@
                     </ul>
                 </div>
 
-                <div class="estrutura-item destaque" data-aos="fade-left">
-                    <h3>Consultoria Individual</h3>
-                    <p>
-                        Estruturamos essa modalidade para pessoas que desejam realizar apenas uma <strong>consulta única
-                            com um profissional especialista</strong> no tratamento do tabagismo.
-                    </p>
-                    <p>
-                        Assim, você pode contar com aconselhamento profissional e conversar sobre o que mais for
-                        importante para o seu processo de parada.
-                    </p>
-                </div>
+               
             </div>
         </div>
     </section>
 
     <agoraTemp />
 
-    <tutorialTemp />
+    <tutorialTemp v-if="!index || index == 2" />
 </template>
 
 
@@ -93,6 +94,11 @@ import 'aos/dist/aos.css';
 import agoraTemp from './agoraTemp.vue';
 import tutorialTemp from './tutorialTemp.vue';
 export default {
+    data() {
+        return {
+            index: this.$route.query.index,
+        }
+    },
     components: {
         agoraTemp,
         tutorialTemp

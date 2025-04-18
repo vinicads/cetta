@@ -30,7 +30,7 @@
                     <h4>Navegar</h4>
                     <ul v-if="!isAuthenticated">
                         <li><router-link to="/sobre">Sobre nós</router-link></li>
-                        <li><router-link to="/funciona">Como funciona</router-link></li>
+                        <li><router-link to="/comoFunciona">Como funciona</router-link></li>
                         <li><router-link to="/grupos">Grupos</router-link></li>
                         <li><router-link to="/login">Login</router-link></li>
                         <li><router-link to="/cadastro">Cadastre-se</router-link></li>
@@ -38,21 +38,21 @@
                     </ul>
                     <ul v-if="isAuthenticated && perfil == 'Usuario'">
                         <li><router-link to="/sobre">Sobre nós</router-link></li>
-                        <li><router-link to="/funciona">Como funciona</router-link></li>
+                        <li><router-link to="/comoFunciona">Como funciona</router-link></li>
                         <li><router-link to="/grupos">Grupos</router-link></li>
                         <li><router-link to="/meuPerfil">Meu Perfil</router-link></li>
                         <li><router-link to="/politicas">Politica de Privacidade e Termos de Uso</router-link></li>
                     </ul>
                     <ul v-if="isAuthenticated && perfil == 'Nutricionista'">
                         <li><router-link to="/sobre">Sobre nós</router-link></li>
-                        <li><router-link to="/funciona">Como funciona</router-link></li>
+                        <li><router-link to="/comoFunciona">Como funciona</router-link></li>
                         <li><router-link to="/admin/grupos">Grupos</router-link></li>
                         <li><router-link to="/meuPerfil">Meu Perfil</router-link></li>
                         <li><router-link to="/politicas">Politica de Privacidade e Termos de Uso</router-link></li>
                     </ul>
                     <ul v-if="isAuthenticated && perfil == 'Admin'">
                         <li><router-link to="/sobre">Sobre nós</router-link></li>
-                        <li><router-link to="/funciona">Como funciona</router-link></li>
+                        <li><router-link to="/comoFunciona">Como funciona</router-link></li>
                         <li><router-link to="/admin/grupos">Grupos</router-link></li>
                         <li><router-link to="/admin/planos">Planos</router-link></li>
                         <li><router-link to="/admin/usuarios">Usuários</router-link></li>

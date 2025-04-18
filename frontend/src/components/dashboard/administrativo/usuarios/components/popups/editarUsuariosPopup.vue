@@ -43,7 +43,7 @@
                 <button @click="closePopup">Cancelar</button>
                 <button @click="editarUsuario">Atualizar</button>
             </div>
-            <div class="assinaturas" v-if="data.assinatura.length > 0">
+            <div class="assinaturas" v-if="data.assinatura && data.assinatura.length > 0">
                 <h5>Assinaturas</h5>
                 <div class="row">
                     <div class="col-md-4" v-for="item in data.assinatura" :key="item.idAssinatura">
@@ -51,7 +51,7 @@
                     </div>
                 </div>
             </div>
-            <div class="assinaturas" v-if="data.historicoPagamento.length > 0">
+            <div class="assinaturas" v-if="data.historicoPagamento && data.historicoPagamento.length > 0">
                 <h5>Histórico de pagamento</h5>
                 <div class="row">
                     <div class="col-md-3" v-for="item in data.historicoPagamento" :key="item.idPagamento">

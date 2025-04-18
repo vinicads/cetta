@@ -30,7 +30,7 @@
                 <div class="texto">
                     <h3>Estrutura</h3>
                     <p>
-                        Ainda, a estrutura do CETTA foi cuidadosamente pensada para aumentar as chances de sucesso da
+                        A estrutura do CETTA foi cuidadosamente pensada para aumentar as chances de sucesso da
                         parada, combinando as terapias medicamentosa e cognitivo-comportamental, conectando pessoas que
                         compartilham da mesma experiência em diferentes momentos de vida e aproximando paciente e
                         terapeuta durante esse processo que exige comprometimento, empatia, cuidado e muita dedicação.
@@ -39,10 +39,11 @@
             </div>
         </div>
 
-        <div class="title" style="margin-top: 2rem; font-size: 1.3rem;" data-aos="fade-up">Aqui, nós te mostramos que você pode e você merece viver uma vida livre do
-            cigarro!</div>
+        <div class="title" style="margin-top: 2rem; font-size: 1.3rem;" data-aos="fade-up">
+            No CETTA, nós entendemos que parar de fumar é difícil, mas também temos a certeza de que é possível.</div>
         <div class="subtitle" data-aos="fade-up" data-aos-delay="200">
-            No CETTA, nós entendemos que parar de fumar é difícil, mas também temos a certeza de que é possível.
+            Aqui, nós te mostramos que você pode e você merece viver uma vida livre do
+            cigarro!
         </div>
 
     </div>

@@ -7,7 +7,7 @@
                 class="bg-gradient-to-br from-white to-gray-50 p-8 min-h-[270px] rounded-2xl shadow-lg border border-gray-300 hover:shadow-2xl transform hover:scale-[1.03] transition duration-300">
                 <h2 class="text-2xl font-bold text-gray-900" style="font-weight: bold;">{{
                     grupo.planos.tipoFuncionalidade == 'Nutricao' ?
-                        'Nutrição' : grupo.planos.tipoFuncionalidade }}</h2>
+                        'Nutrição' : 'Tabagismo' }}</h2>
                 <p class="text-lg text-gray-600 mt-2">{{ grupo.planos.tipo }}</p>
 
                 <div class="mt-2 space-y-3">

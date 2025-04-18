@@ -19,7 +19,7 @@
                 </div>
                 <div class="form-group">
                     <label>Tipo de serviço</label>
-                    <input type="text" :value="dadosPlano.tipoFuncionalidade" disabled>
+                    <input type="text" :value="dadosPlano.tipoFuncionalidade == 'Nutricao' ? 'Nutrição' : 'Tabagismo'" disabled>
                 </div>
                 <div class="form-group">
                     <label>Tipo</label>
@@ -70,7 +70,7 @@
                 </div>
                 <div class="resumo-item">
                     <span>Tipo de Serviço:</span>
-                    <span>{{ dadosPlano.tipoFuncionalidade }}</span>
+                    <span>{{ dadosPlano.tipoFuncionalidade == 'Nutricao' ? 'Nutrição' : 'Tabagismo' }}</span>
                 </div>
                 <div class="resumo-item">
                     <span>Tipo:</span>

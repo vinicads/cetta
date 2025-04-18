@@ -9,11 +9,11 @@
                 data-aos="fade-up"
                 :data-aos-delay="index * 200"
             >
-                <img :src="pessoa.imagem" alt="Imagem" class="image" />
+                <img :src="pessoa.imagem" alt="Imagem"  :style="index === 0 ? { objectPosition: 'bottom right', objectFit: 'cover' } : {}" class="image" />
                 <h3 class="name">{{ pessoa.nome }}</h3>
                 <p class="role">{{ pessoa.titulo }}</p>
                 <p class="subtitle">{{ pessoa.subtitulo }}</p>
-                <button @click="navigateToSobre">Saiba mais</button>
+                <button @click="navigateToSobre(pessoa.index)">Saiba mais</button>
             </div>
         </div>
     </div>
@@ -33,13 +33,15 @@ export default {
                     imagem: imagem,
                     nome: 'Dra. Rebeca Nunes Silva',
                     titulo: 'Fisioterapeuta',
-                    subtitulo: 'Doutora em Fisioterapia Cardiopulmonar'
+                    subtitulo: 'Doutora em Fisioterapia Cardiopulmonar',
+                    index: 0
                 },
                 {
                     imagem: rubia,
                     nome: 'Dra. Rúbia Pereira Nunes Holanda de Melo',
                     titulo: 'Nutricionista',
-                    subtitulo: 'Pós-graduanda em Nutrição Clínica'
+                    subtitulo: 'Pós-graduanda em Nutrição Clínica',
+                    index: 1
                 },
             ]
         };
@@ -48,8 +50,8 @@ export default {
         AOS.init({ duration: 1000, once: true });
     },
     methods: {
-        navigateToSobre() {
-            this.$router.push('/sobre');
+        navigateToSobre(index) {
+            this.$router.push({ path: '/sobre', query: { index: index } });
         }
     }
 };

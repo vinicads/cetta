@@ -64,7 +64,7 @@ export class LoginService {
                 httpOnly: true,
                 withCredentials: true,
                 sameSite: 'lax',
-               domain: 'programacetta.com',
+               //domain: 'programacetta.com',
                 maxAge: Number(String(process.env.tempoCookie)),
                 path: "/",
               });
@@ -100,7 +100,7 @@ async cookieAccepted(req, res){
     secure: false,
     httpOnly: true,
     sameSite: 'lax',
-   domain: 'programacetta.com',
+   //domain: 'programacetta.com',
     withCredentials: true,
     path: "/",
   });
@@ -159,7 +159,7 @@ async cookieAccepted(req, res){
             secure: false,
             httpOnly: true,
             sameSite: 'lax',
-           domain: 'programacetta.com',
+           //domain: 'programacetta.com',
             withCredentials: true,
             path: "/",
           }).status(400).send("Token invalido.");
@@ -171,7 +171,7 @@ async cookieAccepted(req, res){
         secure: false,
         httpOnly: true,
         sameSite: 'lax',
-       domain: 'programacetta.com',
+       //domain: 'programacetta.com',
         withCredentials: true,
         path: "/",
       });
@@ -198,7 +198,7 @@ async cookieAccepted(req, res){
         maxAge: 1,
         secure: false,
         sameSite: 'lax',
-       domain: 'programacetta.com',
+       //domain: 'programacetta.com',
         httpOnly: true,
         withCredentials: true,
         path: "/",
@@ -240,7 +240,7 @@ async forgotPassword(email, req, res){
     httpOnly: true,
     withCredentials: true,
     sameSite: 'lax',
-   domain: 'programacetta.com',
+   //domain: 'programacetta.com',
     maxAge: 30 * 60 * 1000,
     path: "/",
   })
@@ -282,7 +282,7 @@ async changePassword(dados, code, req, res){
         maxAge: 1,
         secure: false,
         sameSite: 'lax',
-       domain: 'programacetta.com',
+       //domain: 'programacetta.com',
         httpOnly: true,
         withCredentials: true,
         path: "/",
